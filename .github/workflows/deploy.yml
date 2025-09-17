@@ -55,12 +55,11 @@ jobs:
           echo "Backend node_modules klasörü silindi."
           cd ..
 
-      # Backend bağımlılıklarını kur ve build et
+      # Backend bağımlılıklarını kur (TypeScript runtime kullanacağız)
       - name: Install dependencies (backend)
         run: |
           cd backend
-          npm ci
-          npm run build
+          npm ci --omit=dev
           cd ..
 
       # Backend arşivleme
