@@ -8,14 +8,10 @@ import {
   Eye, 
   EyeOff, 
   Mail, 
-  Lock, 
-  LogIn, 
   AlertCircle, 
   CheckCircle,
   MessageCircle,
   Circle,
-  Square,
-  Triangle,
   ArrowRight
 } from 'lucide-react'
 
@@ -342,7 +338,7 @@ const MinimalistLoginForm = () => {
           {/* Register Link */}
           <div className="text-center mt-4 pt-3 border-t border-gray-700/30">
             <p className="text-gray-400 text-xs">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/auth/register" className="text-white hover:text-red-400 font-medium transition-colors">
                 Sign up
               </Link>

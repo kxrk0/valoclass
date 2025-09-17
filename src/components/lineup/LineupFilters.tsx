@@ -201,7 +201,7 @@ const LineupFilters = ({ onFiltersChange }: LineupFiltersProps) => {
                   </span>
                 )}
                 {Object.entries(filters).map(([category, values]) =>
-                  values.map(value => (
+                  values.map((value: string) => (
                     <span
                       key={`${category}-${value}`}
                       className="bg-red-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1"

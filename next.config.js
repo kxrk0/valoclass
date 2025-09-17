@@ -1,13 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Enable Turbopack
-  experimental: {
-    turbo: {
-      rules: {
-        '*.scss': {
-          loaders: ['sass-loader'],
-          as: '*.css',
-        },
+  turbopack: {
+    rules: {
+      '*.scss': {
+        loaders: ['sass-loader'],
+        as: '*.css',
       },
     },
   },

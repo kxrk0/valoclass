@@ -96,9 +96,9 @@ const BlurText = ({
         const spanTransition = {
           duration: totalDuration,
           times,
-          delay: (index * delay) / 1000
+          delay: (index * delay) / 1000,
+          ease: easing
         }
-        spanTransition.ease = easing
 
         // Special styling for "Level Up Your Game"
         const isLevelUp = segment === 'Level' || segment === 'Up'

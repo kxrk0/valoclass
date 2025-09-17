@@ -342,7 +342,7 @@ const ModernLoginForm = () => {
         {/* Register Link */}
         <div className="text-center mt-8 pt-6 border-t border-gray-700">
           <p className="text-gray-400">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/auth/register" className="text-red-400 hover:text-red-300 font-medium transition-colors">
               Sign up here
             </Link>

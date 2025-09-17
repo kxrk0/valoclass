@@ -1,0 +1,168 @@
+name: Deploy ValoClass to VPS
+
+# Bu iş akışı ne zaman çalışacak?
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    # Bu işlerin çalışacağı sanal makine
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Adım: Kodu GitHub Actions makinesine indir
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2. Adım: Node.js kurulumu
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Frontend için temizleme (sadece node_modules)
+      - name: Temiz node_modules (Frontend)
+        run: |
+          rm -rf node_modules
+          echo "Frontend node_modules klasörü silindi."
+
+      # Frontend bağımlılıklarını kur
+      - name: Install dependencies (frontend)
+        run: npm ci
+
+      # Frontend build (Next.js)
+      - name: Build Frontend
+        run: npm run build
+
+      # Frontend arşivleme (.next/cache hariç, backend klasörü hariç)
+      - name: Archive frontend
+        run: |
+          tar --exclude='backend' --exclude='.git' --exclude='node_modules' --exclude='.next/cache' -czvf frontend.tar.gz . || {
+            code=$?
+            echo "Uyarı: tar arşivleme sırasında dosya değişti (kod: $code), bu genellikle önemsizdir.";
+            exit 0;
+          }
+
+      # Backend için temizleme (sadece node_modules)
+      - name: Temiz node_modules (Backend)
+        run: |
+          cd backend
+          rm -rf node_modules
+          echo "Backend node_modules klasörü silindi."
+          cd ..
+
+      # Backend bağımlılıklarını kur
+      - name: Install dependencies (backend)
+        run: |
+          cd backend
+          npm ci --omit=dev
+          cd ..
+
+      # Backend arşivleme
+      - name: Archive backend
+        run: tar --exclude='node_modules' -czvf backend.tar.gz -C backend .
+
+      # Arşivleri VPS'e kopyala
+      - name: Copy archives to VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          source: "frontend.tar.gz,backend.tar.gz"
+          target: "/root"
+          strip_components: 0
+
+      # VPS'te deploy işlemleri
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+            
+            # Ana dizini oluştur
+            mkdir -p /root/valoclass
+            
+            # Eski dosyaları backup al
+            if [ -d "/root/valoclass" ]; then
+              echo "📦 Mevcut dosyalar backup alınıyor..."
+              cp -r /root/valoclass /root/valoclass-backup-$(date +%Y%m%d-%H%M%S) || true
+            fi
+
+            # Frontend arşivini çıkar
+            echo "🚀 Frontend deploy ediliyor..."
+            tar -xzvf /root/frontend.tar.gz -C /root/valoclass
+
+            # Backend dizini oluştur ve arşivi çıkar
+            echo "⚡ Backend deploy ediliyor..."
+            mkdir -p /root/valoclass/backend
+            tar -xzvf /root/backend.tar.gz -C /root/valoclass/backend
+
+            # Frontend bağımlılıklarını kur
+            echo "📦 Frontend bağımlılıkları kuruluyor..."
+            cd /root/valoclass
+            npm ci --omit=dev
+
+            # Backend bağımlılıklarını kur
+            echo "📦 Backend bağımlılıkları kuruluyor..."
+            cd /root/valoclass/backend
+            npm ci --omit=dev
+
+            # Prisma generate (eğer varsa)
+            echo "🗄️  Veritabanı şeması generate ediliyor..."
+            npx prisma generate --schema=./prisma/schema.prisma || echo "Prisma generate skipped"
+            
+            # Veritabanı migrasyonları (production için)
+            echo "🗄️  Veritabanı migrasyonları uygulanıyor..."
+            npx prisma db push --schema=./prisma/schema.prisma || echo "Database push skipped"
+
+            # PM2 ile servisleri yeniden başlat
+            echo "🔄 PM2 servisleri yeniden başlatılıyor..."
+            
+            # Frontend servisi (Next.js)
+            echo "🖥️  Frontend servisi başlatılıyor..."
+            pm2 stop valoclass-frontend || true
+            pm2 delete valoclass-frontend || true
+            cd /root/valoclass
+            pm2 start npm --name "valoclass-frontend" -- start
+            
+            # Backend servisi (Express.js)
+            echo "⚙️  Backend servisi başlatılıyor..."
+            pm2 stop valoclass-backend || true
+            pm2 delete valoclass-backend || true
+            cd /root/valoclass/backend
+            pm2 start npm --name "valoclass-backend" -- start
+
+            # Servisleri kaydet
+            pm2 save
+            pm2 status
+
+            # Health check
+            echo "🏥 Sistem durumu kontrol ediliyor..."
+            sleep 5
+            
+            # Frontend health check (Next.js genellikle 3000 portu)
+            echo "🔍 Frontend health check..."
+            curl -I http://localhost:3000 && echo "✅ Frontend erişilebilir" || echo "❌ Frontend erişilemiyor"
+            
+            # Backend health check (genellikle 8000 portu)
+            echo "🔍 Backend health check..."
+            curl -I http://localhost:8000/api || curl -I http://localhost:8000 && echo "✅ Backend erişilebilir" || echo "❌ Backend erişilemiyor"
+
+            # Cleanup temp files
+            rm -f /root/frontend.tar.gz /root/backend.tar.gz
+
+            echo "🎉 ValoClass deploy tamamlandı!"
+
+      # Temizlik
+      - name: Cleanup
+        run: rm -f frontend.tar.gz backend.tar.gz

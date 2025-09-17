@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Plus, Play, Heart, Eye, Edit3, Trash2, MoreVertical } from 'lucide-react'
+import { Plus, Play, Heart, Eye, Edit3, Trash2, MoreVertical, Target } from 'lucide-react'
 
 // Mock lineups data
 const mockLineups = [
