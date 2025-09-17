@@ -55,11 +55,12 @@ jobs:
           echo "Backend node_modules klasörü silindi."
           cd ..
 
-      # Backend bağımlılıklarını kur
+      # Backend bağımlılıklarını kur ve build et
       - name: Install dependencies (backend)
         run: |
           cd backend
-          npm ci --omit=dev
+          npm ci
+          npm run build
           cd ..
 
       # Backend arşivleme
@@ -112,8 +113,8 @@ jobs:
             cd /root/valoclass
             npm ci --omit=dev
 
-            # Backend bağımlılıklarını kur
-            echo "📦 Backend bağımlılıkları kuruluyor..."
+            # Backend bağımlılıklarını kur (sadece production)
+            echo "📦 Backend production bağımlılıkları kuruluyor..."
             cd /root/valoclass/backend
             npm ci --omit=dev
 
