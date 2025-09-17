@@ -1,0 +1,467 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  passwordHash String?
+  displayName String?
+  avatar    String?
+  banner    String?
+  bio       String?
+  location  String?
+  website   String?
+  riotId    String?
+  role      UserRole @default(USER)
+  
+  // Status flags
+  isVerified Boolean @default(false)
+  isPremium  Boolean @default(false)
+  isActive   Boolean @default(true)
+  
+  // Preferences
+  preferences Json @default("{}")
+  
+  // Stats
+  stats Json @default("{}")
+  
+  // Timestamps
+  lastLoginAt    DateTime?
+  emailVerifiedAt DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  // Relations
+  lineups     Lineup[]
+  crosshairs  Crosshair[]
+  comments    Comment[]
+  likes       Like[]
+  bookmarks   Bookmark[]
+  reports     Report[]
+  followers   Follow[] @relation("UserFollowers")
+  following   Follow[] @relation("UserFollowing")
+  sessions    Session[]
+  achievements UserAchievement[]
+  activities  Activity[]
+  accounts    Account[]
+  
+  @@map("users")
+}
+
+model Lineup {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  agent       String
+  ability     String
+  map         String
+  side        LineupSide
+  difficulty  Difficulty
+  
+  // Position data
+  position Json
+  
+  // Content
+  instructions String[]
+  images       String[]
+  videoUrl     String?
+  tags         String[]
+  
+  // Status
+  status    LineupStatus @default(DRAFT)
+  featured  Boolean      @default(false)
+  verified  Boolean      @default(false)
+  
+  // Stats
+  stats Json @default("{}")
+  
+  // SEO
+  seo Json @default("{}")
+  
+  // Relations
+  createdBy    String
+  creator      User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  moderatedBy  String?
+  moderatedAt  DateTime?
+  
+  comments  Comment[]
+  likes     Like[]
+  bookmarks Bookmark[]
+  reports   Report[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([createdBy, title])
+  @@map("lineups")
+}
+
+model Crosshair {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  shareCode   String  @unique
+  
+  // Settings
+  settings Json
+  
+  // Metadata
+  tags      String[]
+  isPublic  Boolean @default(false)
+  featured  Boolean @default(false)
+  
+  // Stats
+  stats Json @default("{}")
+  
+  // Relations
+  createdBy String
+  creator   User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  
+  comments  Comment[]
+  likes     Like[]
+  bookmarks Bookmark[]
+  reports   Report[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("crosshairs")
+}
+
+model Comment {
+  id       String  @id @default(cuid())
+  content  String
+  parentId String?
+  parent   Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies  Comment[] @relation("CommentReplies")
+  
+  // Entity reference (polymorphic)
+  entityType CommentEntity
+  entityId   String
+  
+  // Relations
+  authorId String
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  lineup     Lineup?    @relation(fields: [entityId], references: [id], onDelete: Cascade, map: "comment_lineup_fkey")
+  crosshair  Crosshair? @relation(fields: [entityId], references: [id], onDelete: Cascade, map: "comment_crosshair_fkey")
+  
+  likes   Like[]
+  reports Report[]
+  
+  // Status
+  isEdited Boolean       @default(false)
+  status   CommentStatus @default(ACTIVE)
+  
+  // Stats
+  stats Json @default("{}")
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("comments")
+}
+
+model Like {
+  id String @id @default(cuid())
+  
+  // Entity reference (polymorphic)
+  entityType LikeEntity
+  entityId   String
+  
+  // Relations
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  lineup    Lineup?    @relation(fields: [entityId], references: [id], onDelete: Cascade, map: "like_lineup_fkey")
+  crosshair Crosshair? @relation(fields: [entityId], references: [id], onDelete: Cascade, map: "like_crosshair_fkey")
+  comment   Comment?   @relation(fields: [entityId], references: [id], onDelete: Cascade, map: "like_comment_fkey")
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, entityType, entityId])
+  @@map("likes")
+}
+
+model Bookmark {
+  id           String  @id @default(cuid())
+  collectionId String?
+  
+  // Entity reference (polymorphic)
+  entityType BookmarkEntity
+  entityId   String
+  
+  // Relations
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  lineup    Lineup?    @relation(fields: [entityId], references: [id], onDelete: Cascade, map: "bookmark_lineup_fkey")
+  crosshair Crosshair? @relation(fields: [entityId], references: [id], onDelete: Cascade, map: "bookmark_crosshair_fkey")
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, entityType, entityId])
+  @@map("bookmarks")
+}
+
+model Follow {
+  id String @id @default(cuid())
+  
+  // Relations
+  followerId  String
+  followingId String
+  follower    User @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Report {
+  id     String       @id @default(cuid())
+  reason ReportReason
+  description String?
+  
+  // Entity reference (polymorphic)
+  entityType ReportEntity
+  entityId   String
+  
+  // Relations
+  reporterId String
+  reporter   User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  
+  lineup    Lineup?    @relation(fields: [entityId], references: [id], onDelete: Cascade, map: "report_lineup_fkey")
+  crosshair Crosshair? @relation(fields: [entityId], references: [id], onDelete: Cascade, map: "report_crosshair_fkey")
+  comment   Comment?   @relation(fields: [entityId], references: [id], onDelete: Cascade, map: "report_comment_fkey")
+  
+  // Review
+  status       ReportStatus @default(PENDING)
+  reviewedBy   String?
+  reviewedAt   DateTime?
+  resolution   String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("reports")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  token        String   @unique
+  refreshToken String   @unique
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+  lastActivity DateTime @default(now())
+  
+  // Relations
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  
+  @@map("sessions")
+}
+
+model Account {
+  id         String      @id @default(cuid())
+  type       AccountType
+  provider   String
+  providerId String
+  
+  // OAuth tokens
+  accessToken      String? @db.Text
+  refreshToken     String? @db.Text
+  expiresAt        DateTime?
+  tokenType        String?
+  scope            String?
+  idToken          String? @db.Text
+  sessionState     String?
+  
+  // Relations
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([provider, providerId])
+  @@unique([userId, provider])
+  @@map("accounts")
+}
+
+model Achievement {
+  id          String            @id @default(cuid())
+  name        String
+  description String
+  icon        String
+  category    AchievementCategory
+  
+  // Requirements
+  requirements Json
+  
+  // Rewards
+  rewards Json
+  
+  // Status
+  isActive Boolean @default(true)
+  
+  // Relations
+  userAchievements UserAchievement[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id String @id @default(cuid())
+  
+  // Relations
+  userId        String
+  achievementId String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  
+  // Progress
+  progress Int?
+  earnedAt DateTime @default(now())
+  
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+model Activity {
+  id   String       @id @default(cuid())
+  type ActivityType
+  
+  // Entity reference (optional)
+  entityType String?
+  entityId   String?
+  
+  // Data
+  data     Json
+  isPublic Boolean @default(true)
+  
+  // Relations
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  
+  @@map("activities")
+}
+
+// Enums
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum LineupSide {
+  ATTACKER
+  DEFENDER
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum LineupStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CommentEntity {
+  LINEUP
+  CROSSHAIR
+  USER
+}
+
+enum CommentStatus {
+  ACTIVE
+  HIDDEN
+  DELETED
+}
+
+enum LikeEntity {
+  LINEUP
+  CROSSHAIR
+  COMMENT
+}
+
+enum BookmarkEntity {
+  LINEUP
+  CROSSHAIR
+}
+
+enum ReportEntity {
+  LINEUP
+  CROSSHAIR
+  COMMENT
+  USER
+}
+
+enum ReportReason {
+  SPAM
+  INAPPROPRIATE
+  COPYRIGHT
+  HARASSMENT
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}
+
+enum AchievementCategory {
+  CONTENT
+  SOCIAL
+  ENGAGEMENT
+  SPECIAL
+}
+
+enum ActivityType {
+  LINEUP_CREATED
+  CROSSHAIR_SHARED
+  COMMENT_POSTED
+  USER_FOLLOWED
+  ACHIEVEMENT_EARNED
+  RANK_UPDATED
+}
+
+enum AccountType {
+  oauth
+  credentials
+}
