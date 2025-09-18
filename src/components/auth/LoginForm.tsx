@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Eye, EyeOff, Mail, Lock, LogIn, AlertCircle, CheckCircle, Shield } from 'lucide-react'
-import RiotAuth from './RiotAuth'
 
 interface LoginFormData {
   email: string
@@ -19,69 +18,11 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [showRiotAuth, setShowRiotAuth] = useState(false)
   
   const router = useRouter()
   const searchParams = useSearchParams()
   const message = searchParams.get('message')
-  const riotParam = searchParams.get('riot')
 
-  // Handle riot=true URL parameter with manual URL parsing (Next.js SSR fix)
-  useEffect(() => {
-    console.log('🔥 useEffect RUNNING! window exists?', typeof window !== 'undefined')
-    
-    // Only run on client side
-    if (typeof window === 'undefined') {
-      console.log('❌ Window is undefined, exiting useEffect')
-      return
-    }
-    
-    console.log('✅ [Frontend] useEffect triggered, current URL:', window.location.href)
-    
-    // Manual URL parsing instead of useSearchParams (SSR issue)
-    const urlParams = new URLSearchParams(window.location.search)
-    const riotParam = urlParams.get('riot')
-    const source = urlParams.get('source')
-    const requestId = urlParams.get('rid')
-    
-    console.log('[Frontend] Manual URL params:', {
-      riot: riotParam,
-      source: source,
-      rid: requestId,
-      fullSearch: window.location.search
-    })
-    
-    if (riotParam === 'true') {
-      console.log(`[Frontend] RIOT PARAMETER DETECTED!`, {
-        source,
-        requestId,
-        currentUrl: window.location.href,
-        timestamp: new Date().toISOString()
-      })
-      
-      // Clean URL immediately to prevent loops
-      const currentUrl = new URL(window.location.href)
-      
-      // Remove all OAuth-related parameters
-      currentUrl.searchParams.delete('riot')
-      currentUrl.searchParams.delete('source') 
-      currentUrl.searchParams.delete('rid')
-      
-      const cleanUrl = currentUrl.pathname + (currentUrl.searchParams.toString() ? '?' + currentUrl.searchParams.toString() : '')
-      
-      console.log(`[Frontend] Cleaning URL from:`, window.location.href, 'to:', cleanUrl)
-      
-      // Use window.history for immediate URL cleanup
-      window.history.replaceState({}, '', cleanUrl)
-      
-      // Verify URL was cleaned and open modal
-      setTimeout(() => {
-        console.log(`[Frontend] URL after cleanup:`, window.location.href)
-        console.log(`[Frontend] Opening Riot auth modal - current showRiotAuth:`, showRiotAuth)
-        setShowRiotAuth(true)
-      }, 100)
-    }
-  }, []) // Empty dependencies - run only on mount
   
   
   const {
@@ -128,7 +69,7 @@ const LoginForm = () => {
   return (
     <div className="space-y-6">
       {/* Success Message */}
-      {message && !riotParam && (
+      {message && (
         <div className="flex items-center gap-2 p-3 bg-green-900/20 border border-green-700 rounded-md">
           <CheckCircle size={16} className="text-green-400" />
           <span className="text-green-400 text-sm">{message}</span>
@@ -358,8 +299,8 @@ const LoginForm = () => {
             <button
               onClick={(e) => {
                 e.preventDefault()
-                console.log('🎮 Riot button clicked! Opening modal...')
-                setShowRiotAuth(true)
+                console.log('🎮 Riot button clicked! Redirecting to OAuth...')
+                window.location.href = '/api/auth/oauth/riot'
               }}
               className="w-full btn bg-gradient-to-r from-valorant-red to-red-600 hover:from-red-600 hover:to-valorant-red text-white border-0 flex items-center justify-center gap-3 py-3"
             >
@@ -374,21 +315,6 @@ const LoginForm = () => {
         </div>
       </div>
 
-      {/* Riot Authentication Modal */}
-      {showRiotAuth && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-md">
-            <RiotAuth 
-              onSuccess={(user) => {
-                setShowRiotAuth(false)
-                // Redirect to dashboard or home page
-                window.location.href = '/'
-              }}
-              onClose={() => setShowRiotAuth(false)}
-            />
-          </div>
-        </div>
-      )}
     </div>
   )
 }
