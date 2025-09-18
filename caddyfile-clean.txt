@@ -15,7 +15,7 @@
 
 # Main production site
 playvalorantguides.com www.playvalorantguides.com {
-    # Backend API - Express.js (Port 8000) - MUST come first
+    # ALL API endpoints go to Backend Express.js (Port 8000)
     handle /api/* {
         reverse_proxy localhost:8000 {
             header_up Host {upstream_hostport}

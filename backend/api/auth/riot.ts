@@ -1,303 +1,346 @@
-import { Router, Request, Response } from 'express';
-import { riotAuthService } from '../../services/riotAuth';
-import { prisma } from '../../lib/prisma';
+import { Router, Request, Response, NextFunction } from 'express';
+import { riotAuthService, RiotAccount, RiotProfile } from '../../services/RiotAuthService';
 import { logger } from '../../lib/logger';
-import { 
-  requireAuth, 
-  AuthenticatedRequest, 
-  apiRateLimit 
-} from '../../lib/middleware';
-import { 
-  ApiResponse, 
-  ValidationError, 
-  NotFoundError,
-  ConflictError 
-} from '../../lib/errors';
+import { apiRateLimit, strictRateLimit } from '../../lib/middleware';
+import { z } from 'zod';
 
 const router = Router();
 
-// Temporary in-memory storage for verification challenges
-// In production, this should be stored in Redis or database
-const verificationChallenges = new Map<string, any>();
-
-// POST /api/auth/riot/search
-// Search for Riot account by Game Name + Tag
-router.post('/search', apiRateLimit, async (req: Request, res: Response) => {
-  try {
-    const { gameName, tagLine, region } = req.body;
-
-    if (!gameName || !tagLine) {
-      throw new ValidationError('Game Name and Tag Line are required');
-    }
-
-    // Validate format
-    if (gameName.length < 3 || gameName.length > 16) {
-      throw new ValidationError('Game Name must be between 3-16 characters');
-    }
-
-    if (tagLine.length < 3 || tagLine.length > 5) {
-      throw new ValidationError('Tag Line must be between 3-5 characters');
-    }
-
-    const playerProfile = await riotAuthService.getPlayerProfile(
-      gameName, 
-      tagLine, 
-      region || 'tr1'
-    );
-
-    logger.info('Riot account search successful', { 
-      gameName, 
-      tagLine, 
-      puuid: playerProfile.account.puuid 
-    });
-
-    res.json({
-      success: true,
-      data: playerProfile,
-      message: 'Riot account found successfully'
-    } as ApiResponse<any>);
-
-  } catch (error) {
-    logger.error('Riot account search failed', { 
-      gameName: req.body.gameName, 
-      tagLine: req.body.tagLine,
-      error: error.message 
-    });
-
-    if (error.message.includes('Failed to fetch Riot account')) {
-      throw new NotFoundError('Riot account not found. Please check your Game Name and Tag Line.');
-    }
-    
-    throw error;
-  }
+// ===== VALIDATION SCHEMAS =====
+const SearchAccountSchema = z.object({
+  gameName: z.string()
+    .min(3, 'Game Name must be at least 3 characters')
+    .max(16, 'Game Name must be no more than 16 characters')
+    .trim(),
+  tagLine: z.string()
+    .min(2, 'Tag Line must be at least 2 characters') 
+    .max(5, 'Tag Line must be no more than 5 characters')
+    .trim()
+    .toUpperCase(),
+  region: z.string().optional().default('tr1')
 });
 
-// POST /api/auth/riot/verify/start
-// Start account verification process
-router.post('/verify/start', requireAuth, apiRateLimit, async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    const { puuid, verificationType } = req.body;
+const LoginSchema = z.object({
+  gameName: z.string()
+    .min(3, 'Game Name must be at least 3 characters')
+    .max(16, 'Game Name must be no more than 16 characters')
+    .trim(),
+  tagLine: z.string()
+    .min(2, 'Tag Line must be at least 2 characters')
+    .max(5, 'Tag Line must be no more than 5 characters')
+    .trim()
+    .toUpperCase(),
+  region: z.string().optional().default('tr1')
+});
 
-    if (!puuid) {
-      throw new ValidationError('PUUID is required');
-    }
-
-    // Check if account is already verified by another user
-    const existingVerification = await prisma.user.findFirst({
-      where: { 
-        riotId: puuid,
-        id: { not: req.user!.id }
+// ===== MIDDLEWARE =====
+const validateJson = (schema: z.ZodSchema<any>) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    try {
+      const result = schema.safeParse(req.body);
+      
+      if (!result.success) {
+        res.status(400).json({
+          success: false,
+          error: 'Validation failed',
+          details: result.error.errors.map(err => ({
+            field: err.path.join('.'),
+            message: err.message
+          })),
+          message: 'Please check your input and try again'
+        });
+        return;
       }
-    });
-
-    if (existingVerification) {
-      throw new ConflictError('This Riot account is already verified by another user');
+      
+      req.body = result.data;
+      next();
+    } catch (error) {
+      logger.error('Validation middleware error', { error: (error as Error).message });
+      res.status(400).json({
+        success: false,
+        error: 'Invalid request format',
+        message: 'Request body must be valid JSON'
+      });
     }
+  };
+};
 
-    // Create verification challenge
-    const challenge = riotAuthService.createVerificationChallenge(
-      verificationType || 'third_party_code'
-    );
+const errorHandler = (error: Error, req: Request, res: Response, next: NextFunction): void => {
+  logger.error('Riot API route error', {
+    url: req.url,
+    method: req.method,
+    body: req.body,
+    error: error.message,
+    stack: error.stack
+  });
 
-    // Store challenge temporarily
-    const challengeKey = `${req.user!.id}:${puuid}`;
-    verificationChallenges.set(challengeKey, {
-      ...challenge,
-      userId: req.user!.id,
-      puuid,
-      createdAt: Date.now()
-    });
-
-    logger.info('Verification challenge created', { 
-      userId: req.user!.id, 
-      puuid, 
-      type: challenge.type 
-    });
-
-    res.json({
-      success: true,
-      data: {
-        challenge: challenge.challenge,
-        type: challenge.type,
-        expiresAt: challenge.expiresAt,
-        instructions: getVerificationInstructions(challenge)
-      },
-      message: 'Verification challenge created'
-    } as ApiResponse<any>);
-
-  } catch (error) {
-    logger.error('Failed to start verification', { 
-      userId: req.user?.id, 
-      puuid: req.body.puuid,
-      error: error.message 
-    });
-    throw error;
+  // Check if response already sent
+  if (res.headersSent) {
+    return next(error);
   }
-});
 
-// POST /api/auth/riot/verify/complete
-// Complete account verification
-router.post('/verify/complete', requireAuth, apiRateLimit, async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    const { puuid, region } = req.body;
+  // Handle specific error types
+  if (error.message.includes('Rate limit')) {
+    res.status(429).json({
+      success: false,
+      error: error.message,
+      message: 'Too many requests. Please wait a moment before trying again.',
+      retryAfter: 60
+    });
+    return;
+  }
 
-    if (!puuid) {
-      throw new ValidationError('PUUID is required');
-    }
+  if (error.message.includes('not found')) {
+    res.status(404).json({
+      success: false,
+      error: error.message,
+      message: 'Player not found. Please check your Game Name and Tag Line.'
+    });
+    return;
+  }
 
-    const challengeKey = `${req.user!.id}:${puuid}`;
-    const storedChallenge = verificationChallenges.get(challengeKey);
+  // Default server error
+  res.status(500).json({
+    success: false,
+    error: 'Internal server error',
+    message: 'Something went wrong. Please try again later.'
+  });
+};
 
-    if (!storedChallenge) {
-      throw new NotFoundError('No verification challenge found. Please start verification first.');
-    }
+// ===== API ENDPOINTS =====
 
-    if (Date.now() > storedChallenge.expiresAt) {
-      verificationChallenges.delete(challengeKey);
-      throw new ValidationError('Verification challenge has expired. Please start again.');
-    }
+/**
+ * POST /api/auth/riot/search
+ * Search for a Riot account without authentication
+ */
+router.post('/search', 
+  apiRateLimit,
+  validateJson(SearchAccountSchema),
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { gameName, tagLine, region } = req.body;
+      
+      logger.info('Riot account search request', { 
+        gameName, 
+        tagLine, 
+        region,
+        ip: req.ip 
+      });
 
-    // Verify account ownership
-    const isVerified = await riotAuthService.verifyAccountOwnership(
-      puuid,
-      storedChallenge,
-      region || 'tr1'
-    );
+      const result = await riotAuthService.validateAccount(gameName, tagLine);
 
-    if (!isVerified) {
-      throw new ValidationError('Account verification failed. Please ensure you completed the challenge correctly.');
-    }
-
-    // Get account info for storage
-    const accountInfo = await riotAuthService.getAccountByRiotId(
-      storedChallenge.gameName || 'Unknown',
-      storedChallenge.tagLine || 'Unknown'
-    );
-
-    // Update user with Riot account info
-    const updatedUser = await prisma.user.update({
-      where: { id: req.user!.id },
-      data: { 
-        riotId: puuid,
-        // Store additional Riot info in a JSON field if available
-        // This would depend on your User model structure
+      if (result.success && result.account) {
+        res.json({
+          success: true,
+          data: {
+            account: {
+              puuid: result.account.puuid,
+              gameName: result.account.gameName,
+              tagLine: result.account.tagLine
+            },
+            region,
+            searchedAt: new Date().toISOString()
+          },
+          message: `Account found: ${result.account.gameName}#${result.account.tagLine} ✅`
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          error: result.error || 'Account not found',
+          message: 'Unable to find a Riot account with that Game Name and Tag Line.'
+        });
       }
-    });
 
-    // Clean up challenge
-    verificationChallenges.delete(challengeKey);
-
-    logger.info('Riot account verification completed', { 
-      userId: req.user!.id, 
-      puuid,
-      gameName: accountInfo.gameName,
-      tagLine: accountInfo.tagLine
-    });
-
-    res.json({
-      success: true,
-      data: {
-        riotAccount: accountInfo,
-        user: {
-          id: updatedUser.id,
-          username: updatedUser.username,
-          riotId: updatedUser.riotId
-        }
-      },
-      message: 'Riot account verified and linked successfully'
-    } as ApiResponse<any>);
-
-  } catch (error) {
-    logger.error('Failed to complete verification', { 
-      userId: req.user?.id, 
-      puuid: req.body.puuid,
-      error: error.message 
-    });
-    throw error;
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
-// DELETE /api/auth/riot/unlink
-// Unlink Riot account from user
-router.delete('/unlink', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    const updatedUser = await prisma.user.update({
-      where: { id: req.user!.id },
-      data: { riotId: null }
-    });
+/**
+ * POST /api/auth/riot/authenticate  
+ * Authenticate and login with Riot account
+ */
+router.post('/authenticate',
+  strictRateLimit,
+  validateJson(LoginSchema), 
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { gameName, tagLine, region } = req.body;
 
-    logger.info('Riot account unlinked', { userId: req.user!.id });
+      logger.info('Riot authentication request', { 
+        gameName, 
+        tagLine, 
+        region,
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+      });
 
-    res.json({
-      success: true,
-      data: {
-        user: {
-          id: updatedUser.id,
-          username: updatedUser.username,
-          riotId: updatedUser.riotId
-        }
-      },
-      message: 'Riot account unlinked successfully'
-    } as ApiResponse<any>);
+      const authResult = await riotAuthService.authenticatePlayer(gameName, tagLine, region);
 
-  } catch (error) {
-    logger.error('Failed to unlink Riot account', { 
-      userId: req.user?.id,
-      error: error.message 
-    });
-    throw error;
+      if (authResult.success && authResult.profile && authResult.token) {
+        // Set secure session cookies
+        res.cookie('riot_session', authResult.token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 24 * 60 * 60 * 1000, // 24 hours
+          path: '/'
+        });
+
+        // Set user info cookie for client-side access
+        const userInfo = {
+          gameName: authResult.profile.account.gameName,
+          tagLine: authResult.profile.account.tagLine,
+          region: authResult.profile.region
+        };
+
+        res.cookie('riot_user', JSON.stringify(userInfo), {
+          httpOnly: false, // Accessible to client
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 24 * 60 * 60 * 1000,
+          path: '/'
+        });
+
+        logger.info('Riot authentication successful', {
+          puuid: authResult.profile.account.puuid,
+          gameName: authResult.profile.account.gameName,
+          tagLine: authResult.profile.account.tagLine,
+          region: authResult.profile.region,
+          ip: req.ip
+        });
+
+        res.json({
+          success: true,
+          data: {
+            user: {
+              gameName: authResult.profile.account.gameName,
+              tagLine: authResult.profile.account.tagLine,
+              displayName: `${authResult.profile.account.gameName}#${authResult.profile.account.tagLine}`,
+              region: authResult.profile.region,
+              accountLevel: authResult.profile.accountLevel || 1,
+              authenticatedAt: new Date().toISOString()
+            },
+            // Don't send token in response body for security
+            sessionActive: true
+          },
+          message: authResult.message
+        });
+
+      } else {
+        logger.warn('Riot authentication failed', {
+          gameName,
+          tagLine,
+          region,
+          error: authResult.error,
+          ip: req.ip
+        });
+
+        res.status(401).json({
+          success: false,
+          error: authResult.error || 'Authentication failed',
+          message: authResult.message || 'Unable to authenticate with Riot account'
+        });
+      }
+
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
-// GET /api/auth/riot/profile
-// Get current user's linked Riot profile
-router.get('/profile', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+/**
+ * GET /api/auth/riot/profile
+ * Get current user's Riot profile (requires authentication)
+ */
+router.get('/profile', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    if (!req.user!.riotId) {
-      throw new NotFoundError('No Riot account linked to this user');
+    const sessionToken = req.cookies?.riot_session;
+    const userCookie = req.cookies?.riot_user;
+
+    if (!sessionToken || !userCookie) {
+      res.status(401).json({
+        success: false,
+        error: 'Not authenticated',
+        message: 'Please login with your Riot account first'
+      });
+      return;
     }
 
-    // Get current Riot profile data
-    const accountInfo = await riotAuthService.getAccountByRiotId('', ''); // This would need PUUID lookup
-    
-    // For now, return basic info
-    res.json({
-      success: true,
-      data: {
-        riotId: req.user!.riotId,
-        linkedAt: req.user!.updatedAt // Approximate linking time
-      },
-      message: 'Riot profile retrieved'
-    } as ApiResponse<any>);
+    try {
+      const userInfo = JSON.parse(userCookie);
+      
+      res.json({
+        success: true,
+        data: {
+          profile: {
+            gameName: userInfo.gameName,
+            tagLine: userInfo.tagLine,
+            displayName: `${userInfo.gameName}#${userInfo.tagLine}`,
+            region: userInfo.region,
+            isAuthenticated: true,
+            sessionActive: true
+          }
+        },
+        message: 'Profile retrieved successfully'
+      });
+
+    } catch (parseError) {
+      res.status(401).json({
+        success: false,
+        error: 'Invalid session',
+        message: 'Session data is corrupted. Please login again.'
+      });
+    }
 
   } catch (error) {
-    logger.error('Failed to get Riot profile', { 
-      userId: req.user?.id,
-      error: error.message 
-    });
-    throw error;
+    next(error);
   }
 });
 
-// Helper function to get verification instructions
-function getVerificationInstructions(challenge: any): string {
-  switch (challenge.type) {
-    case 'summoner_name':
-      return `Change your summoner name to: ${challenge.challenge}. This verification method requires changing your summoner name temporarily.`;
-    
-    case 'status_message':
-      return `Set your status message to: ${challenge.challenge}. Update your League of Legends client status message.`;
-    
-    case 'profile_icon':
-      return `${challenge.challenge}. Go to your League of Legends client and change your profile icon to the specified ID.`;
-    
-    case 'third_party_code':
-      return `Open the League of Legends client and set your Third-Party Verification Code to EXACTLY: ${challenge.challenge}. After setting it, return here and complete verification.`;
-    
-    default:
-      return 'Complete the verification challenge as instructed.';
+/**
+ * POST /api/auth/riot/logout
+ * Logout and clear Riot session
+ */
+router.post('/logout', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    // Clear all Riot-related cookies
+    res.clearCookie('riot_session', { path: '/' });
+    res.clearCookie('riot_user', { path: '/' });
+
+    logger.info('Riot user logged out', { ip: req.ip });
+
+    res.json({
+      success: true,
+      message: 'Successfully logged out from Riot account'
+    });
+
+  } catch (error) {
+    next(error);
   }
-}
+});
+
+/**
+ * GET /api/auth/riot/status
+ * Check authentication status
+ */
+router.get('/status', async (req: Request, res: Response): Promise<void> => {
+  const sessionToken = req.cookies?.riot_session;
+  const userCookie = req.cookies?.riot_user;
+
+  res.json({
+    success: true,
+    data: {
+      isAuthenticated: !!(sessionToken && userCookie),
+      hasActiveSession: !!sessionToken,
+      serverTime: new Date().toISOString()
+    },
+    message: 'Status retrieved'
+  });
+});
+
+// ===== ERROR HANDLING =====
+router.use(errorHandler);
 
 export default router;
-

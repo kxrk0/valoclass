@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -12,7 +12,9 @@ import {
   CheckCircle,
   MessageCircle,
   Circle,
-  ArrowRight
+  ArrowRight,
+  Shield,
+  Gamepad2
 } from 'lucide-react'
 
 interface LoginFormData {
@@ -30,6 +32,7 @@ const MinimalistLoginForm = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const message = searchParams.get('message')
+
   
   const {
     register,
@@ -71,10 +74,10 @@ const MinimalistLoginForm = () => {
   const handleOAuthLogin = async (provider: string) => {
     setActiveOAuth(provider)
     try {
+      // Redirect to OAuth endpoint for all providers
       window.location.href = `/api/auth/oauth/${provider}`
     } catch (error) {
       setError(`Failed to login with ${provider}`)
-    } finally {
       setActiveOAuth(null)
     }
   }
@@ -180,25 +183,71 @@ const MinimalistLoginForm = () => {
               </div>
             </button>
 
-            {/* Riot ID */}
-            <button
-              onClick={() => handleOAuthLogin('riot')}
-              disabled={activeOAuth !== null}
-              className="group w-full p-2.5 rounded-lg border border-gray-600/50 hover:border-gray-500 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 bg-gray-800/20 hover:bg-gray-800/40 backdrop-blur-20"
-            >
-              <div className="flex items-center justify-center gap-3 text-gray-300 group-hover:text-white">
-                {activeOAuth === 'riot' ? (
-                  <div className="w-5 h-5 border border-red-400 border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <svg className="w-5 h-5 text-red-400" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12.534 21.25l-1.09-2.21 10.52-5.18L12.534 2v5.5L2 12l10.534 4.5v4.75z"/>
-                  </svg>
-                )}
-                <span className="font-medium text-sm">
-                  {activeOAuth === 'riot' ? 'Connecting...' : 'Continue with Riot ID'}
-                </span>
-              </div>
-            </button>
+            {/* Riot ID - Special Design */}
+            <div className="relative group">
+              {/* Background gradient effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-orange-500/20 to-yellow-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
+              
+              <button
+                onClick={() => handleOAuthLogin('riot')}
+                disabled={activeOAuth !== null}
+                className="relative w-full p-4 rounded-lg border transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 overflow-hidden"
+                style={{
+                  background: `
+                    linear-gradient(135deg, 
+                      rgba(255, 70, 84, 0.1) 0%, 
+                      rgba(255, 154, 0, 0.1) 50%,
+                      rgba(255, 193, 7, 0.1) 100%
+                    )
+                  `,
+                  borderColor: 'rgba(255, 70, 84, 0.3)',
+                  borderImage: 'linear-gradient(135deg, rgba(255, 70, 84, 0.5), rgba(255, 154, 0, 0.5), rgba(255, 193, 7, 0.5)) 1'
+                }}
+              >
+                <div className="flex items-center justify-center gap-4">
+                  {/* Riot Fist Logo */}
+                  <div className="relative">
+                    {activeOAuth === 'riot' ? (
+                      <div className="w-6 h-6 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <div className="relative">
+                        <Shield className="w-6 h-6 text-red-400" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-red-400/20 to-orange-400/20 rounded blur-sm animate-pulse"></div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Text */}
+                  <div className="flex-1 text-left">
+                    <div className="text-white font-semibold text-sm">
+                      {activeOAuth === 'riot' ? 'Connecting to Riot...' : 'Sign in with Riot ID'}
+                    </div>
+                    <div className="text-gray-400 text-xs mt-0.5">
+                      {activeOAuth === 'riot' ? 'Please wait...' : 'Connect your Valorant account'}
+                    </div>
+                  </div>
+                  
+                  {/* Arrow or Game Icon */}
+                  {!activeOAuth && (
+                    <div className="relative">
+                      <Gamepad2 className="w-5 h-5 text-orange-400 group-hover:text-yellow-400 transition-colors" />
+                      <ArrowRight className="w-4 h-4 text-gray-400 absolute -right-1 -top-1 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Animated border on hover */}
+                <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{
+                    background: `
+                      linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)
+                    `,
+                    backgroundSize: '200% 100%',
+                    animation: activeOAuth !== 'riot' ? 'shimmer 2s infinite' : 'none'
+                  }}
+                />
+              </button>
+            </div>
           </div>
 
           {/* Elegant Divider */}
@@ -350,6 +399,7 @@ const MinimalistLoginForm = () => {
           <div className="absolute bottom-4 left-4 w-1 h-1 bg-cyan-400/60 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
       </div>
+
     </div>
   )
 }

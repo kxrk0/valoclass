@@ -1,13 +1,8 @@
-const CACHE_NAME = 'valoclass-v1'
+const CACHE_NAME = 'valorantguides-v2' // Updated to clear login page cache
 const urlsToCache = [
   '/',
-  '/lineups',
-  '/crosshairs',
-  '/stats',
-  '/community',
-  '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  // '/auth/login', // Removed from cache - causes loop issues with OAuth
+  '/manifest.webmanifest'
 ]
 
 // Install event
