@@ -1,0 +1,215 @@
+# ValoClass Production Caddy Configuration
+# Domain: playvalorantguides.com
+# Updated: 2025-09-18
+
+# Main production site with SSL
+playvalorantguides.com www.playvalorantguides.com {
+    # Frontend - Next.js (Port 3000)
+    handle / {
+        reverse_proxy localhost:3000 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    
+    # Backend API - Express.js (Port 8000)
+    handle /api/* {
+        reverse_proxy localhost:8000 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    
+    # Static assets from Next.js
+    handle /_next/* {
+        reverse_proxy localhost:3000
+    }
+    
+    # Public assets
+    handle /public/* {
+        reverse_proxy localhost:3000
+    }
+    
+    # Favicon and other root assets
+    handle /favicon.ico {
+        reverse_proxy localhost:3000
+    }
+    
+    handle /robots.txt {
+        reverse_proxy localhost:3000
+    }
+    
+    handle /sitemap.xml {
+        reverse_proxy localhost:3000
+    }
+    
+    # Security Headers
+    header {
+        # HSTS - Force HTTPS
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        
+        # Prevent XSS attacks
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        X-XSS-Protection "1; mode=block"
+        
+        # CSP for Valorant guides site
+        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' cdn.jsdelivr.net unpkg.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: https: media.valorant-api.com titles.trackercdn.com; connect-src 'self' https: api.valorant-api.com; font-src 'self' fonts.gstatic.com data:; media-src 'self' https:;"
+        
+        # Referrer Policy
+        Referrer-Policy "strict-origin-when-cross-origin"
+        
+        # Permissions Policy
+        Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+        
+        # Hide server information
+        -Server
+        -X-Powered-By
+    }
+    
+    # Enable compression
+    encode {
+        gzip 6
+        zstd
+        match {
+            header Content-Type text/*
+            header Content-Type application/json*
+            header Content-Type application/javascript*
+            header Content-Type application/xml*
+            header Content-Type application/rss+xml*
+        }
+    }
+    
+    # Rate limiting for API endpoints
+    rate_limit {
+        zone api_limit {
+            key {remote_host}
+            events 100
+            window 1m
+        }
+        
+        match {
+            path /api/*
+        }
+        
+        exceed_action respond
+        exceed_response_code 429
+        exceed_response_body "Rate limit exceeded. Please try again later."
+    }
+    
+    # Logging
+    log {
+        output file /var/log/caddy/playvalorantguides.log {
+            roll_size 100MB
+            roll_keep 5
+            roll_keep_for 720h
+        }
+        format console
+        level INFO
+    }
+    
+    # Error pages
+    handle_errors {
+        @404 expression {http.error.status_code} == 404
+        handle @404 {
+            reverse_proxy localhost:3000
+        }
+        
+        @5xx expression {http.error.status_code} >= 500
+        handle @5xx {
+            respond "Service temporarily unavailable. Please try again later." 503
+        }
+    }
+}
+
+# Health check endpoint (non-SSL for monitoring)
+:8080 {
+    respond /health 200 {
+        body "ValoClass Guides - System Status: OK | Frontend: :3000 | Backend: :8000 | Uptime: {system.uptime}"
+    }
+    
+    # System info endpoint
+    respond /status 200 {
+        body `{
+  "service": "ValoClass - Play Valorant Guides",
+  "domain": "playvalorantguides.com",
+  "status": "healthy",
+  "timestamp": "{time.now}",
+  "frontend_port": 3000,
+  "backend_port": 8000,
+  "caddy_version": "{version}"
+}`
+        header Content-Type application/json
+    }
+    
+    # Deny all other paths on health check port
+    respond 404
+}
+
+# Redirect old domains (if any)
+valoclass.com {
+    redir https://playvalorantguides.com{uri} permanent
+}
+
+# API subdomain (optional - for direct API access)
+api.playvalorantguides.com {
+    reverse_proxy localhost:8000 {
+        header_up Host playvalorantguides.com
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto https
+    }
+    
+    # CORS headers for API
+    header {
+        Access-Control-Allow-Origin "https://playvalorantguides.com"
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+        Access-Control-Max-Age "86400"
+    }
+    
+    encode gzip
+}
+
+# Development subdomain (with basic auth)
+dev.playvalorantguides.com {
+    reverse_proxy localhost:3000
+    
+    # Basic authentication for development
+    basicauth {
+        # Username: admin, Password: valoclass2025
+        admin JDJhJDE0JEhOcUdBU2ZBcTNZZWJsZmhOYXhvRi5STlFzV0IvVE1WRFNqSXBqSHdUcUNiQ0FRMnVsb1Vx
+    }
+    
+    header {
+        -Strict-Transport-Security
+        X-Robots-Tag "noindex, nofollow"
+    }
+}
+
+# Global settings
+{
+    # Email for Let's Encrypt
+    email admin@playvalorantguides.com
+    
+    # Enable experimental features
+    servers {
+        name playvalorantguides_server
+        listen_timeout 30s
+        read_timeout 30s
+        read_header_timeout 10s
+        write_timeout 120s
+        idle_timeout 120s
+        max_header_size 1MB
+        
+        # Trust Cloudflare IPs if using Cloudflare
+        trusted_proxies static cloudflare
+    }
+    
+    # Disable admin API on production
+    admin off
+}

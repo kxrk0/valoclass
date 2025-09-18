@@ -150,13 +150,21 @@ jobs:
             echo "🏥 Sistem durumu kontrol ediliyor..."
             sleep 5
             
-            # Frontend health check (Next.js genellikle 3000 portu)
+            # Frontend health check (Next.js Port 3000)
             echo "🔍 Frontend health check..."
             curl -I http://localhost:3000 && echo "✅ Frontend erişilebilir" || echo "❌ Frontend erişilemiyor"
             
-            # Backend health check (genellikle 8000 portu)
+            # Backend health check (Express.js Port 8000)
             echo "🔍 Backend health check..."
             curl -I http://localhost:8000/api || curl -I http://localhost:8000 && echo "✅ Backend erişilebilir" || echo "❌ Backend erişilemiyor"
+            
+            # Caddy proxy health check
+            echo "🔍 Caddy proxy health check..."
+            curl -I http://localhost:80 && echo "✅ Caddy proxy çalışıyor" || echo "❌ Caddy proxy çalışmıyor"
+            
+            # System status endpoint
+            echo "🔍 System status endpoint..."
+            curl -s http://localhost:8080/status && echo "" || echo "❌ Status endpoint erişilemiyor"
 
             # Cleanup temp files
             rm -f /root/frontend.tar.gz /root/backend.tar.gz
