@@ -16,8 +16,8 @@ const Header = () => {
   ]
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10">
-      <div className="container mx-auto px-6">
+    <header className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-6xl w-[95%] glass rounded-2xl border border-white/20 shadow-2xl backdrop-blur-xl">
+      <div className="px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
@@ -50,11 +50,8 @@ const Header = () => {
           {/* User Menu */}
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
-            <Link href="/auth/login" className="btn-secondary text-sm px-4 py-2">
+            <Link href="/auth/login" className="btn-primary text-sm px-6 py-2">
               Sign In
-            </Link>
-            <Link href="/auth/register" className="btn-primary text-sm px-6 py-2">
-              Sign Up
             </Link>
           </div>
 
@@ -69,7 +66,7 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden pb-6 border-t border-white/10 mt-4">
+          <div className="md:hidden pb-6 border-t border-white/20 mt-4 rounded-b-2xl">
             <nav className="flex flex-col space-y-4 pt-4">
               {navigation.map((item) => {
                 const Icon = item.icon
@@ -86,11 +83,8 @@ const Header = () => {
                 )
               })}
               <div className="flex flex-col space-y-3 pt-4 border-t border-white/10">
-                <Link href="/auth/login" className="btn-secondary text-center py-3">
+                <Link href="/auth/login" className="btn-primary text-center py-3">
                   Sign In
-                </Link>
-                <Link href="/auth/register" className="btn-primary text-center py-3">
-                  Sign Up
                 </Link>
               </div>
             </nav>

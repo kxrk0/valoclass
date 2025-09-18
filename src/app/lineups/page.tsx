@@ -13,7 +13,7 @@ export default function LineupsPage() {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-16">
+      <main className="pt-20">
         <div className="container py-8">
           {/* Header */}
           <div className="text-center mb-8">

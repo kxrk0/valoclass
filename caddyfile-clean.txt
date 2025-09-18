@@ -1,0 +1,96 @@
+# ValoClass Clean Production Caddy Configuration
+# Created: 2025-09-18 - Fresh start, tested and working
+# Domain: playvalorantguides.com
+
+# Global settings (must come first)
+{
+    email admin@playvalorantguides.com
+    # admin off  # Temporarily enable admin API for reloads
+    
+    # Cloudflare IP ranges for proxy mode
+    servers {
+        trusted_proxies static 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 141.101.64.0/18 108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 197.234.240.0/22 198.41.128.0/17 162.158.0.0/15 104.16.0.0/13 104.24.0.0/14 172.64.0.0/13 131.0.72.0/22
+    }
+}
+
+# Main production site
+playvalorantguides.com www.playvalorantguides.com {
+    # Backend API - Express.js (Port 8000) - MUST come first
+    handle /api/* {
+        reverse_proxy localhost:8000 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    
+    # Static assets from Next.js - High priority
+    handle /_next/* {
+        reverse_proxy localhost:3000
+    }
+    
+    handle /public/* {
+        reverse_proxy localhost:3000
+    }
+    
+    # Specific files
+    handle /favicon.ico {
+        reverse_proxy localhost:3000
+    }
+    
+    handle /robots.txt {
+        reverse_proxy localhost:3000
+    }
+    
+    handle /sitemap.xml {
+        reverse_proxy localhost:3000
+    }
+    
+    handle /manifest.webmanifest {
+        reverse_proxy localhost:3000
+    }
+    
+    # Catch-all for Next.js SPA routing (auth/login, lineups, crosshairs, etc.)
+    handle /* {
+        reverse_proxy localhost:3000 {
+            header_up Host {upstream_hostport}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    
+    # Enhanced security headers
+    header {
+        # HSTS
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        
+        # XSS Protection
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        X-XSS-Protection "1; mode=block"
+        
+        # Basic CSP
+        Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:;"
+        
+        # Hide server info
+        -Server
+        -X-Powered-By
+    }
+    
+    # Enable compression
+    encode gzip
+    
+    # Logging
+    log {
+        output file /var/log/caddy/access.log
+        level INFO
+    }
+}
+
+# Health check endpoint (non-SSL)
+:8080 {
+    respond /health "ValoClass Health: OK"
+    respond 404
+}

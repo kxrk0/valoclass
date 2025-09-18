@@ -14,7 +14,7 @@ export default function CommunityPage() {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="pt-16">
+      <main className="pt-20">
         <CommunityHero />
         
         <div className="container py-12">
