@@ -109,7 +109,7 @@ export class RiotAuthService {
       headers: {
         'X-Riot-Token': env.RIOT_API_KEY,
         'Content-Type': 'application/json',
-        'User-Agent': 'ValoClass/1.0.0'
+        'User-Agent': 'ValorantGuides/1.0.0'
       }
     });
 
@@ -300,8 +300,8 @@ export class RiotAuthService {
    */
   createVerificationChallenge(type: 'summoner_name' | 'status_message' | 'profile_icon' | 'third_party_code' = 'third_party_code'): VerificationChallenge {
     const challenges = {
-      summoner_name: `ValoClass-${Math.random().toString(36).substr(2, 8).toUpperCase()}`,
-      status_message: `Verify ValoClass ${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+      summoner_name: `ValorantGuides-${Math.random().toString(36).substr(2, 8).toUpperCase()}`,
+      status_message: `Verify ValorantGuides ${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
       profile_icon: `Change your profile icon to ID: ${Math.floor(Math.random() * 100) + 1}`,
       third_party_code: `VALO-${Math.random().toString(36).substr(2, 4).toUpperCase()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`
     };

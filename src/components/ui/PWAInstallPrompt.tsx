@@ -58,7 +58,7 @@ const PWAInstallPrompt = () => {
                 <span className="text-white font-bold text-xl">V</span>
               </div>
               <div>
-                <h3 className="font-semibold text-white text-lg">Install ValoClass</h3>
+                <h3 className="font-semibold text-white text-lg">Install ValorantGuides</h3>
                 <p className="text-gray-400 text-sm">Add to your home screen</p>
               </div>
             </div>

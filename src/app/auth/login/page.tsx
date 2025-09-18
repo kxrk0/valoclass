@@ -4,8 +4,8 @@ import MinimalistLoginForm from '@/components/auth/MinimalistLoginForm'
 import BlurText from '@/components/ui/BlurText'
 
 export const metadata = {
-  title: 'Sign In - ValoClass',
-  description: 'Sign in to your ValoClass account to access your lineups, crosshairs, and community features.',
+  title: 'Sign In - ValorantGuides',
+  description: 'Sign in to your ValorantGuides account to access your lineups, crosshairs, and community features.',
 }
 
 export default function LoginPage() {

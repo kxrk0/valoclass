@@ -4,8 +4,8 @@ import ProfileHeader from '@/components/profile/ProfileHeader'
 import ProfileTabs from '@/components/profile/ProfileTabs'
 
 export const metadata = {
-  title: 'Profile - ValoClass',
-  description: 'Manage your ValoClass profile, view your lineups, crosshairs, and community activity.',
+  title: 'Profile - ValorantGuides',
+  description: 'Manage your ValorantGuides profile, view your lineups, crosshairs, and community activity.',
 }
 
 export default function ProfilePage() {

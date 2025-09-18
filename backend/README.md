@@ -1,6 +1,6 @@
-# ValoClass Backend
+# ValorantGuides Backend
 
-Modern, secure, and scalable backend API for ValoClass - Valorant community platform.
+Modern, secure, and scalable backend API for ValorantGuides - Valorant community platform.
 
 ## 🚀 Features
 

@@ -4,7 +4,7 @@ import CrosshairBuilder from '@/components/crosshair/CrosshairBuilder'
 import CrosshairGallery from '@/components/crosshair/CrosshairGallery'
 
 export const metadata = {
-  title: 'Crosshair Builder - ValoClass',
+  title: 'Crosshair Builder - ValorantGuides',
   description: 'Create, customize, and share your perfect Valorant crosshair. Build from scratch or browse thousands of community crosshairs.',
 }
 

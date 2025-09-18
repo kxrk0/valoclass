@@ -10,7 +10,7 @@ export default function Loading() {
         </div>
 
         {/* Loading Text */}
-        <h2 className="text-xl font-semibold text-white mb-2">Loading ValoClass</h2>
+        <h2 className="text-xl font-semibold text-white mb-2">Loading ValorantGuides</h2>
         <p className="text-gray-400">Preparing your Valorant experience...</p>
 
         {/* Loading Dots */}

@@ -3,8 +3,8 @@ import Footer from '@/components/layout/Footer'
 import RegisterForm from '@/components/auth/RegisterForm'
 
 export const metadata = {
-  title: 'Sign Up - ValoClass',
-  description: 'Join the ValoClass community. Create an account to share lineups, crosshairs, and connect with other Valorant players.',
+  title: 'Sign Up - ValorantGuides',
+  description: 'Join the ValorantGuides community. Create an account to share lineups, crosshairs, and connect with other Valorant players.',
 }
 
 export default function RegisterPage() {
@@ -15,7 +15,7 @@ export default function RegisterPage() {
         <div className="min-h-[calc(100vh-64px)] flex items-center justify-center py-12 px-4">
           <div className="max-w-md w-full">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-white mb-2">Join ValoClass</h1>
+              <h1 className="text-3xl font-bold text-white mb-2">Join ValorantGuides</h1>
               <p className="text-gray-400">
                 Create an account to access exclusive features and join our community
               </p>

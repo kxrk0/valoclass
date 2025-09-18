@@ -5,7 +5,7 @@ import LineupGrid from '@/components/lineup/LineupGrid'
 import FeaturedLineups from '@/components/lineup/FeaturedLineups'
 
 export const metadata = {
-  title: 'Agent Lineups - ValoClass',
+  title: 'Agent Lineups - ValorantGuides',
   description: 'Master Valorant with precise lineups for all agents and maps. Learn smoke, flash, and utility lineups from the best players.',
 }
 

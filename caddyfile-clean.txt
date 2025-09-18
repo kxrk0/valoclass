@@ -1,4 +1,4 @@
-# ValoClass Clean Production Caddy Configuration
+# ValorantGuides Clean Production Caddy Configuration
 # Created: 2025-09-18 - Fresh start, tested and working
 # Domain: playvalorantguides.com
 
@@ -91,6 +91,6 @@ playvalorantguides.com www.playvalorantguides.com {
 
 # Health check endpoint (non-SSL)
 :8080 {
-    respond /health "ValoClass Health: OK"
+    respond /health "ValorantGuides Health: OK"
     respond 404
 }

@@ -4,7 +4,7 @@ import PlayerSearch from '@/components/stats/PlayerSearch'
 import FeaturedPlayers from '@/components/stats/FeaturedPlayers'
 
 export const metadata = {
-  title: 'Player Statistics - ValoClass',
+  title: 'Player Statistics - ValorantGuides',
   description: 'Track your Valorant performance with detailed statistics, match history, and rank progression. Search any player by Riot ID.',
 }
 

@@ -4,8 +4,8 @@ import Footer from '@/components/layout/Footer'
 import AdminDashboard from '@/components/admin/AdminDashboard'
 
 export const metadata: Metadata = {
-  title: 'Admin Dashboard - ValoClass',
-  description: 'Admin panel for managing ValoClass content and users.',
+  title: 'Admin Dashboard - ValorantGuides',
+  description: 'Admin panel for managing ValorantGuides content and users.',
   robots: { index: false, follow: false }
 }
 

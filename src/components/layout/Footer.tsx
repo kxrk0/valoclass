@@ -49,7 +49,7 @@ const Footer = () => {
               <div className="w-10 h-10 bg-gradient-to-br from-valorant-red to-red-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
                 <span className="text-white font-bold text-xl">V</span>
               </div>
-              <span className="font-heading font-bold text-2xl text-white">ValoClass</span>
+              <span className="font-heading font-bold text-2xl text-white">ValorantGuides</span>
             </Link>
             <p className="text-text-secondary text-sm mb-6 max-w-sm leading-relaxed">
               The ultimate Valorant community hub for lineups, crosshairs, and player statistics. 
@@ -97,7 +97,7 @@ const Footer = () => {
         <div className="pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             <div className="text-sm text-text-muted font-medium">
-              © 2024 ValoClass. All rights reserved.
+              © 2024 ValorantGuides. All rights reserved.
             </div>
             <div className="flex space-x-8 text-sm">
               <Link href="/privacy" className="text-text-muted hover:text-valorant-accent transition-colors duration-200 font-medium">

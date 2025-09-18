@@ -454,7 +454,7 @@ const FeaturesSection = () => {
               </h3>
               
               <p className="text-xl md:text-2xl mb-12 leading-relaxed text-slate-300 max-w-3xl mx-auto">
-                Join thousands of players who are already improving their game with ValoClass.
+                Join thousands of players who are already improving their game with ValorantGuides.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-6 justify-center">

@@ -5,8 +5,8 @@ import PWAInstallPrompt from '@/components/ui/PWAInstallPrompt'
 
 export const metadata: Metadata = {
   title: {
-    default: 'ValoClass - Valorant Community Hub',
-    template: '%s | ValoClass'
+    default: 'ValorantGuides - Valorant Community Hub',
+    template: '%s | ValorantGuides'
   },
   description: 'The ultimate destination for Valorant lineups, crosshair sharing, player statistics, and community features. Improve your gameplay with our comprehensive tools and guides.',
   keywords: [
@@ -25,9 +25,9 @@ export const metadata: Metadata = {
     'maps',
     'ranks'
   ],
-  authors: [{ name: 'ValoClass Team' }],
-  creator: 'ValoClass',
-  publisher: 'ValoClass',
+  authors: [{ name: 'ValorantGuides Team' }],
+  creator: 'ValorantGuides',
+  publisher: 'ValorantGuides',
   formatDetection: {
     email: false,
     address: false,
@@ -38,21 +38,21 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://valoclass.com',
-    title: 'ValoClass - Valorant Community Hub',
+    title: 'ValorantGuides - Valorant Community Hub',
     description: 'The ultimate destination for Valorant lineups, crosshair sharing, player statistics, and community features.',
-    siteName: 'ValoClass',
+    siteName: 'ValorantGuides',
     images: [
       {
         url: '/images/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'ValoClass - Valorant Community Hub',
+        alt: 'ValorantGuides - Valorant Community Hub',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ValoClass - Valorant Community Hub',
+    title: 'ValorantGuides - Valorant Community Hub',
     description: 'The ultimate destination for Valorant lineups, crosshair sharing, and community features.',
     images: ['/images/twitter-image.jpg'],
     creator: '@valoclass',

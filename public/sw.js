@@ -55,7 +55,7 @@ self.addEventListener('activate', event => {
 // Push notifications
 self.addEventListener('push', event => {
   const options = {
-    body: event.data ? event.data.text() : 'New notification from ValoClass',
+    body: event.data ? event.data.text() : 'New notification from ValorantGuides',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/badge-72x72.png',
     vibrate: [100, 50, 100],
@@ -78,7 +78,7 @@ self.addEventListener('push', event => {
   }
 
   event.waitUntil(
-    self.registration.showNotification('ValoClass', options)
+    self.registration.showNotification('ValorantGuides', options)
   )
 })
 

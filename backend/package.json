@@ -1,7 +1,7 @@
 {
   "name": "valoclass-backend",
   "version": "1.0.0",
-  "description": "ValoClass Backend API and Services",
+  "description": "ValorantGuides Backend API and Services",
   "main": "index.js",
   "scripts": {
     "dev": "tsx index.ts",
@@ -60,6 +60,6 @@
     "crosshairs",
     "lineups"
   ],
-  "author": "ValoClass Team",
+  "author": "ValorantGuides Team",
   "license": "MIT"
 }

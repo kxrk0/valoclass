@@ -1,4 +1,4 @@
-// Database schema and types for ValoClass
+// Database schema and types for ValorantGuides
 // This would normally use Prisma or another ORM
 
 export interface DatabaseUser {

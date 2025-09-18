@@ -1,9 +1,9 @@
-# ValoClass - Valorant Community Hub
+# ValorantGuides - Valorant Community Hub
 ## Comprehensive Context Engineering Document
 
 ### Project Overview
 
-ValoClass is a comprehensive Valorant community platform built with Next.js 15, TypeScript, and SCSS. It provides essential tools and features for Valorant players including lineup sharing, crosshair customization, player statistics, and community interaction.
+ValorantGuides is a comprehensive Valorant community platform built with Next.js 15, TypeScript, and SCSS. It provides essential tools and features for Valorant players including lineup sharing, crosshair customization, player statistics, and community interaction.
 
 ### Tech Stack
 
@@ -393,4 +393,4 @@ CLOUDINARY_API_SECRET="your-api-secret"
 
 ---
 
-This document serves as a comprehensive guide for understanding, developing, and maintaining the ValoClass platform. It should be updated regularly as the project evolves and new features are implemented.
+This document serves as a comprehensive guide for understanding, developing, and maintaining the ValorantGuides platform. It should be updated regularly as the project evolves and new features are implemented.

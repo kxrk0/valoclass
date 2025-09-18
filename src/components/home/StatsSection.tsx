@@ -283,7 +283,7 @@ const StatsSection = () => {
                 ))}
               </div>
               <blockquote className="text-xl md:text-2xl font-medium leading-relaxed" style={{ color: 'var(--text-main)' }}>
-                &ldquo;ValoClass completely changed my gameplay. The lineups are precise, the crosshair builder is amazing, 
+                &ldquo;ValorantGuides completely changed my gameplay. The lineups are precise, the crosshair builder is amazing, 
                 and the community is incredibly helpful. Went from Silver to Immortal in just 3 months!&rdquo;
               </blockquote>
             </div>

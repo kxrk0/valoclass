@@ -12,7 +12,7 @@ Bu dokümanda Riot ID ile giriş sistemini nasıl kuracağınız açıklanmaktad
 2. Hesabınızla giriş yapın (Riot ID kullanın)
 3. "Create New App" butonuna tıklayın
 4. Uygulama bilgilerinizi doldurun:
-   - **App Name**: ValoClass
+   - **App Name**: ValorantGuides
    - **App Type**: Web Application
    - **Redirect URI**: `http://localhost:3000/api/auth/oauth/riot`
    - **Description**: Valorant community platform

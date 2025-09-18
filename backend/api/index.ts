@@ -18,7 +18,7 @@ router.use('/auth', authRouter);
 // API info endpoint
 router.get('/', (req, res) => {
   res.json({
-    name: 'ValoClass Backend API',
+    name: 'ValorantGuides Backend API',
     version: '1.0.0',
     status: 'running',
     endpoints: {

@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'ValoClass - Valorant Community Hub',
-    short_name: 'ValoClass',
+    name: 'ValorantGuides - Valorant Community Hub',
+    short_name: 'ValorantGuides',
     description: 'The ultimate destination for Valorant lineups, crosshair sharing, player statistics, and community features.',
     start_url: '/',
     display: 'standalone',
@@ -69,14 +69,14 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: '1280x720',
         type: 'image/png',
         form_factor: 'wide',
-        label: 'ValoClass home page showing lineups and crosshairs'
+        label: 'ValorantGuides home page showing lineups and crosshairs'
       },
       {
         src: '/images/screenshot2.png',
         sizes: '720x1280',
         type: 'image/png',
         form_factor: 'narrow',
-        label: 'ValoClass mobile view with crosshair builder'
+        label: 'ValorantGuides mobile view with crosshair builder'
       }
     ],
     shortcuts: [

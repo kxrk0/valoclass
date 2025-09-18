@@ -6,8 +6,8 @@ import RecentActivity from '@/components/community/RecentActivity'
 import CommunityStats from '@/components/community/CommunityStats'
 
 export const metadata = {
-  title: 'Community - ValoClass',
-  description: 'Join the ValoClass community. Connect with players, share your creations, and learn from the best Valorant players.',
+  title: 'Community - ValorantGuides',
+  description: 'Join the ValorantGuides community. Connect with players, share your creations, and learn from the best Valorant players.',
 }
 
 export default function CommunityPage() {

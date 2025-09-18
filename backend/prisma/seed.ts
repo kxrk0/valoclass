@@ -135,7 +135,7 @@ async function main() {
       },
       seo: {
         slug: 'viper-bind-a-site-smoke',
-        metaTitle: 'Viper Bind A Site Smoke - ValoClass',
+        metaTitle: 'Viper Bind A Site Smoke - ValorantGuides',
         metaDescription: 'Learn the perfect Viper smoke lineup for A site executes on Bind',
         keywords: ['viper', 'bind', 'smoke', 'lineup', 'valorant']
       },
@@ -176,7 +176,7 @@ async function main() {
       },
       seo: {
         slug: 'sova-ascent-a-site-recon',
-        metaTitle: 'Sova Ascent A Site Recon - ValoClass',
+        metaTitle: 'Sova Ascent A Site Recon - ValorantGuides',
         metaDescription: 'Master this essential Sova recon bolt for A site on Ascent',
         keywords: ['sova', 'ascent', 'recon', 'lineup', 'valorant']
       },

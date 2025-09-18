@@ -24,7 +24,7 @@ const Header = () => {
             <div className="w-10 h-10 rounded-xl flex items-center justify-center transform group-hover:scale-105 transition-transform duration-200" style={{ backgroundColor: 'var(--red)' }}>
               <span className="text-white font-bold text-xl">V</span>
             </div>
-            <span className="font-heading font-bold text-2xl text-white">ValoClass</span>
+            <span className="font-heading font-bold text-2xl text-white">ValorantGuides</span>
           </Link>
 
           {/* Desktop Navigation */}

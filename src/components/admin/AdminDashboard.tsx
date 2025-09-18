@@ -104,7 +104,7 @@ const AdminDashboard = () => {
       {/* Header */}
       <div>
         <h1 className="font-heading font-bold text-3xl text-white mb-2">Admin Dashboard</h1>
-        <p className="text-gray-400">Manage your ValoClass community</p>
+        <p className="text-gray-400">Manage your ValorantGuides community</p>
       </div>
 
       {/* Stats Grid */}

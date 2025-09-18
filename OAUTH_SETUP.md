@@ -1,6 +1,6 @@
-# OAuth Setup Guide for ValoClass
+# OAuth Setup Guide for ValorantGuides
 
-This guide will help you set up OAuth authentication with Google, Discord, and Steam for your ValoClass application.
+This guide will help you set up OAuth authentication with Google, Discord, and Steam for your ValorantGuides application.
 
 ## Environment Variables
 
