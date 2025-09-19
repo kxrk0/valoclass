@@ -1,6 +1,8 @@
 import { z } from 'zod';
+import { config } from 'dotenv';
 
-// Environment variables are loaded in index.ts
+// Load environment variables
+config();
 
 // Environment variable schema
 const envSchema = z.object({
@@ -22,10 +24,10 @@ const envSchema = z.object({
   RIOT_REGIONAL_URLS: z.string().default('{}'),
   
   // OAuth
-  GOOGLE_CLIENT_ID: z.string().optional(),
-  GOOGLE_CLIENT_SECRET: z.string().optional(),
-  DISCORD_CLIENT_ID: z.string().optional(),
-  DISCORD_CLIENT_SECRET: z.string().optional(),
+  GOOGLE_CLIENT_ID: z.string().min(1, 'Google Client ID is required'),
+  GOOGLE_CLIENT_SECRET: z.string().min(1, 'Google Client Secret is required'),
+  DISCORD_CLIENT_ID: z.string().min(1, 'Discord Client ID is required'),
+  DISCORD_CLIENT_SECRET: z.string().min(1, 'Discord Client Secret is required'),
   
   // App Settings
   API_BASE_URL: z.string().url().default('http://localhost:8000'),

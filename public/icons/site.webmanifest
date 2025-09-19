@@ -1,0 +1,25 @@
+{
+  "name": "ValoClass - Valorant Community Hub",
+  "short_name": "ValoClass",
+  "description": "Ultimate Valorant lineups, crosshairs, and player stats",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#ff4654",
+  "background_color": "#0f1419",
+  "orientation": "portrait-primary",
+  "categories": ["games", "entertainment", "sports"],
+  "icons": [
+    {
+      "src": "/icons/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ]
+}

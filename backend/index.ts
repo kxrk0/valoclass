@@ -1,5 +1,6 @@
-// MUST BE FIRST: Load environment variables before any other imports
-import './config/env-setup';
+// MUST BE FIRST: Load environment variables from .env file
+import { config } from 'dotenv';
+config();
 
 import express from 'express';
 import cors from 'cors';

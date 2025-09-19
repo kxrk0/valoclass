@@ -126,6 +126,10 @@ module.exports = {
           '50%': { opacity: '1', transform: 'scale(1.1) translateY(-10px)' },
           '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
         },
+        shrink: {
+          from: { width: '100%' },
+          to: { width: '0%' },
+        },
       },
       boxShadow: {
         'glow': '0 0 20px rgba(255, 70, 84, 0.4)',
