@@ -33,34 +33,108 @@ export interface Ability {
 export interface Crosshair {
   id: string;
   name: string;
+  description?: string;
   createdBy?: string;
   createdAt: Date;
-  settings: CrosshairSettings;
+  updatedAt: Date;
+  settings: ValorantCrosshairSettings;
   shareCode: string;
+  valorantCode: string;
+  tags: string[];
   likes: number;
+  downloads: number;
   isPublic: boolean;
+  featured: boolean;
+  category: 'general' | 'primary' | 'ads' | 'sniper';
 }
 
-export interface CrosshairSettings {
-  color: string;
+export interface ValorantCrosshairSettings {
+  // Profile (0 = general, 1 = primary, 2 = ADS, 3 = sniper)
+  profile: number;
+  
+  // Basic Settings
+  colorType: number; // 0 = white, 1 = green, 2 = yellow-green, 3 = yellow, 4 = cyan, 5 = pink, 6 = red, 7 = custom
+  customColor: string; // hex color for custom (colorType 7)
+  
+  // Outlines
   outlines: boolean;
-  outlineOpacity: number;
-  outlineThickness: number;
+  outlineOpacity: number; // 0-1
+  outlineThickness: number; // 0-5
+  
+  // Center Dot
   centerDot: boolean;
-  centerDotOpacity: number;
-  centerDotThickness: number;
+  centerDotOpacity: number; // 0-1
+  centerDotThickness: number; // 1-10
+  
+  // Inner Lines
   innerLines: boolean;
-  innerLineOpacity: number;
-  innerLineLength: number;
-  innerLineThickness: number;
-  innerLineOffset: number;
+  innerLineOpacity: number; // 0-1
+  innerLineLength: number; // 0-20
+  innerLineThickness: number; // 1-10
+  innerLineOffset: number; // 0-20
+  
+  // Movement Error (dynamic crosshair)
+  movementError: boolean;
+  movementErrorMultiplier: number; // 0-5
+  
+  // Firing Error (dynamic crosshair)
+  firingError: boolean;
+  firingErrorMultiplier: number; // 0-5
+  
+  // ADS (Aim Down Sight) specific
+  adsError: boolean;
+  
+  // Outer Lines (for dynamic crosshair)
   outerLines: boolean;
-  outerLineOpacity: number;
-  outerLineLength: number;
-  outerLineThickness: number;
-  outerLineOffset: number;
-  movementError: number;
-  firingError: number;
+  outerLineOpacity: number; // 0-1
+  outerLineLength: number; // 0-20
+  outerLineThickness: number; // 1-10
+  outerLineOffset: number; // 5-50
+}
+
+// Legacy crosshair settings for backward compatibility
+export interface CrosshairSettings extends ValorantCrosshairSettings {
+  color: string; // deprecated, use colorType and customColor instead
+  movementError: number; // deprecated, use movementErrorMultiplier
+  firingError: number; // deprecated, use firingErrorMultiplier
+}
+
+export interface CrosshairPreset {
+  id: string;
+  name: string;
+  description: string;
+  settings: ValorantCrosshairSettings;
+  valorantCode: string;
+  category: 'pro' | 'popular' | 'custom';
+  tags: string[];
+  createdBy?: string;
+}
+
+export interface CrosshairProfile {
+  general: ValorantCrosshairSettings;
+  primary: ValorantCrosshairSettings;
+  ads: ValorantCrosshairSettings;
+  sniper: ValorantCrosshairSettings;
+}
+
+export interface SharedCrosshair {
+  id: string;
+  name: string;
+  description?: string;
+  author: string;
+  authorId?: string;
+  settings: ValorantCrosshairSettings;
+  valorantCode: string;
+  category: 'general' | 'primary' | 'ads' | 'sniper';
+  tags: string[];
+  likes: number;
+  downloads: number;
+  createdAt: string;
+  updatedAt: string;
+  isPublic: boolean;
+  featured?: boolean;
+  region?: string;
+  rank?: string;
 }
 
 // Lineup Types

@@ -112,16 +112,27 @@ model Crosshair {
   name        String
   description String?
   shareCode   String  @unique
+  valorantCode String
   
   // Settings
   settings Json
   
   // Metadata
   tags      String[]
+  category  CrosshairCategory @default(GENERAL)
   isPublic  Boolean @default(false)
   featured  Boolean @default(false)
   
-  // Stats
+  // Community Stats
+  likes     Int @default(0)
+  downloads Int @default(0)
+  views     Int @default(0)
+  
+  // User Info (optional)
+  region    String?
+  rank      String?
+  
+  // Additional Stats
   stats Json @default("{}")
   
   // Relations
@@ -129,7 +140,7 @@ model Crosshair {
   creator   User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   
   comments  Comment[]
-  likes     Like[]
+  userLikes Like[]
   bookmarks Bookmark[]
   reports   Report[]
   
@@ -464,4 +475,11 @@ enum ActivityType {
 enum AccountType {
   oauth
   credentials
+}
+
+enum CrosshairCategory {
+  GENERAL
+  PRIMARY
+  ADS
+  SNIPER
 }

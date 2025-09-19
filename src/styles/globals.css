@@ -3,6 +3,137 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Crosshair Slider Styles */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-track {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f0db4f 0%, #f59e0b 100%);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(240, 219, 79, 0.3);
+  transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 4px 12px rgba(240, 219, 79, 0.5);
+  transform: scale(1.1);
+}
+
+.slider::-moz-range-track {
+  height: 8px;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f0db4f 0%, #f59e0b 100%);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(240, 219, 79, 0.3);
+  transition: all 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  box-shadow: 0 4px 12px rgba(240, 219, 79, 0.5);
+  transform: scale(1.1);
+}
+
+/* Crosshair Preview Canvas Styles */
+.crosshair-canvas {
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Enhanced Scrollbar */
+.crosshair-gallery::-webkit-scrollbar {
+  width: 6px;
+}
+
+.crosshair-gallery::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.crosshair-gallery::-webkit-scrollbar-thumb {
+  background: rgba(240, 219, 79, 0.3);
+  border-radius: 3px;
+}
+
+.crosshair-gallery::-webkit-scrollbar-thumb:hover {
+  background: rgba(240, 219, 79, 0.5);
+}
+
+/* Crosshair Builder Animation */
+@keyframes crosshairPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.crosshair-pulse {
+  animation: crosshairPulse 2s ease-in-out infinite;
+}
+
+/* Enhanced Modal Backdrop */
+.modal-backdrop {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Crosshair Profile Tab Styles */
+.profile-tab {
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.profile-tab:hover::before {
+  left: 100%;
+}
+
+/* Valorant-style Glow Effect */
+.valorant-glow {
+  box-shadow: 0 0 20px rgba(240, 219, 79, 0.3);
+}
+
+.valorant-glow:hover {
+  box-shadow: 0 0 30px rgba(240, 219, 79, 0.5);
+}
+
 /* Enhanced Valorant Color System */
 :root {
   /* Core Valorant Colors */
@@ -1254,4 +1385,167 @@ a:hover {
   100% {
     background-position: 200% 0;
   }
+}
+
+/* Hero Section Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up-delay {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-delayed {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-delayed-2 {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-delayed-3 {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(239, 68, 68, 0.6);
+  }
+}
+
+/* Animation Classes */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.8s ease-out 0.2s both;
+}
+
+.animate-slide-up-delay {
+  animation: slide-up-delay 0.8s ease-out 0.4s both;
+}
+
+.animate-fade-in-delayed {
+  animation: fade-in-delayed 0.8s ease-out 0.6s both;
+}
+
+.animate-fade-in-delayed-2 {
+  animation: fade-in-delayed-2 0.8s ease-out 0.8s both;
+}
+
+.animate-fade-in-delayed-3 {
+  animation: fade-in-delayed-3 0.8s ease-out 1s both;
+}
+
+.animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Hover Effects */
+.hover-tilt {
+  transition: transform 0.3s ease;
+}
+
+.hover-tilt:hover {
+  transform: perspective(1000px) rotateX(5deg) rotateY(5deg) translateZ(10px);
+}
+
+/* Glassmorphism Enhanced */
+.glass-hero {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-hero:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }

@@ -12,7 +12,7 @@ const Header = () => {
     { name: 'Lineups', href: '/lineups', icon: Target },
     { name: 'Crosshairs', href: '/crosshairs', icon: Crosshair },
     { name: 'Stats', href: '/stats', icon: BarChart3 },
-    { name: 'Community', href: '/community', icon: Users },
+    { name: 'Community', href: '/community/crosshairs', icon: Users },
   ]
 
   return (

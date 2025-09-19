@@ -1,38 +1,52 @@
 'use client'
 
 import { ChangeEvent } from 'react'
-import type { CrosshairSettings } from '@/types'
+import type { ValorantCrosshairSettings } from '@/types'
+import { VALORANT_COLORS, getColorFromType } from '@/utils/valorantCrosshair'
+import ToggleSwitch from '@/components/ui/ToggleSwitch'
 
 interface CrosshairControlsProps {
-  settings: CrosshairSettings
-  updateSetting: (key: keyof CrosshairSettings, value: string | number | boolean) => void
+  settings: ValorantCrosshairSettings
+  updateSetting: (key: keyof ValorantCrosshairSettings, value: string | number | boolean) => void
+  profile?: 'general' | 'primary' | 'ads' | 'sniper'
 }
 
-const CrosshairControls = ({ settings, updateSetting }: CrosshairControlsProps) => {
-  const handleRangeChange = (key: keyof CrosshairSettings) => (e: ChangeEvent<HTMLInputElement>) => {
+const CrosshairControls = ({ settings, updateSetting, profile = 'general' }: CrosshairControlsProps) => {
+  const handleRangeChange = (key: keyof ValorantCrosshairSettings) => (e: ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value)
     updateSetting(key, value)
   }
 
-  const handleColorChange = (e: ChangeEvent<HTMLInputElement>) => {
-    updateSetting('color', e.target.value)
-  }
-
-  const handleCheckboxChange = (key: keyof CrosshairSettings) => (e: ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxChange = (key: keyof ValorantCrosshairSettings) => (e: ChangeEvent<HTMLInputElement>) => {
     updateSetting(key, e.target.checked)
   }
 
-  const ControlGroup = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  const handleSelectChange = (key: keyof ValorantCrosshairSettings) => (e: ChangeEvent<HTMLSelectElement>) => {
+    const value = parseInt(e.target.value)
+    updateSetting(key, value)
+  }
+
+  const handleColorChange = (e: ChangeEvent<HTMLInputElement>) => {
+    updateSetting('customColor', e.target.value)
+    if (settings.colorType !== 7) {
+      updateSetting('colorType', 7) // Set to custom when user picks a color
+    }
+  }
+
+  const ControlGroup = ({ title, children, icon }: { title: string; children: React.ReactNode; icon?: string }) => (
     <div 
-      className="rounded-xl p-3"
+      className="rounded-xl p-4"
       style={{
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%)',
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%)',
         backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255, 255, 255, 0.08)'
+        border: '1px solid rgba(255, 255, 255, 0.1)'
       }}
     >
-      <h4 className="font-semibold text-sm mb-3 text-yellow-400/90">{title}</h4>
-      <div className="space-y-3">
+      <h4 className="font-semibold text-base mb-4 text-yellow-400/90 flex items-center gap-2">
+        {icon && <span>{icon}</span>}
+        {title}
+      </h4>
+      <div className="space-y-4">
         {children}
       </div>
     </div>
@@ -45,7 +59,8 @@ const CrosshairControls = ({ settings, updateSetting }: CrosshairControlsProps) 
     max, 
     step = 1, 
     onChange,
-    unit = ''
+    unit = '',
+    description
   }: {
     label: string
     value: number
@@ -54,11 +69,14 @@ const CrosshairControls = ({ settings, updateSetting }: CrosshairControlsProps) 
     step?: number
     onChange: (e: ChangeEvent<HTMLInputElement>) => void
     unit?: string
+    description?: string
   }) => (
     <div>
-      <div className="flex justify-between items-center mb-1">
-        <label className="text-xs font-medium text-gray-300">{label}</label>
-        <span className="text-xs text-yellow-400 font-mono">{value}{unit}</span>
+      <div className="flex justify-between items-center mb-2">
+        <label className="text-sm font-medium text-gray-200">{label}</label>
+        <span className="text-sm text-yellow-400 font-mono bg-black/20 px-2 py-1 rounded">
+          {value}{unit}
+        </span>
       </div>
       <input
         type="range"
@@ -67,113 +85,142 @@ const CrosshairControls = ({ settings, updateSetting }: CrosshairControlsProps) 
         step={step}
         value={value}
         onChange={onChange}
-        className="w-full h-1.5 bg-gray-800/50 rounded-lg appearance-none cursor-pointer"
+        className="w-full h-2 bg-gray-800/50 rounded-lg appearance-none cursor-pointer slider"
         style={{
           background: `linear-gradient(to right, #f0db4f 0%, #f0db4f ${((value - min) / (max - min)) * 100}%, rgba(255,255,255,0.1) ${((value - min) / (max - min)) * 100}%, rgba(255,255,255,0.1) 100%)`
         }}
       />
+      {description && (
+        <p className="text-xs text-gray-500 mt-1">{description}</p>
+      )}
     </div>
   )
 
-  const CheckboxControl = ({ 
-    label, 
-    checked, 
-    onChange 
+
+  const SelectControl = ({
+    label,
+    value,
+    options,
+    onChange,
+    description
   }: {
     label: string
-    checked: boolean
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void
+    value: number
+    options: { value: number; label: string }[]
+    onChange: (e: ChangeEvent<HTMLSelectElement>) => void
+    description?: string
   }) => (
-    <div className="flex items-center space-x-2">
-      <input
-        type="checkbox"
-        checked={checked}
+    <div>
+      <label className="block text-sm font-medium text-gray-200 mb-2">{label}</label>
+      <select
+        value={value}
         onChange={onChange}
-        className="w-3.5 h-3.5 text-yellow-500 bg-gray-800/50 border-gray-600 rounded focus:ring-yellow-500/50 focus:ring-1"
-      />
-      <label className="text-xs font-medium text-gray-300">{label}</label>
+        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-sm text-white focus:outline-none focus:border-yellow-500/50"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      {description && (
+        <p className="text-xs text-gray-500 mt-1">{description}</p>
+      )}
     </div>
   )
 
-  const colorPresets = [
-    { name: 'Green', value: '#00ff00' },
-    { name: 'Cyan', value: '#00ffff' },
-    { name: 'Yellow', value: '#ffff00' },
-    { name: 'Red', value: '#ff0000' },
-    { name: 'White', value: '#ffffff' },
-    { name: 'Pink', value: '#ff00ff' },
-  ]
+  const colorOptions = Object.entries(VALORANT_COLORS).map(([value, color]) => ({
+    value: parseInt(value),
+    label: color.name
+  }))
 
   return (
-    <div className="space-y-3">
-      {/* Color Settings */}
-      <ControlGroup title="Color & Style">
-        <div>
-          <label className="block text-xs font-medium text-gray-300 mb-1">Color</label>
-          <div className="flex items-center gap-2">
-            <input
-              type="color"
-              value={settings.color}
-              onChange={handleColorChange}
-              className="w-8 h-6 rounded border border-gray-600 bg-transparent cursor-pointer"
-            />
-            <input
-              type="text"
-              value={settings.color}
-              onChange={handleColorChange}
-              className="flex-1 px-2 py-1 bg-gray-800/50 border border-gray-700 rounded text-xs font-mono"
-            />
-          </div>
-          <div className="flex gap-1 mt-2">
-            {colorPresets.map((preset) => (
-              <button
-                key={preset.name}
-                onClick={() => updateSetting('color', preset.value)}
-                className="w-6 h-6 rounded border border-gray-600 transition-all duration-200"
-                style={{ backgroundColor: preset.value }}
-                title={preset.name}
+    <div className="space-y-4">
+      {/* Color & Appearance */}
+      <ControlGroup title="Color & Appearance" icon="🎨">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <SelectControl
+            label="Color Type"
+            value={settings.colorType}
+            options={colorOptions}
+            onChange={handleSelectChange('colorType')}
+            description="Choose from Valorant's preset colors or use custom"
+          />
+          
+          {settings.colorType === 7 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-200 mb-2">Custom Color</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={settings.customColor}
+                  onChange={handleColorChange}
+                  className="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={settings.customColor}
+                  onChange={handleColorChange}
+                  className="flex-1 px-3 py-2 bg-gray-800/50 border border-gray-700 rounded text-sm font-mono"
+                />
+              </div>
+            </div>
+          )}
+          
+          {settings.colorType !== 7 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-200 mb-2">Color Preview</label>
+              <div 
+                className="w-full h-10 rounded border border-gray-600"
+                style={{ backgroundColor: getColorFromType(settings.colorType, settings.customColor) }}
               />
-            ))}
-          </div>
+            </div>
+          )}
         </div>
 
-        <CheckboxControl
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ToggleSwitch
           label="Enable Outlines"
           checked={settings.outlines}
           onChange={handleCheckboxChange('outlines')}
+          description="Black outline around crosshair for better visibility"
         />
 
-        {settings.outlines && (
-          <div className="grid grid-cols-2 gap-2">
-            <SliderControl
-              label="Outline Opacity"
-              value={settings.outlineOpacity}
-              min={0}
-              max={1}
-              step={0.1}
-              onChange={handleRangeChange('outlineOpacity')}
-            />
-            <SliderControl
-              label="Outline Thickness"
-              value={settings.outlineThickness}
-              min={0}
-              max={5}
-              onChange={handleRangeChange('outlineThickness')}
-            />
-          </div>
-        )}
+          {settings.outlines && (
+            <>
+              <SliderControl
+                label="Outline Opacity"
+                value={settings.outlineOpacity}
+                min={0}
+                max={1}
+                step={0.1}
+                onChange={handleRangeChange('outlineOpacity')}
+                description="Transparency of the outline"
+              />
+              <SliderControl
+                label="Outline Thickness"
+                value={settings.outlineThickness}
+                min={0}
+                max={5}
+                onChange={handleRangeChange('outlineThickness')}
+                description="Thickness of the outline"
+              />
+            </>
+          )}
+        </div>
       </ControlGroup>
 
       {/* Center Dot */}
-      <ControlGroup title="Center Dot">
-        <CheckboxControl
+      <ControlGroup title="Center Dot" icon="⚫">
+        <ToggleSwitch
           label="Show Center Dot"
           checked={settings.centerDot}
           onChange={handleCheckboxChange('centerDot')}
+          description="Small dot in the center of crosshair"
         />
 
         {settings.centerDot && (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SliderControl
               label="Dot Opacity"
               value={settings.centerDotOpacity}
@@ -181,6 +228,7 @@ const CrosshairControls = ({ settings, updateSetting }: CrosshairControlsProps) 
               max={1}
               step={0.1}
               onChange={handleRangeChange('centerDotOpacity')}
+              description="Transparency of the center dot"
             />
             <SliderControl
               label="Dot Size"
@@ -188,21 +236,23 @@ const CrosshairControls = ({ settings, updateSetting }: CrosshairControlsProps) 
               min={1}
               max={10}
               onChange={handleRangeChange('centerDotThickness')}
+              description="Size of the center dot"
             />
           </div>
         )}
       </ControlGroup>
 
       {/* Inner Lines */}
-      <ControlGroup title="Inner Lines">
-        <CheckboxControl
+      <ControlGroup title="Inner Lines" icon="✚">
+        <ToggleSwitch
           label="Show Inner Lines"
           checked={settings.innerLines}
           onChange={handleCheckboxChange('innerLines')}
+          description="Main crosshair lines"
         />
 
         {settings.innerLines && (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SliderControl
               label="Line Opacity"
               value={settings.innerLineOpacity}
@@ -210,6 +260,7 @@ const CrosshairControls = ({ settings, updateSetting }: CrosshairControlsProps) 
               max={1}
               step={0.1}
               onChange={handleRangeChange('innerLineOpacity')}
+              description="Transparency of inner lines"
             />
             <SliderControl
               label="Line Length"
@@ -217,6 +268,7 @@ const CrosshairControls = ({ settings, updateSetting }: CrosshairControlsProps) 
               min={0}
               max={20}
               onChange={handleRangeChange('innerLineLength')}
+              description="Length of crosshair lines"
             />
             <SliderControl
               label="Line Thickness"
@@ -224,6 +276,7 @@ const CrosshairControls = ({ settings, updateSetting }: CrosshairControlsProps) 
               min={1}
               max={10}
               onChange={handleRangeChange('innerLineThickness')}
+              description="Thickness of crosshair lines"
             />
             <SliderControl
               label="Center Gap"
@@ -231,78 +284,120 @@ const CrosshairControls = ({ settings, updateSetting }: CrosshairControlsProps) 
               min={0}
               max={20}
               onChange={handleRangeChange('innerLineOffset')}
+              description="Gap between lines and center"
             />
           </div>
         )}
       </ControlGroup>
 
-      {/* Outer Lines */}
-      <ControlGroup title="Outer Lines">
-        <CheckboxControl
-          label="Show Outer Lines"
-          checked={settings.outerLines}
-          onChange={handleCheckboxChange('outerLines')}
-        />
-
-        {settings.outerLines && (
-          <div className="grid grid-cols-2 gap-2">
-            <SliderControl
-              label="Line Opacity"
-              value={settings.outerLineOpacity}
-              min={0}
-              max={1}
-              step={0.1}
-              onChange={handleRangeChange('outerLineOpacity')}
-            />
-            <SliderControl
-              label="Line Length"
-              value={settings.outerLineLength}
-              min={0}
-              max={20}
-              onChange={handleRangeChange('outerLineLength')}
-            />
-            <SliderControl
-              label="Line Thickness"
-              value={settings.outerLineThickness}
-              min={1}
-              max={10}
-              onChange={handleRangeChange('outerLineThickness')}
-            />
-            <SliderControl
-              label="Distance from Center"
-              value={settings.outerLineOffset}
-              min={5}
-              max={50}
-              onChange={handleRangeChange('outerLineOffset')}
-            />
-          </div>
-        )}
-      </ControlGroup>
-
-      {/* Error Settings */}
-      <ControlGroup title="Dynamic Crosshair">
-        <div className="grid grid-cols-2 gap-2">
-          <SliderControl
+      {/* Dynamic Crosshair */}
+      <ControlGroup title="Dynamic Crosshair" icon="🎯">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ToggleSwitch
             label="Movement Error"
-            value={settings.movementError}
-            min={0}
-            max={5}
-            step={0.1}
-            onChange={handleRangeChange('movementError')}
+            checked={settings.movementError}
+            onChange={handleCheckboxChange('movementError')}
+            description="Crosshair expands when moving"
           />
-          <SliderControl
+          
+          <ToggleSwitch
             label="Firing Error"
-            value={settings.firingError}
-            min={0}
-            max={5}
-            step={0.1}
-            onChange={handleRangeChange('firingError')}
+            checked={settings.firingError}
+            onChange={handleCheckboxChange('firingError')}
+            description="Crosshair expands when shooting"
           />
         </div>
-        <div className="text-xs text-gray-500">
-          Controls crosshair expansion when moving or shooting
-        </div>
+
+        {(settings.movementError || settings.firingError) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {settings.movementError && (
+              <SliderControl
+                label="Movement Error Multiplier"
+                value={settings.movementErrorMultiplier}
+                min={0}
+                max={5}
+                step={0.1}
+                onChange={handleRangeChange('movementErrorMultiplier')}
+                description="How much crosshair expands when moving"
+              />
+            )}
+            
+            {settings.firingError && (
+              <SliderControl
+                label="Firing Error Multiplier"
+                value={settings.firingErrorMultiplier}
+                min={0}
+                max={5}
+                step={0.1}
+                onChange={handleRangeChange('firingErrorMultiplier')}
+                description="How much crosshair expands when shooting"
+              />
+            )}
+          </div>
+        )}
       </ControlGroup>
+
+      {/* Outer Lines (Dynamic) */}
+      {(settings.movementError || settings.firingError) && (
+        <ControlGroup title="Outer Lines (Dynamic)" icon="⊕">
+          <ToggleSwitch
+            label="Show Outer Lines"
+            checked={settings.outerLines}
+            onChange={handleCheckboxChange('outerLines')}
+            description="Additional lines that appear during movement/firing"
+          />
+
+          {settings.outerLines && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SliderControl
+                label="Outer Line Opacity"
+                value={settings.outerLineOpacity}
+                min={0}
+                max={1}
+                step={0.1}
+                onChange={handleRangeChange('outerLineOpacity')}
+                description="Transparency of outer lines"
+              />
+              <SliderControl
+                label="Outer Line Length"
+                value={settings.outerLineLength}
+                min={0}
+                max={20}
+                onChange={handleRangeChange('outerLineLength')}
+                description="Length of outer lines"
+              />
+              <SliderControl
+                label="Outer Line Thickness"
+                value={settings.outerLineThickness}
+                min={1}
+                max={10}
+                onChange={handleRangeChange('outerLineThickness')}
+                description="Thickness of outer lines"
+              />
+              <SliderControl
+                label="Distance from Center"
+                value={settings.outerLineOffset}
+                min={5}
+                max={50}
+                onChange={handleRangeChange('outerLineOffset')}
+                description="Distance of outer lines from center"
+              />
+            </div>
+          )}
+        </ControlGroup>
+      )}
+
+      {/* Profile-specific Settings */}
+      {profile === 'ads' && (
+        <ControlGroup title="ADS Settings" icon="🔍">
+          <ToggleSwitch
+            label="ADS Error"
+            checked={settings.adsError}
+            onChange={handleCheckboxChange('adsError')}
+            description="Enable error when aiming down sights"
+          />
+        </ControlGroup>
+      )}
     </div>
   )
 }

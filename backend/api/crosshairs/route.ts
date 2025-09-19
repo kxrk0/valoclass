@@ -53,15 +53,18 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Get all public crosshairs (mock implementation)
+    // Get all public crosshairs (updated for new structure)
     const allCrosshairs = [
       {
         id: '1',
-        name: 'TenZ Style',
-        description: 'Professional crosshair inspired by TenZ',
-        shareCode: 'VALO-TENZ47',
+        name: 'TenZ Sentinel',
+        description: 'Professional crosshair used by TenZ in competitive play',
+        shareCode: 'VLC-TENZ001',
+        valorantCode: '0;s;1;P;c;1;o;1;d;0;f;0;s;0;0t;1;0l;4;0o;2;0a;255;0f;1;1t;2;1l;2;1o;10;1a;90;1m;0;1f;0',
         settings: {
-          color: '#00ff00',
+          profile: 0,
+          colorType: 1,
+          customColor: '#00ff00',
           outlines: true,
           outlineOpacity: 0.5,
           outlineThickness: 1,
@@ -73,26 +76,68 @@ export async function GET(request: NextRequest) {
           innerLineLength: 4,
           innerLineThickness: 1,
           innerLineOffset: 2,
+          movementError: false,
+          movementErrorMultiplier: 0,
+          firingError: false,
+          firingErrorMultiplier: 0,
+          adsError: false,
           outerLines: false,
           outerLineOpacity: 0.35,
           outerLineLength: 2,
           outerLineThickness: 2,
-          outerLineOffset: 10,
-          movementError: 0,
-          firingError: 0,
+          outerLineOffset: 10
         },
-        tags: ['pro', 'green', 'minimal'],
+        tags: ['pro', 'green', 'minimal', 'sentinel'],
         isPublic: true,
         featured: true,
+        category: 'general',
         createdBy: 'user1',
-        stats: {
-          downloads: 1247,
-          likes: 89,
-          bookmarks: 45,
-          shares: 23
-        },
+        likes: 1247,
+        downloads: 8945,
         createdAt: new Date('2024-01-10'),
         updatedAt: new Date('2024-01-10')
+      },
+      {
+        id: '2',
+        name: 'ScreaM Precision',
+        description: 'Dot crosshair for precise headshot accuracy',
+        shareCode: 'VLC-SCREAM1',
+        valorantCode: '0;s;1;P;c;0;o;0;d;1;f;0;s;0;0t;2;0l;6;0o;3;0a;255;0f;0;1t;2;1l;2;1o;10;1a;90;1m;0;1f;0',
+        settings: {
+          profile: 0,
+          colorType: 0,
+          customColor: '#ffffff',
+          outlines: false,
+          outlineOpacity: 0.5,
+          outlineThickness: 1,
+          centerDot: true,
+          centerDotOpacity: 1,
+          centerDotThickness: 3,
+          innerLines: false,
+          innerLineOpacity: 1,
+          innerLineLength: 6,
+          innerLineThickness: 2,
+          innerLineOffset: 3,
+          movementError: false,
+          movementErrorMultiplier: 0,
+          firingError: false,
+          firingErrorMultiplier: 0,
+          adsError: false,
+          outerLines: false,
+          outerLineOpacity: 0.35,
+          outerLineLength: 2,
+          outerLineThickness: 2,
+          outerLineOffset: 10
+        },
+        tags: ['pro', 'white', 'dot', 'precision'],
+        isPublic: true,
+        featured: true,
+        category: 'general',
+        createdBy: 'user2',
+        likes: 892,
+        downloads: 6234,
+        createdAt: new Date('2024-01-12'),
+        updatedAt: new Date('2024-01-12')
       }
     ]
 
