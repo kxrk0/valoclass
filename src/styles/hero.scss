@@ -1,0 +1,514 @@
+// Hero Section Advanced SCSS Styling
+@use '_variables' as *;
+
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(135deg, 
+    rgba(15, 20, 25, 0.95) 0%, 
+    rgba(25, 30, 40, 0.9) 50%, 
+    rgba(35, 40, 55, 0.85) 100%
+  );
+
+  // Advanced Background Effects
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 30%, rgba(255, 70, 84, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 40% 90%, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
+    animation: backgroundShift 20s ease-in-out infinite;
+  }
+
+  // Animated Grid Pattern
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      linear-gradient(rgba(255, 70, 84, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 70, 84, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridMove 25s linear infinite;
+    opacity: 0.6;
+  }
+}
+
+// Floating Particles System
+.hero-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 70, 84, 0.8);
+    border-radius: 50%;
+    animation: floatParticle 15s infinite ease-in-out;
+
+    &:nth-child(2n) {
+      background: rgba(0, 212, 255, 0.6);
+      animation-delay: -5s;
+      animation-duration: 12s;
+    }
+
+    &:nth-child(3n) {
+      background: rgba(168, 85, 247, 0.7);
+      animation-delay: -10s;
+      animation-duration: 18s;
+    }
+
+    &:nth-child(4n) {
+      background: rgba(240, 219, 79, 0.5);
+      animation-delay: -2s;
+      animation-duration: 20s;
+    }
+
+    &:nth-child(5n) {
+      width: 2px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.9);
+      animation-delay: -8s;
+    }
+  }
+}
+
+// Hero Content Styling
+.hero-content {
+  position: relative;
+  z-index: 10;
+  padding-top: 4rem;
+
+
+  .hero-title {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+
+    .title-line {
+      display: block;
+      font-size: clamp(2.5rem, 8vw, 6rem);
+      font-weight: 900;
+      line-height: 0.9;
+      animation: fadeInUp 1s ease-out 0.4s both;
+
+      &.primary {
+        color: #ffffff;
+        text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+      }
+
+      &.gradient {
+        background: linear-gradient(135deg, #ff4654 0%, #ff8a80 50%, #ffb74d 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeInUp 1s ease-out 0.6s both, gradientShift 8s ease-in-out infinite;
+      }
+    }
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 600px;
+    animation: fadeInUp 1s ease-out 0.8s both;
+  }
+
+  .hero-buttons {
+    margin-top: 3rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    animation: fadeInUp 1s ease-out 1s both;
+
+    .btn-primary {
+      position: relative;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #ff4654 0%, #ff6b6b 100%);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+      }
+
+      &:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 20px 40px rgba(255, 70, 84, 0.4);
+
+        &::before {
+          left: 100%;
+        }
+      }
+    }
+
+    .btn-secondary {
+      position: relative;
+      padding: 1rem 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      backdrop-filter: blur(20px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 70, 84, 0.5);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+}
+
+// Valorant Search Bar Styling
+.valorant-search {
+  position: relative;
+  margin-top: 4rem;
+  max-width: 600px;
+  animation: fadeInUp 1s ease-out 1.2s both;
+
+  .search-container {
+    position: relative;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    padding: 1rem;
+    transition: all 0.3s ease;
+
+    &:focus-within {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 70, 84, 0.5);
+      box-shadow: 0 0 30px rgba(255, 70, 84, 0.2);
+    }
+  }
+
+  .search-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 1.1rem;
+    padding: 0.5rem 3rem 0.5rem 1rem;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .search-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 70, 84, 0.7);
+  }
+
+  .riot-id-button {
+    background-color: #d53435;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 0.875rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+
+    .riot-icon {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+      z-index: 2;
+      position: relative;
+    }
+
+    .button-text {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      z-index: 2;
+      position: relative;
+      
+      .collapsed {
+        display: none;
+        
+        @media (min-width: 640px) {
+          display: inline;
+        }
+      }
+    }
+
+    // Shimmer effect overlay
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+      z-index: 1;
+    }
+
+    &:hover {
+      background-color: #b82d2e;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(213, 52, 53, 0.3);
+
+      &::before {
+        left: 100%;
+      }
+    }
+
+    // Continuous shimmer animation when not hovering
+    &:not(:hover)::before {
+      animation: shimmer 2s ease-in-out infinite;
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      left: -100%;
+    }
+    50% {
+      left: 100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+}
+
+// Keyframe Animations
+@keyframes backgroundShift {
+  0%, 100% { 
+    filter: hue-rotate(0deg);
+  }
+  50% { 
+    filter: hue-rotate(30deg);
+  }
+}
+
+@keyframes gridMove {
+  0% { 
+    transform: translate(0, 0);
+  }
+  100% { 
+    transform: translate(60px, 60px);
+  }
+}
+
+@keyframes floatParticle {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) scale(1);
+    opacity: 0.7;
+  }
+  25% {
+    transform: translateY(-100px) translateX(50px) scale(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50px) translateX(-30px) scale(0.8);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(-150px) translateX(80px) scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 70, 84, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 70, 84, 0.8);
+    transform: scale(1.2);
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .hero-content {
+    padding-top: 3rem;
+
+    .hero-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .valorant-search {
+      margin-top: 3rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-content {
+    padding-top: 2rem;
+  }
+}
+
+// Enhanced Smooth Animations
+.hero-title,
+.hero-subtitle,
+.hero-buttons,
+.valorant-search {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+// Staggered Animation Utilities
+.delay-0 { transition-delay: 0ms !important; }
+.delay-300 { transition-delay: 300ms !important; }
+.delay-500 { transition-delay: 500ms !important; }
+.delay-700 { transition-delay: 700ms !important; }
+.delay-1000 { transition-delay: 1000ms !important; }
+.delay-1200 { transition-delay: 1200ms !important; }
+.delay-1400 { transition-delay: 1400ms !important; }
+.delay-1600 { transition-delay: 1600ms !important; }
+.delay-1800 { transition-delay: 1800ms !important; }
+.delay-2000 { transition-delay: 2000ms !important; }
+.delay-2200 { transition-delay: 2200ms !important; }
+
+// Enhanced Feature Card Animations
+@keyframes featureCardEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(50px) scale(0.8);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-10px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// Smooth Icon Rotation
+@keyframes iconRotate {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(6deg) scale(1.1); }
+  100% { transform: rotate(12deg) scale(1.1); }
+}
+
+// Enhanced Glow Effect for Feature Cards
+@keyframes featureGlow {
+  0%, 100% {
+    box-shadow: 
+      0 8px 32px rgba(255, 70, 84, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 12px 48px rgba(255, 70, 84, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+}
+
+// Floating Decorative Elements Animation
+@keyframes floatDecorative {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.3;
+  }
+  33% {
+    transform: translateY(-15px) scale(1.1);
+    opacity: 0.6;
+  }
+  66% {
+    transform: translateY(10px) scale(0.9);
+    opacity: 0.4;
+  }
+}
+
+// Apply enhanced animations
+.animate-feature-entrance {
+  animation: featureCardEntrance 1s ease-out;
+}
+
+.animate-icon-rotate {
+  animation: iconRotate 0.3s ease-out;
+}
+
+.animate-feature-glow {
+  animation: featureGlow 2s ease-in-out infinite;
+}
+
+.animate-float-decorative {
+  animation: floatDecorative 6s ease-in-out infinite;
+}

@@ -79,10 +79,16 @@ module.exports = {
         'float': 'float 3s ease-in-out infinite',
         'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
         'rotate-slow': 'rotateSlow 20s linear infinite',
+        'slow-spin': 'rotateSlow 20s linear infinite',
         'neon-pulse': 'neonPulse 2s ease-in-out infinite',
         'text-glow': 'textGlow 2s ease-in-out infinite alternate',
         'shimmer': 'shimmer 2s linear infinite',
         'bounce-in': 'bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+        'gradient-x': 'gradientShift 3s ease infinite',
+        'particle-flow': 'particleFlow 4s ease-in-out infinite',
+        'data-flow': 'dataFlow 2s ease-in-out infinite',
+        'pulse-stats': 'pulseStats 2s ease-in-out infinite',
+        'network-pulse': 'networkPulse 3s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -129,6 +135,25 @@ module.exports = {
         shrink: {
           from: { width: '100%' },
           to: { width: '0%' },
+        },
+        particleFlow: {
+          '0%': { transform: 'translate(0, 0) rotate(0deg)', opacity: '0', scale: '0.5' },
+          '25%': { opacity: '1', scale: '1' },
+          '75%': { opacity: '1', scale: '0.8' },
+          '100%': { transform: 'translate(100px, -100px) rotate(360deg)', opacity: '0', scale: '0.3' },
+        },
+        dataFlow: {
+          '0%': { transform: 'translateX(-20px)', opacity: '0' },
+          '50%': { opacity: '1' },
+          '100%': { transform: 'translateX(20px)', opacity: '0' },
+        },
+        pulseStats: {
+          '0%, 100%': { transform: 'scale(1)', opacity: '0.7' },
+          '50%': { transform: 'scale(1.05)', opacity: '1' },
+        },
+        networkPulse: {
+          '0%, 100%': { boxShadow: '0 0 5px rgba(157, 78, 221, 0.3)' },
+          '50%': { boxShadow: '0 0 20px rgba(157, 78, 221, 0.6)' },
         },
       },
       boxShadow: {

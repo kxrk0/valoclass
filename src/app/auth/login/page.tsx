@@ -1,14 +1,14 @@
+'use client'
+
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import MinimalistLoginForm from '@/components/auth/MinimalistLoginForm'
 import BlurText from '@/components/ui/BlurText'
-
-export const metadata = {
-  title: 'Sign In - ValorantGuides',
-  description: 'Sign in to your ValorantGuides account to access your lineups, crosshairs, and community features.',
-}
+import { useTranslation } from '@/contexts/LanguageContext'
 
 export default function LoginPage() {
+  const t = useTranslation()
+  
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Animated Background */}
@@ -54,14 +54,14 @@ export default function LoginPage() {
                 </div>
                 
                 <p className="text-xl text-gray-400 max-w-lg leading-relaxed mb-8">
-                  Join the elite Valorant community and unlock your true potential
+                  {t.auth.loginSubtitle}
                 </p>
 
                 {/* Demo Notice */}
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800/50 border border-gray-700/50 backdrop-blur-10">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-gray-400 text-sm">
-                    Demo: <strong className="text-white">admin@valoclass.com</strong> / <strong className="text-white">admin123</strong>
+                    {t.auth.demo}: <strong className="text-white">admin@valoclass.com</strong> / <strong className="text-white">admin123</strong>
                   </span>
                 </div>
               </div>

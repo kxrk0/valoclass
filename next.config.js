@@ -1,20 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable Turbopack
-  turbopack: {
-    rules: {
-      '*.scss': {
-        loaders: ['sass-loader'],
-        as: '*.css',
-      },
-    },
-  },
   images: {
     domains: ['media.valorant-api.com', 'titles.trackercdn.com'],
   },
   sassOptions: {
     includePaths: ['./src/styles'],
-    prependData: '@import "variables";',
   },
   async rewrites() {
     return [

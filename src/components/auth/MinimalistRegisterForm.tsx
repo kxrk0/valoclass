@@ -8,26 +8,34 @@ import {
   Eye, 
   EyeOff, 
   Mail, 
+  User,
+  Lock,
   AlertCircle, 
   CheckCircle,
   MessageCircle,
   Circle,
   ArrowRight,
-  Shield,
+  UserPlus,
   Gamepad2
 } from 'lucide-react'
 import { useTranslation } from '@/contexts/LanguageContext'
+import { ValidationUtils } from '@/lib/validation'
 
-interface LoginFormData {
+interface RegisterFormData {
+  username: string
   email: string
   password: string
-  rememberMe: boolean
+  confirmPassword: string
+  riotId?: string
+  acceptTerms: boolean
 }
 
-const MinimalistLoginForm = () => {
+const MinimalistRegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
   const [activeOAuth, setActiveOAuth] = useState<string | null>(null)
   
   const router = useRouter()
@@ -39,35 +47,76 @@ const MinimalistLoginForm = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isValid }
-  } = useForm<LoginFormData>({
+  } = useForm<RegisterFormData>({
     mode: 'onChange'
   })
 
-  const onSubmit = async (data: LoginFormData) => {
+  const password = watch('password')
+
+  const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const response = await fetch('/api/auth/login', {
+      // Validate form data
+      if (data.password !== data.confirmPassword) {
+        setError('Passwords do not match')
+        return
+      }
+
+      if (!data.acceptTerms) {
+        setError('You must accept the terms and conditions')
+        return
+      }
+
+      // Validate password strength
+      const passwordValidation = ValidationUtils.validatePassword(data.password)
+      if (!passwordValidation.isValid) {
+        setError(passwordValidation.errors[0])
+        return
+      }
+
+      // Validate username
+      const usernameValidation = ValidationUtils.validateUsername(data.username)
+      if (!usernameValidation.isValid) {
+        setError(usernameValidation.errors[0])
+        return
+      }
+
+      // Validate email
+      if (!ValidationUtils.isValidEmail(data.email)) {
+        setError('Please enter a valid email address')
+        return
+      }
+
+      // Register user
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          username: data.username,
           email: data.email,
           password: data.password,
-          rememberMe: data.rememberMe
+          riotId: data.riotId
         })
       })
-      
+
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Login failed')
+        throw new Error(errorData.error || 'Registration failed')
       }
 
-      router.push('/')
+      setSuccess(true)
+      
+      // Redirect after success
+      setTimeout(() => {
+        router.push('/auth/login?message=Registration successful! Please sign in.')
+      }, 2000)
       
     } catch (err: any) {
-      setError(err.message || 'Invalid email or password. Please try again.')
+      setError(err.message || 'Registration failed. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -79,9 +128,43 @@ const MinimalistLoginForm = () => {
       // Redirect to OAuth endpoint for all providers
       window.location.href = `/api/auth/oauth/${provider}`
     } catch (error) {
-      setError(`Failed to login with ${provider}`)
+      setError(`Failed to register with ${provider}`)
       setActiveOAuth(null)
     }
+  }
+
+  // Success State
+  if (success) {
+    return (
+      <div className="w-full max-w-lg mx-auto relative">
+        <div 
+          className="relative p-6 lg:p-8 rounded-2xl backdrop-blur-30 border transition-all duration-300 text-center"
+          style={{
+            background: `
+              linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                rgba(255, 255, 255, 0.05) 50%,
+                rgba(255, 255, 255, 0.02) 100%
+              )
+            `,
+            borderColor: 'rgba(255, 255, 255, 0.2)',
+            boxShadow: `
+              0 25px 45px rgba(0, 0, 0, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2)
+            `
+          }}
+        >
+          <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle size={32} className="text-white" />
+          </div>
+          <h2 className="text-xl font-semibold text-white mb-2">Registration Successful!</h2>
+          <p className="text-gray-400 mb-4">
+            Your account has been created successfully. You will be redirected to the login page.
+          </p>
+          <div className="w-6 h-6 border-2 border-green-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -89,8 +172,8 @@ const MinimalistLoginForm = () => {
       {/* Subtle Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Minimal geometric elements */}
-        <div className="absolute top-10 right-10 w-2 h-2 bg-red-500/40 rounded-full animate-pulse" style={{ animationDelay: '0s' }}></div>
-        <div className="absolute bottom-10 left-10 w-2 h-2 bg-cyan-500/40 rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-10 right-10 w-2 h-2 bg-green-500/40 rounded-full animate-pulse" style={{ animationDelay: '0s' }}></div>
+        <div className="absolute bottom-10 left-10 w-2 h-2 bg-purple-500/40 rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
       {/* Main Container */}
@@ -105,8 +188,8 @@ const MinimalistLoginForm = () => {
                 rgba(255, 255, 255, 0.05) 50%,
                 rgba(255, 255, 255, 0.02) 100%
               ),
-              radial-gradient(circle at 30% 40%, rgba(255, 70, 84, 0.05) 0%, transparent 50%),
-              radial-gradient(circle at 70% 60%, rgba(0, 212, 255, 0.05) 0%, transparent 50%)
+              radial-gradient(circle at 30% 40%, rgba(34, 197, 94, 0.05) 0%, transparent 50%),
+              radial-gradient(circle at 70% 60%, rgba(168, 85, 247, 0.05) 0%, transparent 50%)
             `,
             borderColor: 'rgba(255, 255, 255, 0.2)',
             boxShadow: `
@@ -121,16 +204,16 @@ const MinimalistLoginForm = () => {
             {/* Geometric logo */}
             <div className="relative inline-flex items-center justify-center w-8 h-8 mb-3">
               {/* Overlapping shapes */}
-              <div className="absolute w-8 h-8 border border-red-400/60 rounded-lg rotate-45 animate-pulse"></div>
-              <div className="absolute w-5 h-5 bg-cyan-400/40 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              <div className="absolute w-8 h-8 border border-green-400/60 rounded-lg rotate-45 animate-pulse"></div>
+              <div className="absolute w-5 h-5 bg-purple-400/40 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
               <div className="absolute w-2 h-2 bg-white rounded-sm animate-pulse" style={{ animationDelay: '1s' }}></div>
             </div>
 
             <h1 className="text-xl font-light mb-1 text-white tracking-wide">
-              Welcome
+              Create Account
             </h1>
             <p className="text-gray-400 text-xs font-light">
-              Enter your credentials to continue
+              Join the community and start your journey
             </p>
           </div>
 
@@ -185,7 +268,7 @@ const MinimalistLoginForm = () => {
               </div>
             </button>
 
-            {/* Riot ID - Hero Style Design */}
+            {/* Riot ID */}
             <button
               onClick={() => handleOAuthLogin('riot')}
               disabled={activeOAuth !== null}
@@ -204,7 +287,7 @@ const MinimalistLoginForm = () => {
               <span className="button-text">
                 {activeOAuth === 'riot' ? 'Connecting...' : (
                   <>
-                    Sign in<span className="collapsed"> with Riot ID</span>
+                    Sign up<span className="collapsed"> with Riot ID</span>
                   </>
                 )}
               </span>
@@ -223,8 +306,38 @@ const MinimalistLoginForm = () => {
             </div>
           </div>
 
-          {/* Clean Email Login Form */}
+          {/* Clean Registration Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Username Field */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">Username</label>
+              <div className="relative group">
+                <input
+                  type="text"
+                  placeholder="Choose a username"
+                  className="w-full px-4 py-3 bg-gray-800/30 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all duration-300 backdrop-blur-20 hover:bg-gray-800/50"
+                  {...register('username', {
+                    required: 'Username is required',
+                    minLength: { value: 3, message: 'Username must be at least 3 characters' },
+                    maxLength: { value: 20, message: 'Username must be no more than 20 characters' },
+                    pattern: {
+                      value: /^[a-zA-Z0-9_-]+$/,
+                      message: 'Username can only contain letters, numbers, underscores, and hyphens'
+                    }
+                  })}
+                />
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <User className="h-4 w-4 text-gray-500 group-focus-within:text-green-400 transition-colors" />
+                </div>
+              </div>
+              {errors.username && (
+                <p className="text-red-400 text-sm flex items-center gap-2">
+                  <Circle size={4} className="fill-current" />
+                  {errors.username.message}
+                </p>
+              )}
+            </div>
+
             {/* Email Field */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-300">Email</label>
@@ -232,7 +345,7 @@ const MinimalistLoginForm = () => {
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 bg-gray-800/30 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 transition-all duration-300 backdrop-blur-20 hover:bg-gray-800/50"
+                  className="w-full px-4 py-3 bg-gray-800/30 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all duration-300 backdrop-blur-20 hover:bg-gray-800/50"
                   {...register('email', {
                     required: 'Email is required',
                     pattern: {
@@ -242,7 +355,7 @@ const MinimalistLoginForm = () => {
                   })}
                 />
                 <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                  <Mail className="h-4 w-4 text-gray-500 group-focus-within:text-red-400 transition-colors" />
+                  <Mail className="h-4 w-4 text-gray-500 group-focus-within:text-green-400 transition-colors" />
                 </div>
               </div>
               {errors.email && (
@@ -253,17 +366,49 @@ const MinimalistLoginForm = () => {
               )}
             </div>
 
+            {/* Riot ID Field */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">Riot ID <span className="text-gray-500">(Optional)</span></label>
+              <div className="relative group">
+                <input
+                  type="text"
+                  placeholder="PlayerName#TAG"
+                  className="w-full px-4 py-3 bg-gray-800/30 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-300 backdrop-blur-20 hover:bg-gray-800/50"
+                  {...register('riotId', {
+                    pattern: {
+                      value: /^.+#.+$/,
+                      message: 'Riot ID must include # symbol (e.g., PlayerName#TAG)'
+                    }
+                  })}
+                />
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <Gamepad2 className="h-4 w-4 text-gray-500 group-focus-within:text-purple-400 transition-colors" />
+                </div>
+              </div>
+              {errors.riotId && (
+                <p className="text-red-400 text-sm flex items-center gap-2">
+                  <Circle size={4} className="fill-current" />
+                  {errors.riotId.message}
+                </p>
+              )}
+              <p className="text-xs text-gray-500">Link your Riot account to sync stats and rank</p>
+            </div>
+
             {/* Password Field */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-300">Password</label>
               <div className="relative group">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
-                  className="w-full px-4 py-3 bg-gray-800/30 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 transition-all duration-300 backdrop-blur-20 hover:bg-gray-800/50"
+                  placeholder="Create a password"
+                  className="w-full px-4 py-3 bg-gray-800/30 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all duration-300 backdrop-blur-20 hover:bg-gray-800/50"
                   {...register('password', {
                     required: 'Password is required',
-                    minLength: { value: 6, message: 'Password must be at least 6 characters' }
+                    minLength: { value: 8, message: 'Password must be at least 8 characters' },
+                    validate: (value) => {
+                      const validation = ValidationUtils.validatePassword(value)
+                      return validation.isValid || validation.errors[0]
+                    }
                   })}
                 />
                 <button
@@ -282,25 +427,65 @@ const MinimalistLoginForm = () => {
               )}
             </div>
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center">
-                <label className="relative inline-flex items-center cursor-pointer">
+            {/* Confirm Password Field */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">Confirm Password</label>
+              <div className="relative group">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="Confirm your password"
+                  className="w-full px-4 py-3 bg-gray-800/30 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all duration-300 backdrop-blur-20 hover:bg-gray-800/50"
+                  {...register('confirmPassword', {
+                    required: 'Please confirm your password',
+                    validate: (value) => value === password || 'Passwords do not match'
+                  })}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-white transition-colors"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              {errors.confirmPassword && (
+                <p className="text-red-400 text-sm flex items-center gap-2">
+                  <Circle size={4} className="fill-current" />
+                  {errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
+
+            {/* Terms and Conditions */}
+            <div className="space-y-2 pt-2">
+              <div className="flex items-start">
+                <label className="relative inline-flex items-start cursor-pointer">
                   <input
                     type="checkbox"
                     className="sr-only peer"
-                    {...register('rememberMe')}
+                    {...register('acceptTerms', {
+                      required: 'You must accept the terms and conditions'
+                    })}
                   />
-                  <div className="relative w-9 h-5 bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-red-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
-                  <span className="ml-3 text-sm text-gray-400">Remember me</span>
+                  <div className="relative mt-1 w-4 h-4 bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-500/50 rounded peer peer-checked:after:scale-100 after:scale-0 after:content-['✓'] after:absolute after:top-0 after:left-0 after:w-4 after:h-4 after:text-white after:text-xs after:flex after:items-center after:justify-center after:transition-all peer-checked:bg-green-500"></div>
+                  <span className="ml-3 text-sm text-gray-300 leading-relaxed">
+                    I agree to the{' '}
+                    <Link href="/terms" className="text-green-400 hover:text-green-300 underline">
+                      Terms of Service
+                    </Link>{' '}
+                    and{' '}
+                    <Link href="/privacy" className="text-green-400 hover:text-green-300 underline">
+                      Privacy Policy
+                    </Link>
+                  </span>
                 </label>
               </div>
-              <Link
-                href="/auth/forgot-password"
-                className="text-xs text-gray-400 hover:text-white transition-colors"
-              >
-                Forgot password?
-              </Link>
+              {errors.acceptTerms && (
+                <p className="text-red-400 text-sm flex items-center gap-2">
+                  <Circle size={4} className="fill-current" />
+                  {errors.acceptTerms.message}
+                </p>
+              )}
             </div>
 
             {/* Error Message */}
@@ -319,22 +504,23 @@ const MinimalistLoginForm = () => {
               style={{
                 background: `
                   linear-gradient(135deg, 
-                    rgba(255, 70, 84, 0.8) 0%, 
-                    rgba(255, 70, 84, 0.9) 100%
+                    rgba(34, 197, 94, 0.8) 0%, 
+                    rgba(34, 197, 94, 0.9) 100%
                   )
                 `,
-                boxShadow: '0 8px 25px rgba(255, 70, 84, 0.3)'
+                boxShadow: '0 8px 25px rgba(34, 197, 94, 0.3)'
               }}
             >
               <div className="flex items-center justify-center gap-3 text-white">
                 {isLoading ? (
                   <>
                     <div className="w-4 h-4 border border-white border-t-transparent rounded-full animate-spin" />
-                    Signing in...
+                    Creating Account...
                   </>
                 ) : (
                   <>
-                    <span>Sign In</span>
+                    <UserPlus size={16} />
+                    <span>Create Account</span>
                     <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
@@ -345,19 +531,19 @@ const MinimalistLoginForm = () => {
             </button>
           </form>
 
-          {/* Register Link */}
+          {/* Login Link */}
           <div className="text-center mt-4 pt-3 border-t border-gray-700/30">
             <p className="text-gray-400 text-xs">
-              Don&apos;t have an account?{' '}
-              <Link href="/auth/register" className="text-white hover:text-red-400 font-medium transition-colors">
-                Sign up
+              Already have an account?{' '}
+              <Link href="/auth/login" className="text-white hover:text-green-400 font-medium transition-colors">
+                Sign in
               </Link>
             </p>
           </div>
 
           {/* Minimal decorative elements */}
-          <div className="absolute top-2.5 right-4 w-1 h-1 bg-red-400/60 rounded-full animate-pulse"></div>
-          <div className="absolute bottom-4 left-4 w-1 h-1 bg-cyan-400/60 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-2.5 right-4 w-1 h-1 bg-green-400/60 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-4 left-4 w-1 h-1 bg-purple-400/60 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
       </div>
 
@@ -365,4 +551,4 @@ const MinimalistLoginForm = () => {
   )
 }
 
-export default MinimalistLoginForm
+export default MinimalistRegisterForm

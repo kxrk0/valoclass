@@ -1,0 +1,193 @@
+name: Discord Update Notifications
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    types: [ closed ]
+    branches: [ main, master ]
+
+jobs:
+  notify-discord:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install Dependencies
+      run: |
+        cd .github/scripts
+        npm init -y
+        npm install
+        
+    - name: Generate Advanced Changelog
+      id: generate-log
+      run: |
+        # Get commit range
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          COMMIT_RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+        else
+          COMMIT_RANGE="${{ github.event.before }}..${{ github.event.after }}"
+          PR_TITLE=""
+          PR_AUTHOR=""
+        fi
+        
+        # Get commits with detailed info
+        COMMITS_JSON="[]"
+        if [ "$COMMIT_RANGE" != ".." ]; then
+          COMMITS_RAW=$(git log --pretty=format:'{"hash":"%h","message":"%s","author":"%an","email":"%ae","date":"%ad","timestamp":"%at"}' --date=format:"%Y-%m-%d %H:%M" $COMMIT_RANGE)
+          if [ -n "$COMMITS_RAW" ]; then
+            # Convert to proper JSON array
+            COMMITS_JSON="[$(echo "$COMMITS_RAW" | sed ':a;N;$!ba;s/\n/,/g')]"
+          fi
+        fi
+        
+        # Get file changes
+        FILES_CHANGED=0
+        LINES_ADDED=0
+        LINES_DELETED=0
+        
+        if [ "$COMMIT_RANGE" != ".." ]; then
+          FILES_CHANGED=$(git diff --name-only $COMMIT_RANGE 2>/dev/null | wc -l || echo "0")
+          DIFF_STATS=$(git diff --numstat $COMMIT_RANGE 2>/dev/null || echo "")
+          if [ -n "$DIFF_STATS" ]; then
+            LINES_ADDED=$(echo "$DIFF_STATS" | awk '{sum+=$1} END {print sum+0}')
+            LINES_DELETED=$(echo "$DIFF_STATS" | awk '{sum+=$2} END {print sum+0}')
+          fi
+        fi
+        
+        # Repository statistics
+        TOTAL_COMMITS=$(git rev-list --count HEAD 2>/dev/null || echo "0")
+        BRANCH_NAME="${{ github.ref_name }}"
+        REPOSITORY="${{ github.repository }}"
+        TRIGGERED_BY="${{ github.actor }}"
+        
+        # Generate changelog using our advanced script
+        node .github/scripts/generate-changelog.js "$COMMITS_JSON" > changelog_output.json
+        CHANGELOG_DATA=$(cat changelog_output.json)
+        
+        # Output for next step
+        echo "COMMITS_JSON<<EOF" >> $GITHUB_OUTPUT
+        echo "$COMMITS_JSON" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+        echo "CHANGELOG_DATA<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG_DATA" >> $GITHUB_OUTPUT  
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+        echo "PR_TITLE=$PR_TITLE" >> $GITHUB_OUTPUT
+        echo "PR_AUTHOR=$PR_AUTHOR" >> $GITHUB_OUTPUT
+        echo "FILES_CHANGED=$FILES_CHANGED" >> $GITHUB_OUTPUT
+        echo "LINES_ADDED=$LINES_ADDED" >> $GITHUB_OUTPUT
+        echo "LINES_DELETED=$LINES_DELETED" >> $GITHUB_OUTPUT
+        echo "TOTAL_COMMITS=$TOTAL_COMMITS" >> $GITHUB_OUTPUT
+        echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_OUTPUT
+        echo "REPOSITORY=$REPOSITORY" >> $GITHUB_OUTPUT
+        echo "TRIGGERED_BY=$TRIGGERED_BY" >> $GITHUB_OUTPUT
+        
+    - name: Create Advanced Discord Notification
+      id: create-notification
+      run: |
+        # Parse changelog data
+        CHANGELOG_DATA='${{ steps.generate-log.outputs.CHANGELOG_DATA }}'
+        
+        # Get commit count
+        COMMITS_JSON='${{ steps.generate-log.outputs.COMMITS_JSON }}'
+        COMMIT_COUNT=$(echo "$COMMITS_JSON" | jq '. | length' 2>/dev/null || echo "0")
+        
+        # Update türü ve rengini belirle
+        UPDATE_TYPE="🔄 Kod Güncellemesi"
+        COLOR=3447003  # Varsayılan mavi
+        
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          UPDATE_TYPE="🔀 Pull Request Birleştirildi: ${{ steps.generate-log.outputs.PR_TITLE }}"
+          COLOR=7419530  # PR'lar için mor
+        fi
+        
+        # Set color based on commit count
+        if [ "$COMMIT_COUNT" -ge 5 ]; then
+          COLOR=15844367  # Gold for major updates
+        elif [ "$COMMIT_COUNT" -ge 3 ]; then
+          COLOR=3066993   # Green for moderate updates
+        elif [ "$COMMIT_COUNT" -eq 1 ] && echo "$COMMITS_JSON" | jq -r '.[0].message' | grep -qi -E "(fix|bug|hotfix)"; then
+          COLOR=15158332  # Red for hotfixes
+        fi
+        
+        # Açıklama oluştur
+        DESCRIPTION="**🏛️ Depo:** \`${{ steps.generate-log.outputs.REPOSITORY }}\`\\n**🌿 Dal:** \`${{ steps.generate-log.outputs.BRANCH_NAME }}\`\\n**👤 Tetikleyen:** **${{ steps.generate-log.outputs.TRIGGERED_BY }}**"
+        
+        # Özet alanını oluştur
+        SUMMARY_VALUE="📝 **$COMMIT_COUNT** commit • 📁 **${{ steps.generate-log.outputs.FILES_CHANGED }}** dosya değiştirildi\\n➕ **${{ steps.generate-log.outputs.LINES_ADDED }}** satır eklendi • ➖ **${{ steps.generate-log.outputs.LINES_DELETED }}** satır silindi\\n🏗️ Toplam **${{ steps.generate-log.outputs.TOTAL_COMMITS }}** commit"
+        
+        # Get current timestamp
+        TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        
+        # Create Discord payload using jq
+        jq -n --arg title "$UPDATE_TYPE" \
+              --arg description "$DESCRIPTION" \
+              --argjson color $COLOR \
+              --arg summary "$SUMMARY_VALUE" \
+              --arg timestamp "$TIMESTAMP" \
+              '{
+                "username": "PLAYVALORANTGUIDES.COM",
+                "avatar_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg",
+                "embeds": [{
+                  "title": $title,
+                  "description": $description,
+                  "color": $color,
+                  "fields": [{
+                    "name": "📊 Güncelleme Özeti",
+                    "value": $summary,
+                    "inline": false
+                  }],
+                  "footer": {
+                    "text": "PLAYVALORANTGUIDES.COM • Geliştirme Güncellemeleri",
+                    "icon_url": "https://github.com/fluidicon.png"
+                  },
+                  "timestamp": $timestamp,
+                  "thumbnail": {
+                    "url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Github-Dark.svg"
+                  }
+                }]
+              }' > webhook_payload.json
+        
+        echo "BASE_PAYLOAD_CREATED=true" >> $GITHUB_OUTPUT
+        echo "COMMIT_COUNT=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+        echo "UPDATE_TYPE=$UPDATE_TYPE" >> $GITHUB_OUTPUT
+        echo "COLOR=$COLOR" >> $GITHUB_OUTPUT
+        
+    - name: Send Discord Notification
+      env:
+        DISCORD_WEBHOOK: https://discord.com/api/webhooks/1418956975256895518/4J_UApL7o6pxD_PkFEKXI0umRtmPcy9PZQ-R8kXC-EsDrpHfHADSRIso8A_iNlyv9Ta4
+      run: |        
+        # Send the notification
+        RESPONSE=$(curl -s -w "%{http_code}" -H "Content-Type: application/json" \
+                       -d @webhook_payload.json \
+                       "$DISCORD_WEBHOOK")
+                       
+        HTTP_CODE=$(echo "$RESPONSE" | tail -c 4)
+        
+        if [ "$HTTP_CODE" = "204" ]; then
+          echo "✅ Discord bildirimi başarıyla gönderildi!"
+          echo "📝 Commit Sayısı: ${{ steps.create-notification.outputs.COMMIT_COUNT }}"
+          echo "📊 Değişen Dosya: ${{ steps.generate-log.outputs.FILES_CHANGED }}"
+          echo "🎨 Güncelleme Türü: ${{ steps.create-notification.outputs.UPDATE_TYPE }}"
+        else
+          echo "❌ Discord bildirimi gönderilemedi. HTTP Kod: $HTTP_CODE"
+          echo "Yanıt: $(echo "$RESPONSE" | head -n -1)"
+          exit 1
+        fi
+        
+        # Clean up
+        rm -f webhook_*.json commit_fields.json changelog_output.json 2>/dev/null || true

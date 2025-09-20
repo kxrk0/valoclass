@@ -1,14 +1,19 @@
 import { Metadata } from 'next'
 import '@/styles/globals.css'
-import { ThemeProvider } from '@/contexts/ThemeContext'
+import { LanguageProvider } from '@/contexts/LanguageContext'
 import PWAInstallPrompt from '@/components/ui/PWAInstallPrompt'
 
 export const metadata: Metadata = {
   title: {
-    default: 'ValorantGuides - Valorant Community Hub',
-    template: '%s | ValorantGuides'
+    default: 'PLAYVALORANTGUIDES.COM - Valorant Community Hub',
+    template: '%s | PLAYVALORANTGUIDES.COM'
   },
   description: 'The ultimate destination for Valorant lineups, crosshair sharing, player statistics, and community features. Improve your gameplay with our comprehensive tools and guides.',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
   keywords: [
     'Valorant',
     'lineups',
@@ -120,12 +125,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
         />
       </head>
       <body>
-        <ThemeProvider>
+        <LanguageProvider>
           <div id="root">
             {children}
           </div>
           <PWAInstallPrompt />
-        </ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   )

@@ -2,17 +2,20 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Menu, X, Target, Users, BarChart3, Crosshair } from 'lucide-react'
-import ThemeToggle from '@/components/ui/ThemeToggle'
+import LanguageToggle from '@/components/ui/LanguageToggle'
+import { useTranslation } from '@/contexts/LanguageContext'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const t = useTranslation()
 
   const navigation = [
-    { name: 'Lineups', href: '/lineups', icon: Target },
-    { name: 'Crosshairs', href: '/crosshairs', icon: Crosshair },
-    { name: 'Stats', href: '/stats', icon: BarChart3 },
-    { name: 'Community', href: '/community/crosshairs', icon: Users },
+    { name: t.nav.lineups, href: '/lineups', icon: Target },
+    { name: t.nav.crosshairs, href: '/crosshairs', icon: Crosshair },
+    { name: t.nav.stats, href: '/stats', icon: BarChart3 },
+    { name: t.nav.community, href: '/community', icon: Users },
   ]
 
   return (
@@ -21,10 +24,19 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center transform group-hover:scale-105 transition-transform duration-200" style={{ backgroundColor: 'var(--red)' }}>
-              <span className="text-white font-bold text-xl">V</span>
+            <div className="relative w-10 h-10 md:w-12 md:h-12 transform group-hover:scale-105 transition-all duration-200">
+              <Image
+                src="/assets/logos/brand/vlogo.png" 
+                alt="PlayValorantGuides Logo"
+                width={48}
+                height={48}
+                className="object-contain"
+                priority
+              />
             </div>
-            <span className="font-heading font-bold text-2xl text-white">ValorantGuides</span>
+            <span className="font-heading font-bold text-lg md:text-xl lg:text-2xl text-white group-hover:text-red-300 transition-colors duration-200">
+              PLAYVALORANTGUIDES.COM
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -49,9 +61,9 @@ const Header = () => {
 
           {/* User Menu */}
           <div className="hidden md:flex items-center space-x-4">
-            <ThemeToggle />
+            <LanguageToggle />
             <Link href="/auth/login" className="btn-primary text-sm px-6 py-2">
-              Sign In
+              {t.nav.signIn}
             </Link>
           </div>
 
@@ -84,7 +96,7 @@ const Header = () => {
               })}
               <div className="flex flex-col space-y-3 pt-4 border-t border-white/10">
                 <Link href="/auth/login" className="btn-primary text-center py-3">
-                  Sign In
+                  {t.nav.signIn}
                 </Link>
               </div>
             </nav>

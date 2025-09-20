@@ -302,10 +302,17 @@ const LoginForm = () => {
                 console.log('🎮 Riot button clicked! Redirecting to OAuth...')
                 window.location.href = '/api/auth/oauth/riot'
               }}
-              className="w-full btn bg-gradient-to-r from-valorant-red to-red-600 hover:from-red-600 hover:to-valorant-red text-white border-0 flex items-center justify-center gap-3 py-3"
+              className="w-full riot-id-button-auth"
             >
-              <Shield size={20} />
-              <span>Connect with Riot ID</span>
+              <svg className="riot-icon" width="20" height="20" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+                <g>
+                  <polygon points="80.11463165283203,8.324189960956573 0,45.35578089952469 19.96091079711914,121.31561595201492 35.225154876708984,119.41886454820633 30.980073928833008,71.72943431138992 36.03803253173828,69.47140055894852 44.61853790283203,118.24470835924149 70.54061126708984,115.08348399400711 65.93424224853516,62.42641764879227 70.81159210205078,60.25872737169266 80.29529571533203,113.90928965806961 106.57864379882812,110.6577256321907 101.52070617675781,52.942733108997345 106.48834228515625,50.775035202503204 116.87525177001953,109.39323741197586 142.79733276367188,106.23201304674149 142.79733276367188,24.040038406848907"></polygon>
+                  <polygon points="82.01138305664062,123.3929780125618 83.27587127685547,130.8895142674446 142.79733276367188,140.8247407078743 142.79733276367188,115.98668986558914 82.10169982910156,123.3929780125618"></polygon>
+                </g>
+              </svg>
+              <span className="button-text">
+                Sign in<span className="collapsed"> with Riot ID</span>
+              </span>
             </button>
             
             <p className="text-xs text-gray-500 mt-3">

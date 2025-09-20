@@ -1,0 +1,48 @@
+{
+  "webhook": {
+    "username": "PLAYVALORANTGUIDES.COM",
+    "avatar_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg"
+  },
+  "embed": {
+    "colors": {
+      "major": 15844367,
+      "moderate": 3066993,
+      "minor": 3447003,
+      "hotfix": 15158332
+    },
+    "footer": {
+      "text": "PLAYVALORANTGUIDES.COM • Development Updates",
+      "icon_url": "https://github.com/fluidicon.png"
+    },
+    "thumbnail": {
+      "url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Github-Dark.svg"
+    }
+  },
+  "triggers": {
+    "branches": ["main", "master", "develop"],
+    "ignore_commits": [
+      "merge pull request",
+      "merge branch",
+      "initial commit",
+      "update readme",
+      "fix typo"
+    ],
+    "minimum_commits": 1,
+    "batch_delay_minutes": 10
+  },
+  "features": {
+    "show_file_changes": true,
+    "show_commit_stats": true,
+    "group_by_category": true,
+    "include_author_stats": true,
+    "show_repository_info": true,
+    "prioritize_commits": true
+  },
+  "formatting": {
+    "max_field_length": 1024,
+    "max_description_length": 2048,
+    "truncate_long_messages": true,
+    "show_commit_hash": true,
+    "date_format": "MMM DD, YYYY HH:mm"
+  }
+}

@@ -134,7 +134,7 @@
   box-shadow: 0 0 30px rgba(240, 219, 79, 0.5);
 }
 
-/* Enhanced Valorant Color System */
+/* Dark mode color system (default) */
 :root {
   /* Core Valorant Colors */
   --red: #ff4654;
@@ -172,6 +172,99 @@
   --text-muted: #8a92a5;
 }
 
+/* Riot ID Button for Auth Pages */
+.riot-id-button-auth {
+  background-color: #d53435;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  padding: 0.875rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  overflow: hidden;
+  position: relative;
+}
+
+.riot-id-button-auth .riot-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  z-index: 2;
+  position: relative;
+}
+
+.riot-id-button-auth .button-text {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  z-index: 2;
+  position: relative;
+}
+
+.riot-id-button-auth .button-text .collapsed {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .riot-id-button-auth .button-text .collapsed {
+    display: inline;
+  }
+}
+
+/* Shimmer effect overlay for auth buttons */
+.riot-id-button-auth::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+  z-index: 1;
+}
+
+.riot-id-button-auth:hover {
+  background-color: #b82d2e;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(213, 52, 53, 0.3);
+}
+
+.riot-id-button-auth:hover::before {
+  left: 100%;
+}
+
+/* Continuous shimmer animation when not hovering */
+.riot-id-button-auth:not(:hover)::before {
+  animation: shimmer-auth 2s ease-in-out infinite;
+}
+
+.riot-id-button-auth:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@keyframes shimmer-auth {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+
 /* Base Styles */
 * {
   box-sizing: border-box;
@@ -189,6 +282,7 @@ body {
   color: var(--text-main);
   min-height: 100vh;
   line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Enhanced Background with Particles */
@@ -1543,9 +1637,294 @@ a:hover {
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
 }
 
+/* Additional gradient utilities */
+.bg-gradient-radial {
+  background: radial-gradient(var(--tw-gradient-stops));
+}
+
+.bg-gradient-conic {
+  background: conic-gradient(var(--tw-gradient-stops));
+}
+
+/* Enhanced responsive design for hero */
+@media (max-width: 640px) {
+  .hero-title {
+    font-size: 2.5rem !important;
+    line-height: 1.1 !important;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.125rem !important;
+  }
+  
+  .hero-stats {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+  
+  .hero-stats .divider {
+    display: none !important;
+  }
+}
+
+/* Improved animations with reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse,
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-bounce-gentle {
+    animation: none !important;
+  }
+}
+
+/* Enhanced Page Transitions and Micro-interactions */
+
+/* Page transition animations */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(-10px) scale(1.02);
+  transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+/* Enhanced micro-interactions */
+.btn-hover-lift {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.btn-hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+.card-hover-scale {
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.card-hover-scale:hover {
+  transform: scale(1.03) translateY(-5px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced focus states */
+.focus-ring:focus {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+  transition: outline 0.2s ease-out;
+}
+
+/* Improved button hover states */
+.btn-glow:hover {
+  box-shadow: 0 0 30px rgba(255, 70, 84, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Advanced link hover effects */
+a.link-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+a.link-hover::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--red), var(--yellow));
+  transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+a.link-hover:hover::after {
+  width: 100%;
+}
+
+/* Interactive card effects */
+.interactive-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.interactive-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+  z-index: 1;
+}
+
+.interactive-card:hover::before {
+  left: 100%;
+}
+
+/* Smooth page scroll behavior with momentum */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer-loading {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Entrance animations for page content */
+.enter-from-bottom {
+  opacity: 0;
+  transform: translateY(50px);
+  animation: enter-bottom 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.enter-from-top {
+  opacity: 0;
+  transform: translateY(-50px);
+  animation: enter-top 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.enter-from-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  animation: enter-left 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.enter-from-right {
+  opacity: 0;
+  transform: translateX(50px);
+  animation: enter-right 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes enter-bottom {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes enter-top {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes enter-left {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes enter-right {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Staggered animation delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+
 /* Smooth transitions for all interactive elements */
 * {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+  transition-duration: 200ms;
+}
+
+/* Reduce motion for accessibility - sadece büyük animasyonları kısıtla */
+/* Footer Animations */
+@keyframes footer-grid-move {
+  0% { transform: translateX(0) translateY(0); }
+  100% { transform: translateX(60px) translateY(60px); }
+}
+
+@keyframes footer-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes footer-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(20px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-footer-fade-in-up {
+  animation: footer-fade-in-up 0.8s ease-out both;
+}
+
+.animate-footer-bounce-in {
+  animation: footer-bounce-in 0.6s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-slow-spin,
+  .animate-gradient-x,
+  .animate-particle-flow,
+  .hero-particles .particle,
+  .animate-footer-fade-in-up,
+  .animate-footer-bounce-in {
+    animation: none !important;
+  }
+  
+  /* Geçiş animasyonlarını hızlandır ama tamamen kapatma */
+  .page-enter-active,
+  .page-exit-active {
+    transition-duration: 0.2s !important;
+  }
 }

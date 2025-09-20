@@ -1,440 +1,480 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Search, Filter, Heart, Download, Copy, Shuffle, TrendingUp, Clock, Users, Star } from 'lucide-react'
-import type { SharedCrosshair } from '@/types'
-import CrosshairPreview from '@/components/crosshair/CrosshairPreview'
-import { encodeValorantCrosshair } from '@/utils/valorantCrosshair'
+import { useState, useEffect, useCallback } from 'react'
+import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
+import { useTranslation } from '@/contexts/LanguageContext'
+import { Search, Filter, Heart, Eye, Download, Users, Star, TrendingUp, Clock, Zap, Target, ArrowRight } from 'lucide-react'
 
-const CommunityPageHeader = ({ stats }: { stats?: { totalCrosshairs: number, totalLikes: number, totalDownloads: number } }) => (
-  <div className="relative overflow-hidden rounded-2xl p-8 mb-8"
-    style={{
-      background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(168, 85, 247, 0.1) 50%, rgba(59, 130, 246, 0.1) 100%)',
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255, 255, 255, 0.1)'
-    }}
-  >
-    <div className="relative z-10">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-3 rounded-full bg-gradient-to-r from-red-500 to-purple-500">
-          <Users className="w-6 h-6 text-white" />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold text-white">Community Crosshairs</h1>
-          <p className="text-gray-300">Discover and share the best crosshairs from the ValoClass community</p>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-        <div className="bg-white/5 rounded-lg p-4 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-500/20">
-              <TrendingUp className="w-5 h-5 text-blue-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{stats?.totalCrosshairs.toLocaleString() || '0'}</p>
-              <p className="text-sm text-gray-400">Total Crosshairs</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white/5 rounded-lg p-4 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-red-500/20">
-              <Heart className="w-5 h-5 text-red-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{stats?.totalLikes.toLocaleString() || '0'}</p>
-              <p className="text-sm text-gray-400">Total Likes</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white/5 rounded-lg p-4 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-green-500/20">
-              <Download className="w-5 h-5 text-green-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{stats?.totalDownloads.toLocaleString() || '0'}</p>
-              <p className="text-sm text-gray-400">Downloads</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-)
+// Önceden tanımlanmış particle pozisyonları (hydration mismatch'i önlemek için)
+const COMMUNITY_PARTICLES = [
+  { left: 12.4, top: 18.7, delay: 1.2, color: 'purple', duration: 4.2 },
+  { left: 87.1, top: 23.4, delay: 2.8, color: 'red', duration: 3.8 },
+  { left: 34.8, top: 67.2, delay: 0.5, color: 'blue', duration: 5.1 },
+  { left: 76.3, top: 41.9, delay: 3.4, color: 'purple', duration: 4.7 },
+  { left: 23.7, top: 85.6, delay: 1.9, color: 'red', duration: 3.5 },
+  { left: 65.2, top: 12.3, delay: 2.6, color: 'blue', duration: 4.9 },
+  { left: 8.9, top: 54.1, delay: 0.8, color: 'purple', duration: 4.4 },
+  { left: 91.6, top: 78.8, delay: 3.1, color: 'red', duration: 3.9 },
+  { left: 45.3, top: 29.7, delay: 1.5, color: 'blue', duration: 4.6 },
+  { left: 58.7, top: 93.2, delay: 2.3, color: 'purple', duration: 3.7 },
+  { left: 29.1, top: 7.4, delay: 0.9, color: 'red', duration: 5.2 },
+  { left: 82.4, top: 62.8, delay: 3.7, color: 'blue', duration: 4.1 },
+  { left: 15.8, top: 37.5, delay: 1.7, color: 'purple', duration: 4.8 },
+  { left: 73.9, top: 81.3, delay: 2.4, color: 'red', duration: 3.6 },
+  { left: 41.2, top: 16.9, delay: 0.6, color: 'blue', duration: 4.3 },
+  { left: 67.5, top: 52.6, delay: 3.2, color: 'purple', duration: 3.8 },
+  { left: 19.3, top: 74.1, delay: 1.4, color: 'red', duration: 4.7 },
+  { left: 86.7, top: 35.8, delay: 2.9, color: 'blue', duration: 4.5 },
+  { left: 52.8, top: 89.4, delay: 0.7, color: 'purple', duration: 3.9 },
+  { left: 38.4, top: 43.7, delay: 3.5, color: 'red', duration: 4.2 },
+  { left: 74.6, top: 27.2, delay: 1.8, color: 'blue', duration: 4.8 },
+  { left: 26.9, top: 65.9, delay: 2.7, color: 'purple', duration: 3.7 },
+  { left: 63.1, top: 11.6, delay: 1.1, color: 'red', duration: 4.6 },
+  { left: 89.5, top: 58.3, delay: 3.8, color: 'blue', duration: 4.1 },
+  { left: 7.2, top: 82.7, delay: 2.1, color: 'purple', duration: 4.9 }
+];
 
-const FilterBar = ({ 
-  searchTerm, 
-  setSearchTerm, 
-  selectedCategory, 
-  setSelectedCategory,
-  sortBy,
-  setSortBy 
-}: {
-  searchTerm: string
-  setSearchTerm: (term: string) => void
-  selectedCategory: string
-  setSelectedCategory: (category: string) => void
-  sortBy: string
-  setSortBy: (sort: string) => void
-}) => (
-  <div className="flex flex-col lg:flex-row gap-4 mb-8">
-    {/* Search */}
-    <div className="relative flex-1">
-      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-      <input
-        type="text"
-        placeholder="Search crosshairs by name, author, or tags..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/50 backdrop-blur-sm"
-      />
-    </div>
+// Mock real-time data
+const MOCK_STATS = {
+  totalCrosshairs: 15247,
+  activePlayers: 2834,
+  todayUploads: 156,
+  trending: '+18%'
+};
+
+// Mock crosshair data
+const MOCK_CROSSHAIRS = [
+  {
+    id: 1,
+    name: "TenZ Pro Setup",
+    author: "TenZ_Official",
+    code: "0;P;c;5;o;1;d;1;z;3;f;0;s;0;0l;4;0o;2;0a;1;0f;0;1b;0",
+    likes: 12543,
+    downloads: 45612,
+    views: 128456,
+    category: "Pro Player",
+    agent: "Jett",
+    preview: "/crosshairs/tenz.png",
+    verified: true
+  },
+  {
+    id: 2,
+    name: "Phantom Precision",
+    author: "AimGod",
+    code: "0;s;1;P;c;1;h;0;m;1;0t;1;0l;2;0o;2;0a;1;0f;0;1b;0",
+    likes: 8934,
+    downloads: 23781,
+    views: 67432,
+    category: "Rifle",
+    agent: "All",
+    preview: "/crosshairs/phantom.png",
+    verified: false
+  },
+  {
+    id: 3,
+    name: "Dot Perfect",
+    author: "MinimalAim",
+    code: "0;P;c;5;o;1;d;1;z;1;f;0;s;0;0l;1;0o;1;0a;1;0f;0;1b;0",
+    likes: 15647,
+    downloads: 89234,
+    views: 234567,
+    category: "Minimalist",
+    agent: "All",
+    preview: "/crosshairs/dot.png",
+    verified: true
+  },
+  {
+    id: 4,
+    name: "Valorant Default+",
+    author: "CommunityFav",
+    code: "0;s;1;P;c;1;h;0;m;1;0t;4;0l;2;0o;2;0a;1;0f;0;1b;0",
+    likes: 6789,
+    downloads: 19876,
+    views: 45321,
+    category: "Classic",
+    agent: "All",
+    preview: "/crosshairs/default.png",
+    verified: false
+  }
+];
+
+export default function CommunityCrosshairsPage() {
+  const t = useTranslation()
+  const [isVisible, setIsVisible] = useState(false)
+  const [stats, setStats] = useState(MOCK_STATS)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [activeFilter, setActiveFilter] = useState('all')
+  const [sortBy, setSortBy] = useState('popular')
+  const [crosshairs, setCrosshairs] = useState(MOCK_CROSSHAIRS)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setIsVisible(true)
     
-    {/* Category Filter */}
-    <select
-      value={selectedCategory}
-      onChange={(e) => setSelectedCategory(e.target.value)}
-      className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 backdrop-blur-sm"
-    >
-      <option value="">All Categories</option>
-      <option value="general">General</option>
-      <option value="primary">Primary</option>
-      <option value="ads">ADS</option>
-      <option value="sniper">Sniper</option>
-    </select>
+    // Simulate loading crosshairs
+    setTimeout(() => {
+      setLoading(false)
+    }, 1500)
     
-    {/* Sort */}
-    <select
-      value={sortBy}
-      onChange={(e) => setSortBy(e.target.value)}
-      className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 backdrop-blur-sm"
-    >
-      <option value="newest">Newest First</option>
-      <option value="popular">Most Popular</option>
-      <option value="downloads">Most Downloaded</option>
-      <option value="featured">Featured</option>
-    </select>
-  </div>
-)
+    // Real-time stats simulation
+    const interval = setInterval(() => {
+      setStats(prev => ({
+        ...prev,
+        activePlayers: Math.max(2500, prev.activePlayers + Math.floor(Math.random() * 20 - 10)),
+        todayUploads: prev.todayUploads + (Math.random() > 0.8 ? 1 : 0)
+      }))
+    }, 3000)
 
-const CrosshairCard = ({ 
-  crosshair, 
-  onUpdate 
-}: { 
-  crosshair: SharedCrosshair
-  onUpdate: () => void
-}) => {
-  const [liked, setLiked] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const [isUpdating, setIsUpdating] = useState(false)
+    return () => clearInterval(interval)
+  }, [])
 
-  const handleCopyCode = async () => {
-    try {
-      await navigator.clipboard.writeText(crosshair.valorantCode)
-      setCopied(true)
-      
-      // Update download count
-      setIsUpdating(true)
-      await updateCrosshairStats(crosshair.id, 'download')
-      onUpdate() // Refresh the list
-      setIsUpdating(false)
-      
-      setTimeout(() => setCopied(false), 2000)
-    } catch (error) {
-      console.error('Failed to copy code:', error)
-      setIsUpdating(false)
-    }
+  const handleSearch = useCallback((e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    // Simulate search
+    setTimeout(() => {
+      setLoading(false)
+    }, 800)
+  }, [searchQuery])
+
+  const filters = [
+    { id: 'all', name: 'Tümü', icon: Filter, count: 15247 },
+    { id: 'popular', name: 'Popüler', icon: TrendingUp, count: 2834 },
+    { id: 'recent', name: 'Yeni', icon: Clock, count: 456 },
+    { id: 'pro', name: 'Pro', icon: Star, count: 89 },
+    { id: 'favorites', name: 'Favoriler', icon: Heart, count: 189 }
+  ]
+
+  const handleLike = (id: number) => {
+    setCrosshairs(prev => prev.map(ch => 
+      ch.id === id ? { ...ch, likes: ch.likes + 1 } : ch
+    ))
   }
 
-  const handleLike = async () => {
-    if (isUpdating) return
-    
-    setIsUpdating(true)
-    const action = liked ? 'unlike' : 'like'
-    const success = await updateCrosshairStats(crosshair.id, action)
-    
-    if (success) {
-      setLiked(!liked)
-      onUpdate() // Refresh the list
-    }
-    setIsUpdating(false)
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    })
+  const handleDownload = (crosshair: typeof MOCK_CROSSHAIRS[0]) => {
+    setCrosshairs(prev => prev.map(ch => 
+      ch.id === crosshair.id ? { ...ch, downloads: ch.downloads + 1 } : ch
+    ))
+    // Copy to clipboard
+    navigator.clipboard.writeText(crosshair.code)
   }
 
   return (
-    <div className="rounded-xl p-6 transition-all duration-300 hover:scale-105 group"
-      style={{
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)'
-      }}
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-white mb-1">{crosshair.name}</h3>
-          <p className="text-sm text-gray-400">by {crosshair.author}</p>
-          {crosshair.description && (
-            <p className="text-sm text-gray-300 mt-2">{crosshair.description}</p>
-          )}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Modern Enhanced Background */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800" />
+        
+        {/* Dynamic Gradient Orbs */}
+        <div className="absolute top-1/4 right-1/3 w-96 h-96 bg-gradient-to-r from-purple-500/15 to-pink-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-gradient-to-r from-red-500/12 to-orange-500/8 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}} />
+        <div className="absolute top-2/3 right-1/4 w-64 h-64 bg-gradient-to-r from-cyan-500/10 to-blue-500/15 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}} />
+        
+        {/* Animated Grid Pattern */}
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `
+            linear-gradient(rgba(168, 85, 247, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(168, 85, 247, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px',
+          animation: 'gridMove 25s linear infinite'
+        }} />
+        
+        {/* Sabit Community Particles */}
+        <div className="absolute inset-0">
+          {COMMUNITY_PARTICLES.map((particle, i) => (
+            <div
+              key={i}
+              className="absolute"
+    style={{
+                left: `${particle.left}%`,
+                top: `${particle.top}%`,
+                animationDelay: `${particle.delay}s`,
+                animationDuration: `${particle.duration}s`
+              }}
+            >
+              <div className={`w-1 h-1 rounded-full animate-float ${
+                particle.color === 'purple' ? 'bg-purple-400/30' : 
+                particle.color === 'red' ? 'bg-red-400/25' : 'bg-blue-400/20'
+              }`} />
+        </div>
+          ))}
+        </div>
+      </div>
+      
+      <Header />
+      <main className="pt-20">
+        <div className="container py-8">
+          {/* Modern Hero Section */}
+          <section className={`text-center mb-16 transition-all duration-1000 ${
+            isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+          }`}>
+            {/* Status Badge with Real-time Data */}
+            <div className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-500/20 via-pink-500/15 to-blue-500/20 border border-purple-400/30 rounded-full text-white text-sm font-medium mb-8 backdrop-blur-xl shadow-2xl">
+              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50" />
+              <span className="font-semibold">🔥 {stats.activePlayers.toLocaleString()}</span>
+              <span className="text-gray-300">aktif oyuncu • </span>
+              <span className="font-semibold text-green-400">{stats.trending}</span>
+              <span className="text-gray-300">trend</span>
+              <div className="w-px h-4 bg-white/20" />
+              <Users className="w-4 h-4 text-purple-400" />
+              <span className="font-semibold">{stats.totalCrosshairs.toLocaleString()}</span>
+              <span className="text-gray-300">crosshair</span>
+            </div>
+            
+            <h1 className="font-heading font-black text-5xl md:text-8xl mb-8 leading-tight">
+              <span className="text-white">Community</span>
+              <br />
+              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-x">
+                Crosshairs
+              </span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-gray-300 max-w-5xl mx-auto mb-12 leading-relaxed">
+              Valorant topluluğunun en iyi crosshair'leri. Profesyonel oyunculardan ilham alın, 
+              kendi yaratımlarınızı paylaşın ve mükemmel nişanı bulun.
+            </p>
+
+            {/* Real-time Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+              <div className="group relative bg-gradient-to-br from-purple-500/10 to-purple-600/5 backdrop-blur-xl border border-purple-400/20 rounded-2xl p-6 hover:scale-105 transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+                <TrendingUp className="w-8 h-8 text-purple-400 mb-3 group-hover:scale-110 transition-transform" />
+                <div className="text-3xl font-black text-white mb-2">{stats.totalCrosshairs.toLocaleString()}</div>
+                <div className="text-sm text-gray-400 font-medium">Toplam Crosshair</div>
+            </div>
+              
+              <div className="group relative bg-gradient-to-br from-pink-500/10 to-pink-600/5 backdrop-blur-xl border border-pink-400/20 rounded-2xl p-6 hover:scale-105 transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+                <Zap className="w-8 h-8 text-pink-400 mb-3 group-hover:scale-110 transition-transform" />
+                <div className="text-3xl font-black text-white mb-2">{stats.activePlayers.toLocaleString()}</div>
+                <div className="text-sm text-gray-400 font-medium">Aktif Oyuncu</div>
+            </div>
+              
+              <div className="group relative bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 backdrop-blur-xl border border-cyan-400/20 rounded-2xl p-6 hover:scale-105 transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+                <Clock className="w-8 h-8 text-cyan-400 mb-3 group-hover:scale-110 transition-transform" />
+                <div className="text-3xl font-black text-white mb-2">{stats.todayUploads}</div>
+                <div className="text-sm text-gray-400 font-medium">Bugün Yüklenen</div>
+          </div>
+        </div>
+          </section>
+
+          {/* Advanced Search and Filter Section */}
+          <section className={`mb-12 transition-all duration-1000 delay-200 ${
+            isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+          }`}>
+            {/* Search Bar */}
+            <div className="max-w-4xl mx-auto mb-8">
+              <form onSubmit={handleSearch} className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-cyan-500/20 rounded-2xl blur-xl opacity-75 group-hover:opacity-100 transition-opacity" />
+                <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-2xl">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1 flex items-center gap-4 px-6">
+                      <Search className="w-6 h-6 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Crosshair ara... (örn: 'TenZ', 'dot', 'pro')"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="flex-1 bg-transparent text-white placeholder-gray-400 text-lg focus:outline-none"
+                      />
+            </div>
+                    <button
+                      type="submit"
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-purple-500/25"
+                    >
+                      <Search className="w-5 h-5" />
+                      Ara
+                    </button>
+            </div>
+          </div>
+              </form>
         </div>
         
-        <div className="flex gap-2">
-          {crosshair.featured && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-yellow-500/20 rounded-full">
-              <Star className="w-3 h-3 text-yellow-400" />
-              <span className="text-xs text-yellow-400 font-medium">Featured</span>
+            {/* Filter Tabs */}
+            <div className="flex justify-center">
+              <div className="inline-flex bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-2">
+                {filters.map((filter) => {
+                  const Icon = filter.icon
+                  return (
+                    <button
+                      key={filter.id}
+                      onClick={() => setActiveFilter(filter.id)}
+                      className={`flex items-center gap-3 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                        activeFilter === filter.id
+                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                          : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span>{filter.name}</span>
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        activeFilter === filter.id ? 'bg-white/20' : 'bg-white/10'
+                      }`}>
+                        {filter.count.toLocaleString()}
+                      </span>
+                    </button>
+                  )
+                })}
+            </div>
+          </div>
+          </section>
+
+          {/* Main Content Grid */}
+          <section className={`transition-all duration-1000 delay-400 ${
+            isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+          }`}>
+            {loading ? (
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12">
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl mx-auto mb-4 flex items-center justify-center animate-pulse">
+                      <Target className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-white mb-2">Crosshair'ler Yükleniyor...</h3>
+                    <p className="text-gray-400 mb-4">En popüler topluluk crosshair'leri getiriliyor</p>
+                    <div className="w-64 bg-white/10 rounded-full h-2 mx-auto overflow-hidden">
+                      <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full animate-pulse w-3/4" />
+        </div>
+      </div>
+    </div>
+  </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {crosshairs.map((crosshair, index) => (
+                  <div
+                    key={crosshair.id}
+                    className={`group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:scale-105 transition-all duration-500 hover:bg-white/10 ${
+                      isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+                    }`}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    {/* Verified Badge */}
+                    {crosshair.verified && (
+                      <div className="absolute top-4 right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                        <Star className="w-3 h-3" />
+                        Doğrulanmış
             </div>
           )}
           
-          {crosshair.likes > 500 && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-red-500/20 rounded-full">
-              <Heart className="w-3 h-3 text-red-400" />
-              <span className="text-xs text-red-400 font-medium">Popular</span>
+                    {/* Preview Area */}
+                    <div className="bg-black/50 rounded-xl p-8 mb-4 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="flex items-center justify-center h-16">
+                        <div className="w-8 h-8 relative">
+                          {/* Crosshair Preview - Basic representation */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-1 h-6 bg-white rounded-full"></div>
+                            <div className="w-6 h-1 bg-white rounded-full absolute"></div>
+                            <div className="w-2 h-2 bg-white rounded-full absolute border-2 border-black"></div>
             </div>
-          )}
-          
-          {crosshair.downloads > 1000 && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-green-500/20 rounded-full">
-              <TrendingUp className="w-3 h-3 text-green-400" />
-              <span className="text-xs text-green-400 font-medium">Trending</span>
             </div>
-          )}
         </div>
       </div>
 
-      {/* Preview */}
-      <div className="flex justify-center mb-4 p-4 bg-black/20 rounded-lg">
-        <CrosshairPreview settings={crosshair.settings} size="medium" />
-      </div>
-
-      {/* Tags */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        <span className={`px-2 py-1 text-xs rounded-full font-medium ${
-          crosshair.category === 'general' ? 'bg-blue-500/20 text-blue-400' :
-          crosshair.category === 'primary' ? 'bg-green-500/20 text-green-400' :
-          crosshair.category === 'ads' ? 'bg-purple-500/20 text-purple-400' :
-          'bg-red-500/20 text-red-400'
-        }`}>
-          {crosshair.category.toUpperCase()}
-        </span>
-        
-        {crosshair.tags.slice(0, 3).map((tag, index) => (
-          <span key={index} className="px-2 py-1 text-xs bg-gray-500/20 text-gray-300 rounded-full">
-            {tag}
-          </span>
-        ))}
-        
-        {crosshair.tags.length > 3 && (
-          <span className="px-2 py-1 text-xs bg-gray-500/20 text-gray-300 rounded-full">
-            +{crosshair.tags.length - 3}
-          </span>
-        )}
+                    {/* Content */}
+                    <div className="space-y-3">
+                      <div>
+                        <h3 className="font-semibold text-white text-lg mb-1 group-hover:text-purple-400 transition-colors">
+                          {crosshair.name}
+                        </h3>
+                        <p className="text-sm text-gray-400">by {crosshair.author}</p>
       </div>
 
       {/* Stats */}
-      <div className="flex items-center justify-between mb-4 text-sm text-gray-400">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1">
+                      <div className="flex items-center gap-4 text-sm text-gray-400">
+                        <div className="flex items-center gap-1">
             <Heart className="w-4 h-4" />
             {crosshair.likes.toLocaleString()}
-          </span>
-          <span className="flex items-center gap-1">
+                        </div>
+                        <div className="flex items-center gap-1">
             <Download className="w-4 h-4" />
             {crosshair.downloads.toLocaleString()}
-          </span>
         </div>
         <div className="flex items-center gap-1">
-          <Clock className="w-4 h-4" />
-          {formatDate(crosshair.createdAt)}
+                          <Eye className="w-4 h-4" />
+                          {crosshair.views.toLocaleString()}
         </div>
       </div>
+
+                      {/* Tags */}
+                      <div className="flex gap-2">
+                        <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full">
+                          {crosshair.category}
+                        </span>
+                        <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full">
+                          {crosshair.agent}
+                        </span>
+                      </div>
 
       {/* Actions */}
-      <div className="flex gap-2">
+                      <div className="flex gap-2 pt-2">
         <button
-          onClick={handleLike}
-          disabled={isUpdating}
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 flex-1 justify-center ${
-            liked 
-              ? 'bg-red-500/20 text-red-400 border border-red-500/30' 
-              : 'bg-white/5 text-gray-300 border border-white/10 hover:bg-white/10'
-          } ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} />
-          Like
+                          onClick={() => handleLike(crosshair.id)}
+                          className="flex-1 bg-gradient-to-r from-purple-500/20 to-purple-600/20 hover:from-purple-500/40 hover:to-purple-600/40 text-purple-400 px-4 py-2 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm font-medium"
+                        >
+                          <Heart className="w-4 h-4" />
+                          Beğen
         </button>
-        
         <button
-          onClick={handleCopyCode}
-          disabled={isUpdating}
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 flex-1 justify-center ${
-            copied
-              ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-white/5 text-gray-300 border border-white/10 hover:bg-white/10'
-          } ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          <Copy className="w-4 h-4" />
-          {copied ? 'Downloaded!' : 'Copy Code'}
+                          onClick={() => handleDownload(crosshair)}
+                          className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-4 py-2 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm font-medium shadow-lg"
+                        >
+                          <Download className="w-4 h-4" />
+                          İndir
         </button>
       </div>
     </div>
-  )
-}
-
-// Helper function to update crosshair stats via API
-const updateCrosshairStats = async (id: string, action: 'like' | 'unlike' | 'download') => {
-  try {
-    const response = await fetch('/api/community/crosshairs', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, action })
-    })
-    return response.ok
-  } catch (error) {
-    console.error('Failed to update crosshair stats:', error)
-    return false
-  }
-}
-
-const CommunityPage = () => {
-  const [crosshairs, setCrosshairs] = useState<SharedCrosshair[]>([])
-  const [filteredCrosshairs, setFilteredCrosshairs] = useState<SharedCrosshair[]>([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('')
-  const [sortBy, setSortBy] = useState('newest')
-  const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState<{ totalCrosshairs: number, totalLikes: number, totalDownloads: number }>({
-    totalCrosshairs: 0,
-    totalLikes: 0,
-    totalDownloads: 0
-  })
-
-  const fetchCrosshairs = async () => {
-    try {
-      const response = await fetch('/api/community/crosshairs')
-      const data = await response.json()
-      
-      if (data.crosshairs) {
-        setCrosshairs(data.crosshairs)
-        
-        // Update stats if available
-        if (data.stats) {
-          setStats(data.stats)
-        }
-      } else {
-        console.error('No crosshairs data received from API')
-        setCrosshairs([])
-      }
-    } catch (error) {
-      console.error('Failed to fetch crosshairs:', error)
-      setCrosshairs([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchCrosshairs()
-  }, [])
-
-  useEffect(() => {
-    let filtered = crosshairs
-
-    // Filter by search term
-    if (searchTerm) {
-      filtered = filtered.filter(crosshair =>
-        crosshair.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        crosshair.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        crosshair.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-      )
-    }
-
-    // Filter by category
-    if (selectedCategory) {
-      filtered = filtered.filter(crosshair => crosshair.category === selectedCategory)
-    }
-
-    // Sort
-    switch (sortBy) {
-      case 'popular':
-        filtered.sort((a, b) => b.likes - a.likes)
-        break
-      case 'downloads':
-        filtered.sort((a, b) => b.downloads - a.downloads)
-        break
-      case 'featured':
-        filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
-        break
-      default: // newest
-        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    }
-
-    setFilteredCrosshairs(filtered)
-  }, [crosshairs, searchTerm, selectedCategory, sortBy])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900/20 to-purple-900/20 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="flex items-center gap-3">
-              <Shuffle className="w-6 h-6 text-red-400 animate-spin" />
-              <span className="text-white text-lg">Loading community crosshairs...</span>
-            </div>
-          </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
-      </div>
-    )
-  }
+      </main>
+      <Footer />
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900/20 to-purple-900/20 p-6">
-      <div className="max-w-7xl mx-auto">
-        <CommunityPageHeader stats={stats} />
-        
-        <FilterBar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-        />
+      {/* Enhanced Animations */}
+      <style jsx>{`
+        @keyframes gridMove {
+          0% { transform: translateX(0) translateY(0); }
+          100% { transform: translateX(60px) translateY(60px); }
+        }
 
-        {filteredCrosshairs.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg">No crosshairs found</p>
-              <p className="text-sm">Try adjusting your search or filters</p>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredCrosshairs.map((crosshair) => (
-              <CrosshairCard 
-                key={crosshair.id} 
-                crosshair={crosshair} 
-                onUpdate={fetchCrosshairs}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
+
+        @keyframes pulse-glow {
+          0%, 100% { 
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+          }
+          50% { 
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.6), 0 0 60px rgba(236, 72, 153, 0.3);
+          }
+        }
+
+        .animate-float {
+          animation: float 4s ease-in-out infinite;
+        }
+
+        .animate-pulse-glow {
+          animation: pulse-glow 3s ease-in-out infinite;
+        }
+
+        .animate-gradient-x {
+          background-size: 200% 200%;
+          animation: gradient-shift 3s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+      `}</style>
     </div>
   )
 }
-
-export default CommunityPage

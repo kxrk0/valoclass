@@ -1,0 +1,31 @@
+{
+  "username": "PLAYVALORANTGUIDES.COM",
+  "avatar_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg",
+  "embeds": [
+    {
+      "title": "🧪 Test Update - Discord Webhook System",
+      "description": "**🏛️ Repository:** `test/playvalorantguides`\n**🌿 Branch:** `main`\n**👤 Triggered by:** **test-user**",
+      "color": 3447003,
+      "fields": [
+        {
+          "name": "📊 Update Summary",
+          "value": "📝 **1** commit(s) • 📁 **4** files changed\n➕ **51** additions • ➖ **97** deletions\n🏗️ **1,247** total repository commits",
+          "inline": false
+        },
+        {
+          "name": "✨ New Feature",
+          "value": "💡 `abc1234` feat(hero): add smooth entry animations and modern design\\n👤 **Developer 1** • 📅 2024-01-15 14:30",
+          "inline": false
+        }
+      ],
+      "footer": {
+        "text": "PLAYVALORANTGUIDES.COM • Development Updates (TEST MODE)",
+        "icon_url": "https://github.com/fluidicon.png"
+      },
+      "timestamp": "2025-09-20T14:07:33.931Z",
+      "thumbnail": {
+        "url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Github-Dark.svg"
+      }
+    }
+  ]
+}

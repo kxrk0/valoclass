@@ -1,0 +1,36 @@
+{
+  "username": "PLAYVALORANTGUIDES.COM",
+  "avatar_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg",
+  "embeds": [
+    {
+      "title": "🔄 Kod Güncellemesi",
+      "description": "**🏛️ Depo:** `playvalorantguides`\n**🌿 Dal:** `main`\n**👤 Tetikleyen:** **test-kullanıcı**",
+      "color": 3447003,
+      "fields": [
+        {
+          "name": "📊 Güncelleme Özeti",
+          "value": "📝 **2** commit • 📁 **6** dosya değiştirildi\n➕ **51** satır eklendi • ➖ **54** satır silindi\n🏗️ Toplam **1,247** commit",
+          "inline": false
+        },
+        {
+          "name": "✨ Yeni Özellik",
+          "value": "`abc1234` Hero bölümüne yumuşak giriş animasyonları eklendi - Geliştirici 1",
+          "inline": false
+        },
+        {
+          "name": "🐛 Hata Düzeltme",
+          "value": "`def5678` Crosshair doğrulama hatası düzeltildi - Geliştirici 2",
+          "inline": false
+        }
+      ],
+      "footer": {
+        "text": "PLAYVALORANTGUIDES.COM • Geliştirme Güncellemeleri",
+        "icon_url": "https://github.com/fluidicon.png"
+      },
+      "timestamp": "2025-09-20T14:11:56.063Z",
+      "thumbnail": {
+        "url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Github-Dark.svg"
+      }
+    }
+  ]
+}

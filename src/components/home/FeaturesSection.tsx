@@ -2,8 +2,11 @@
 
 import Link from 'next/link'
 import { Target, Crosshair, Users, BarChart3, Map, Zap } from 'lucide-react'
+import { useTranslation } from '@/contexts/LanguageContext'
 
 const FeaturesSection = () => {
+  const t = useTranslation()
+  
   // Advanced CSS animations for futuristic effects
   if (typeof document !== 'undefined' && !document.getElementById('valo-futuristic-animations')) {
     const style = document.createElement('style')
@@ -124,8 +127,8 @@ const FeaturesSection = () => {
   }
   const features = [
     {
-      title: 'Advanced Lineups',
-      description: 'Discover precise lineups for all agents and maps. Learn from pros and master every throwable ability.',
+      title: t.featuresSection.features.advancedLineups.title,
+      description: t.featuresSection.features.advancedLineups.description,
       icon: Target,
       primary: '#ff0054',
       secondary: '#ff4081',
@@ -133,8 +136,8 @@ const FeaturesSection = () => {
       href: '/lineups'
     },
     {
-      title: 'Custom Crosshairs',
-      description: 'Create, customize, and share crosshairs. Find the perfect setup for your playstyle and aim better.',
+      title: t.featuresSection.features.customCrosshairs.title,
+      description: t.featuresSection.features.customCrosshairs.description,
       icon: Crosshair,
       primary: '#f0db4f',
       secondary: '#ffed4e',
@@ -142,8 +145,8 @@ const FeaturesSection = () => {
       href: '/crosshairs'
     },
     {
-      title: 'Player Statistics',
-      description: 'Track your progress with detailed stats. Analyze your performance and identify areas for improvement.',
+      title: t.featuresSection.features.playerStatistics.title,
+      description: t.featuresSection.features.playerStatistics.description,
       icon: BarChart3,
       primary: '#00d4ff',
       secondary: '#4dd0e1',
@@ -151,8 +154,8 @@ const FeaturesSection = () => {
       href: '/stats'
     },
     {
-      title: 'Community Hub',
-      description: 'Connect with other players, share strategies, and learn from the best in the community.',
+      title: t.featuresSection.features.communityHub.title,
+      description: t.featuresSection.features.communityHub.description,
       icon: Users,
       primary: '#9d4edd',
       secondary: '#c77dff',
@@ -160,8 +163,8 @@ const FeaturesSection = () => {
       href: '/community'
     },
     {
-      title: 'Complete Maps',
-      description: 'Comprehensive coverage of all Valorant maps with detailed callouts and strategic positions.',
+      title: t.featuresSection.features.completeMaps.title,
+      description: t.featuresSection.features.completeMaps.description,
       icon: Map,
       primary: '#00f5a0',
       secondary: '#69f0ae',
@@ -169,8 +172,8 @@ const FeaturesSection = () => {
       href: '/maps'
     },
     {
-      title: 'Live Updates',
-      description: 'Stay current with the latest patches, meta changes, and new strategies as they emerge.',
+      title: t.featuresSection.features.liveUpdates.title,
+      description: t.featuresSection.features.liveUpdates.description,
       icon: Zap,
       primary: '#ff8c42',
       secondary: '#ffb74d',
@@ -199,10 +202,9 @@ const FeaturesSection = () => {
           <div className="relative">
             <h2 className="font-heading font-bold text-5xl md:text-7xl mb-8 relative">
               <span className="relative z-10">
-                Everything You Need to{' '}
                 <span className="relative inline-block">
                   <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                    Dominate
+                    {t.featuresSection.title}
                   </span>
                   <div className="absolute -inset-2 bg-gradient-to-r from-cyan-400/20 via-purple-500/20 to-pink-500/20 blur-xl" />
                 </span>
@@ -220,8 +222,7 @@ const FeaturesSection = () => {
           
           <p className="text-xl md:text-2xl text-slate-300 max-w-4xl mx-auto leading-relaxed relative">
             <span className="relative z-10">
-              From precise lineups to custom crosshairs, we provide all the tools and knowledge 
-              you need to improve your Valorant gameplay and climb the ranks.
+              {t.featuresSection.subtitle}
             </span>
           </p>
         </div>
@@ -372,7 +373,7 @@ const FeaturesSection = () => {
                           e.currentTarget.style.boxShadow = 'none'
                         }}
                       >
-                        <span>Access Now</span>
+                        <span>{t.featuresSection.accessNow}</span>
                         <svg 
                           width="16" 
                           height="16" 
@@ -449,12 +450,12 @@ const FeaturesSection = () => {
             <div className="relative z-10">
               <h3 className="font-heading font-bold text-4xl md:text-5xl mb-8">
                 <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-                  Ready to Dominate?
+                  {t.featuresSection.cta.title}
                 </span>
               </h3>
               
               <p className="text-xl md:text-2xl mb-12 leading-relaxed text-slate-300 max-w-3xl mx-auto">
-                Join thousands of players who are already improving their game with ValorantGuides.
+                {t.featuresSection.cta.subtitle}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -475,7 +476,7 @@ const FeaturesSection = () => {
                     e.currentTarget.style.boxShadow = '0 10px 30px rgba(139, 92, 246, 0.3)'
                   }}
                 >
-                  Join the Community
+                  {t.featuresSection.cta.joinCommunity}
                 </Link>
                 
                 <Link 
@@ -497,7 +498,7 @@ const FeaturesSection = () => {
                     e.currentTarget.style.boxShadow = 'none'
                   }}
                 >
-                  Explore Lineups
+                  {t.featuresSection.cta.exploreLineups}
                 </Link>
               </div>
             </div>
