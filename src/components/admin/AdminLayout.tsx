@@ -173,46 +173,62 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             background: 'rgba(255,255,255,0.02)'
           }}>
             <div className="mb-3">
-              <h3 className="text-white font-medium text-xs">Statistics</h3>
+              <h3 className="text-white font-medium text-xs">Quick Access</h3>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-white/5 p-2 rounded-lg border border-white/10">
-                <div className="flex items-center gap-1.5">
-                  <Users size={12} className="text-white/60" />
-                  <div className="text-white font-semibold text-sm">{stats.totalUsers}</div>
+            <div className="grid grid-cols-1 gap-2">
+              <Link
+                href="/admin/users"
+                className="bg-white/5 p-3 rounded-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-200 group cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <Users size={14} className="text-white/60 group-hover:text-white transition-colors" />
+                  <div className="flex-1">
+                    <div className="text-white font-semibold text-sm">{stats.totalUsers}</div>
+                    <div className="text-white/50 text-xs">Users</div>
+                  </div>
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg className="w-3 h-3 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </div>
-                <div className="text-white/50 text-xs mt-1">Users</div>
-              </div>
-              <div className="bg-white/5 p-2 rounded-lg border border-white/10">
-                <div className="flex items-center gap-1.5">
-                  <Crosshair size={12} className="text-white/60" />
-                  <div className="text-white font-semibold text-sm">{stats.totalCrosshairs}</div>
-                </div>
-                <div className="text-white/50 text-xs mt-1">Crosshairs</div>
-              </div>
-              <div className="bg-white/5 p-2 rounded-lg border border-white/10">
-                <div className="flex items-center gap-1.5">
-                  <Target size={12} className="text-white/60" />
-                  <div className="text-white font-semibold text-sm">{stats.totalLineups}</div>
-                </div>
-                <div className="text-white/50 text-xs mt-1">Lineups</div>
-              </div>
-              <div className="bg-white/5 p-2 rounded-lg border border-white/10">
-                <div className="flex items-center gap-1.5">
-                  <AlertTriangle size={12} className="text-white/60" />
-                  <div className="text-white font-semibold text-sm">{stats.pendingReports}</div>
+              </Link>
+              
+              <Link
+                href="/admin/reports"
+                className="bg-white/5 p-3 rounded-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-200 group cursor-pointer relative"
+              >
+                <div className="flex items-center gap-2">
+                  <AlertTriangle size={14} className="text-white/60 group-hover:text-white transition-colors" />
+                  <div className="flex-1">
+                    <div className="text-white font-semibold text-sm">{stats.pendingReports}</div>
+                    <div className="text-white/50 text-xs">Reports</div>
+                  </div>
                   {stats.pendingReports > 0 && (
-                    <div className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
                   )}
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg className="w-3 h-3 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </div>
-                <div className="text-white/50 text-xs mt-1">Reports</div>
-              </div>
+              </Link>
             </div>
           </div>
         )}
 
         {/* Navigation */}
-        <nav className={`flex-1 overflow-y-auto py-4 transition-all duration-300 ${sidebarCollapsed ? 'px-2' : 'px-3'}`}>
+        <nav 
+          className={`flex-1 overflow-y-auto py-4 transition-all duration-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20 hover:scrollbar-thumb-white/30 ${sidebarCollapsed ? 'px-2' : 'px-3'}`}
+          onWheel={(e) => {
+            // Enable smooth mousewheel scrolling
+            e.currentTarget.scrollBy({
+              top: e.deltaY,
+              behavior: 'smooth'
+            });
+          }}
+        >
           {navigation.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
