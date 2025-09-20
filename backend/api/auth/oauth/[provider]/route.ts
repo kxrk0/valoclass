@@ -135,9 +135,7 @@ async function initiateOAuthFlow(
       throw new Error(`Unsupported provider: ${provider}`)
   }
 
-  response.headers.set('Location', authUrl)
-  response.status = 302
-  return response
+  return NextResponse.redirect(authUrl, { status: 302 })
 }
 
 async function handleOAuthCallback(
@@ -190,7 +188,10 @@ async function handleOAuthCallback(
     const user = await OAuthService.handleOAuthUser(oauthUser)
 
     // Generate JWT tokens
-    const { accessToken, refreshToken } = await AuthService.createSession(user)
+    const { accessToken, refreshToken } = await AuthService.createSession({
+      ...user,
+      avatar: user.avatar || undefined
+    } as any)
 
     // Set authentication cookies
     const response = NextResponse.redirect(new URL('/', request.url))

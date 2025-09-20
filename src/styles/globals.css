@@ -3,6 +3,161 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Animations for Hero Section */
+@keyframes floatRotate {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-10px) rotate(1deg); }
+  50% { transform: translateY(-5px) rotate(-1deg); }
+  75% { transform: translateY(-15px) rotate(0.5deg); }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes slide-up {
+  from { 
+    opacity: 0;
+    transform: translateY(30px) rotateX(-10deg);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+}
+
+@keyframes slide-up-delay {
+  from { 
+    opacity: 0;
+    transform: translateY(40px) rotateX(-15deg);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+}
+
+@keyframes fade-in-delayed {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-delayed-2 {
+  from { 
+    opacity: 0;
+    transform: translateY(25px) scale(0.98);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fade-in-delayed-3 {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-float {
+  animation: floatRotate 6s ease-in-out infinite;
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.8s ease-out forwards;
+}
+
+.animate-slide-up-delay {
+  animation: slide-up-delay 0.8s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delayed {
+  animation: fade-in-delayed 0.8s ease-out 0.4s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delayed-2 {
+  animation: fade-in-delayed-2 0.8s ease-out 0.6s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delayed-3 {
+  animation: fade-in-delayed-3 0.8s ease-out 0.8s forwards;
+  opacity: 0;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Glassmorphism Effects */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 3D Transform Utilities */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #ef4444, #8b5cf6);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #dc2626, #7c3aed);
+}
+
 /* Custom Crosshair Slider Styles */
 .slider {
   -webkit-appearance: none;
@@ -278,11 +433,12 @@ html {
 
 body {
   font-family: 'Inter', sans-serif;
-  background: var(--bg-main);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
   color: var(--text-main);
   min-height: 100vh;
   line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
 }
 
 /* Enhanced Background with Particles */
@@ -299,10 +455,10 @@ body::before {
     radial-gradient(circle at 40% 60%, rgba(0, 212, 255, 0.06) 0%, transparent 40%),
     radial-gradient(circle at 60% 40%, rgba(157, 78, 221, 0.06) 0%, transparent 40%);
   z-index: -1;
-  animation: float 8s ease-in-out infinite;
+  animation: floatScale 8s ease-in-out infinite;
 }
 
-@keyframes float {
+@keyframes floatScale {
   0%, 100% { opacity: 0.7; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.02); }
 }
@@ -915,7 +1071,7 @@ a:hover {
   }
 }
 
-@keyframes float {
+@keyframes floatScaleTranslate {
   0%, 100% { 
     opacity: 0.7; 
     transform: scale(1) translateY(0px);
@@ -975,7 +1131,7 @@ a:hover {
   50% { background-position: 100% 50%; }
 }
 
-@keyframes float {
+@keyframes floatSimple {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
 }

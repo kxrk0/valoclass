@@ -42,7 +42,14 @@ router.post('/login', loginRateLimit, async (req: Request, res: Response) => {
     }
 
     // Verify password
-    const isPasswordValid = await AuthService.verifyPassword(password, user.password);
+    if (!user.passwordHash) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials'
+      } as ApiResponse<never>);
+    }
+    
+    const isPasswordValid = await AuthService.verifyPassword(password, user.passwordHash);
     if (!isPasswordValid) {
       logger.warn(`Invalid password attempt for user: ${user.id} from IP: ${clientIP}`);
       return res.status(401).json({

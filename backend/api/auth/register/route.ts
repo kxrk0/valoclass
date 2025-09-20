@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { AuthService } from '@/lib/auth'
-import { apiRateLimit, getClientIP } from '@/lib/middleware'
+import { getClientIPNext, getUserAgentNext, checkRateLimit } from '@/lib/middleware'
 
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting
-    const clientIP = getClientIP(request)
-    if (!apiRateLimit(clientIP)) {
+    const clientIP = getClientIPNext(request)
+    if (!checkRateLimit(clientIP, 900000, 10)) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
         { status: 429 }

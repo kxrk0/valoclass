@@ -1,296 +1,500 @@
 'use client'
 
-import { useState } from 'react'
-import { Search, Shield, Ban, Mail, User, AlertTriangle } from 'lucide-react'
+import React, { useState, useEffect, useCallback } from 'react';
+import { 
+  Users, 
+  Search, 
+  Filter, 
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  Shield,
+  ShieldCheck,
+  ShieldX,
+  Eye,
+  EyeOff,
+  Star,
+  StarOff,
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw
+} from 'lucide-react';
+import { useNotifications } from '@/contexts/NotificationContext';
+import { AdminLoader } from '@/components/ui/LoadingSpinner';
 
-interface UserData {
-  id: string
-  username: string
-  email: string
-  role: 'user' | 'moderator' | 'admin'
-  status: 'active' | 'banned' | 'suspended' | 'pending'
-  joinDate: Date
-  lastActive: Date
-  reputation: number
-  contentCount: {
-    lineups: number
-    crosshairs: number
-    comments: number
-  }
-  reports: number
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  displayName?: string;
+  avatar?: string;
+  role: 'USER' | 'MODERATOR' | 'ADMIN';
+  isActive: boolean;
+  isVerified: boolean;
+  isPremium: boolean;
+  createdAt: string;
+  lastLoginAt?: string;
+  _count: {
+    lineups: number;
+    crosshairs: number;
+    comments: number;
+    reports: number;
+  };
 }
 
-const UserManagement = () => {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [roleFilter, setRoleFilter] = useState<'all' | 'user' | 'moderator' | 'admin'>('all')
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'banned' | 'suspended' | 'pending'>('all')
+interface UserFilters {
+  search: string;
+  role: string;
+  isActive: string;
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
+}
 
-  // Mock users data
-  const users: UserData[] = [
-    {
-      id: '1',
-      username: 'ValoMaster',
-      email: 'valomaster@example.com',
-      role: 'user',
-      status: 'active',
-      joinDate: new Date('2023-03-15'),
-      lastActive: new Date('2024-01-18'),
-      reputation: 1250,
-      contentCount: { lineups: 45, crosshairs: 23, comments: 189 },
-      reports: 0
-    },
-    {
-      id: '2',
-      username: 'LineupKing',
-      email: 'lineupking@example.com',
-      role: 'moderator',
-      status: 'active',
-      joinDate: new Date('2023-01-20'),
-      lastActive: new Date('2024-01-18'),
-      reputation: 2890,
-      contentCount: { lineups: 156, crosshairs: 67, comments: 423 },
-      reports: 0
-    },
-    {
-      id: '3',
-      username: 'ToxicPlayer',
-      email: 'toxic@example.com',
-      role: 'user',
-      status: 'banned',
-      joinDate: new Date('2024-01-10'),
-      lastActive: new Date('2024-01-15'),
-      reputation: -150,
-      contentCount: { lineups: 2, crosshairs: 0, comments: 15 },
-      reports: 8
-    },
-    {
-      id: '4',
-      username: 'NewPlayer123',
-      email: 'newplayer@example.com',
-      role: 'user',
-      status: 'pending',
-      joinDate: new Date('2024-01-18'),
-      lastActive: new Date('2024-01-18'),
-      reputation: 0,
-      contentCount: { lineups: 0, crosshairs: 1, comments: 0 },
-      reports: 0
+const UserManagement: React.FC = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [filters, setFilters] = useState<UserFilters>({
+    search: '',
+    role: '',
+    isActive: '',
+    sortBy: 'createdAt',
+    sortOrder: 'desc'
+  });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    total: 0,
+    pages: 0
+  });
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  
+  const { success, error: showError } = useNotifications();
+
+  // Fetch users
+  const fetchUsers = useCallback(async () => {
+    setLoading(true);
+    try {
+      const queryParams = new URLSearchParams({
+        page: pagination.page.toString(),
+        limit: pagination.limit.toString(),
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder,
+        ...(filters.search && { search: filters.search }),
+        ...(filters.role && { role: filters.role }),
+        ...(filters.isActive && { isActive: filters.isActive })
+      });
+
+      const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/users?${queryParams}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch users');
+      }
+
+      const data = await response.json();
+      setUsers(data.users);
+      setPagination(prev => ({
+        ...prev,
+        total: data.pagination.total,
+        pages: data.pagination.pages
+      }));
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoading(false);
     }
-  ]
+  }, [pagination.page, pagination.limit, filters]);
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesRole = roleFilter === 'all' || user.role === roleFilter
-    const matchesStatus = statusFilter === 'all' || user.status === statusFilter
-    
-    return matchesSearch && matchesRole && matchesStatus
-  })
+  // Initial load and refresh on filter changes
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
-  const handleUserAction = (userId: string, action: string) => {
-    console.log(`${action} user:`, userId)
-    // In real app, call API
-    alert(`User ${action} action triggered for user ${userId}`)
-  }
+  // Handle filter changes
+  const handleFilterChange = (key: keyof UserFilters, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+    setPagination(prev => ({ ...prev, page: 1 }));
+  };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'text-green-400 bg-green-400/10'
-      case 'banned': return 'text-red-400 bg-red-400/10'
-      case 'suspended': return 'text-orange-400 bg-orange-400/10'
-      case 'pending': return 'text-yellow-400 bg-yellow-400/10'
-      default: return 'text-gray-400 bg-gray-400/10'
+  // Handle user selection
+  const toggleUserSelection = (userId: string) => {
+    setSelectedUsers(prev => 
+      prev.includes(userId) 
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
+  const selectAllUsers = () => {
+    if (selectedUsers.length === users.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(users.map(user => user.id));
     }
-  }
+  };
+
+  // Bulk actions
+  const handleBulkAction = async (action: string, role?: string) => {
+    if (selectedUsers.length === 0) return;
+
+    try {
+      const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/users/bulk`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userIds: selectedUsers,
+          action,
+          ...(role && { role })
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Bulk action failed');
+      }
+
+      const data = await response.json();
+      
+      // Refresh users list
+      await fetchUsers();
+      setSelectedUsers([]);
+      setShowBulkActions(false);
+      
+      success('Bulk Action Completed', data.message);
+    } catch (error) {
+      console.error('Bulk action error:', error);
+      showError('Bulk Action Failed', 'Failed to perform bulk action on users');
+    }
+  };
+
+  // Individual user actions
+  const handleUserAction = async (userId: string, action: 'activate' | 'deactivate' | 'verify' | 'unverify' | 'promote' | 'demote', role?: string) => {
+    try {
+      const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...(action === 'activate' && { isActive: true }),
+          ...(action === 'deactivate' && { isActive: false }),
+          ...(action === 'verify' && { isVerified: true }),
+          ...(action === 'unverify' && { isVerified: false }),
+          ...(role && { role })
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('User action failed');
+      }
+
+      const data = await response.json();
+      
+      // Refresh users list
+      await fetchUsers();
+      
+      success('User Updated', data.message);
+    } catch (error) {
+      console.error('User action error:', error);
+      showError('User Action Failed', 'Failed to update user');
+    }
+  };
+
+  // Pagination
+  const goToPage = (page: number) => {
+    setPagination(prev => ({ ...prev, page }));
+  };
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'admin': return 'text-purple-400 bg-purple-400/10'
-      case 'moderator': return 'text-blue-400 bg-blue-400/10'
-      case 'user': return 'text-gray-400 bg-gray-400/10'
-      default: return 'text-gray-400 bg-gray-400/10'
+      case 'ADMIN': return 'bg-red-600';
+      case 'MODERATOR': return 'bg-blue-600';
+      case 'USER': return 'bg-gray-600';
+      default: return 'bg-gray-600';
     }
-  }
+  };
+
+  const getRoleName = (role: string) => {
+    switch (role) {
+      case 'ADMIN': return 'Admin';
+      case 'MODERATOR': return 'Moderator';
+      case 'USER': return 'User';
+      default: return role;
+    }
+  };
 
   return (
     <div className="space-y-6">
-      {/* Search & Filters */}
-      <div className="card">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white mb-2">User Management</h1>
+          <p className="text-gray-400">Manage users, roles, and permissions</p>
+        </div>
+        <button
+          onClick={fetchUsers}
+          disabled={loading}
+          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 disabled:opacity-50"
+        >
+          <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+          Refresh
+        </button>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-gradient-to-br from-[#242738] to-[#2A2D47] p-6 rounded-xl border border-gray-600/50">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search users by username or email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full"
+              placeholder="Search users..."
+              value={filters.search}
+              onChange={(e) => handleFilterChange('search', e.target.value)}
+              className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
               />
             </div>
-          </div>
-          
+
+          {/* Role Filter */}
           <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value as typeof roleFilter)}
-            className="px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm focus:outline-none focus:border-yellow-500"
+            value={filters.role}
+            onChange={(e) => handleFilterChange('role', e.target.value)}
+            className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
           >
-            <option value="all">All Roles</option>
-            <option value="user">Users</option>
-            <option value="moderator">Moderators</option>
-            <option value="admin">Admins</option>
+            <option value="">All Roles</option>
+            <option value="USER">User</option>
+            <option value="MODERATOR">Moderator</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+
+          {/* Status Filter */}
+          <select
+            value={filters.isActive}
+            onChange={(e) => handleFilterChange('isActive', e.target.value)}
+            className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+          >
+            <option value="">All Status</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
           </select>
           
+          {/* Sort */}
           <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-            className="px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm focus:outline-none focus:border-yellow-500"
+            value={`${filters.sortBy}:${filters.sortOrder}`}
+            onChange={(e) => {
+              const [sortBy, sortOrder] = e.target.value.split(':');
+              setFilters(prev => ({ ...prev, sortBy, sortOrder: sortOrder as 'asc' | 'desc' }));
+            }}
+            className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
           >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="pending">Pending</option>
-            <option value="suspended">Suspended</option>
-            <option value="banned">Banned</option>
+            <option value="createdAt:desc">Newest First</option>
+            <option value="createdAt:asc">Oldest First</option>
+            <option value="username:asc">Username A-Z</option>
+            <option value="username:desc">Username Z-A</option>
+            <option value="lastLoginAt:desc">Last Login</option>
           </select>
         </div>
       </div>
 
+      {/* Bulk Actions */}
+      {selectedUsers.length > 0 && (
+        <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 p-4 rounded-lg border border-blue-500/50">
+          <div className="flex items-center justify-between">
+            <span className="text-white font-medium">
+              {selectedUsers.length} user{selectedUsers.length !== 1 ? 's' : ''} selected
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleBulkAction('activate')}
+                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
+              >
+                Activate
+              </button>
+              <button
+                onClick={() => handleBulkAction('deactivate')}
+                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
+              >
+                Deactivate
+              </button>
+              <button
+                onClick={() => handleBulkAction('verify')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+              >
+                Verify
+              </button>
+              <button
+                onClick={() => setSelectedUsers([])}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Users Table */}
-      <div className="card overflow-hidden">
+      <div className="bg-gradient-to-br from-[#242738] to-[#2A2D47] rounded-xl border border-gray-600/50 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-700">
-                <th className="text-left py-3 px-4 font-medium text-gray-300">User</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-300">Role</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-300">Status</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-300">Content</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-300">Reputation</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-300">Last Active</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-300">Actions</th>
+            <thead className="bg-gray-800/50">
+              <tr>
+                <th className="p-4 text-left">
+                  <input
+                    type="checkbox"
+                    checked={selectedUsers.length === users.length && users.length > 0}
+                    onChange={selectAllUsers}
+                    className="w-4 h-4"
+                  />
+                </th>
+                <th className="p-4 text-left text-white font-semibold">User</th>
+                <th className="p-4 text-left text-white font-semibold">Role</th>
+                <th className="p-4 text-left text-white font-semibold">Status</th>
+                <th className="p-4 text-left text-white font-semibold">Content</th>
+                <th className="p-4 text-left text-white font-semibold">Joined</th>
+                <th className="p-4 text-left text-white font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="border-b border-gray-800 hover:bg-gray-800/30">
-                  <td className="py-3 px-4">
-                    <div>
-                      <div className="font-medium text-white">{user.username}</div>
-                      <div className="text-sm text-gray-400">{user.email}</div>
-                    </div>
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="p-16 text-center">
+                    <AdminLoader size="lg" message="Loading users..." />
                   </td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded-full text-xs ${getRoleColor(user.role)}`}>
-                      {user.role}
-                    </span>
+                </tr>
+              ) : users.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="p-8 text-center text-gray-400">
+                    No users found
                   </td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(user.status)}`}>
-                      {user.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="text-sm">
-                      <div>{user.contentCount.lineups} lineups</div>
-                      <div>{user.contentCount.crosshairs} crosshairs</div>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-1">
-                      <span className={user.reputation > 0 ? 'text-green-400' : 'text-red-400'}>
-                        {user.reputation}
-                      </span>
-                      {user.reports > 0 && (
-                        <div className="flex items-center gap-1 text-red-400">
-                          <AlertTriangle size={12} />
-                          <span className="text-xs">{user.reports}</span>
+                </tr>
+              ) : (
+                users.map((user) => (
+                  <tr key={user.id} className="border-t border-gray-700/50 hover:bg-gray-700/20">
+                    <td className="p-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.includes(user.id)}
+                        onChange={() => toggleUserSelection(user.id)}
+                        className="w-4 h-4"
+                      />
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">
+                            {user.username.charAt(0).toUpperCase()}
+                          </span>
                         </div>
-                      )}
+                    <div>
+                          <div className="text-white font-medium">{user.username}</div>
+                          <div className="text-gray-400 text-sm">{user.email}</div>
+                        </div>
                     </div>
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-400">
-                    {user.lastActive.toLocaleDateString()}
+                    <td className="p-4">
+                      <span className={`${getRoleColor(user.role)} text-white px-2 py-1 rounded text-sm font-medium`}>
+                        {getRoleName(user.role)}
+                    </span>
                   </td>
-                  <td className="py-3 px-4">
-                    <div className="flex gap-1">
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${user.isActive ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                        <span className={`text-sm ${user.isActive ? 'text-green-400' : 'text-red-400'}`}>
+                          {user.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                        {user.isVerified && <ShieldCheck size={14} className="text-blue-400" />}
+                        {user.isPremium && <Star size={14} className="text-yellow-400" />}
+                      </div>
+                  </td>
+                    <td className="p-4">
+                      <div className="text-sm text-gray-300">
+                        <div>{user._count.lineups} lineups</div>
+                        <div>{user._count.crosshairs} crosshairs</div>
+                        <div>{user._count.comments} comments</div>
+                    </div>
+                  </td>
+                    <td className="p-4">
+                      <div className="text-sm text-gray-400">
+                        {new Date(user.createdAt).toLocaleDateString()}
+                    </div>
+                  </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-1">
                       <button
-                        onClick={() => handleUserAction(user.id, 'view')}
-                        className="p-1 text-blue-400 hover:bg-blue-400/10 rounded"
-                        title="View Profile"
-                      >
-                        <User size={14} />
+                          onClick={() => handleUserAction(user.id, user.isActive ? 'deactivate' : 'activate')}
+                          className={`p-1 rounded hover:bg-gray-600 ${user.isActive ? 'text-red-400' : 'text-green-400'}`}
+                          title={user.isActive ? 'Deactivate' : 'Activate'}
+                        >
+                          {user.isActive ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>
                       <button
-                        onClick={() => handleUserAction(user.id, 'message')}
-                        className="p-1 text-green-400 hover:bg-green-400/10 rounded"
-                        title="Send Message"
-                      >
-                        <Mail size={14} />
+                          onClick={() => handleUserAction(user.id, user.isVerified ? 'unverify' : 'verify')}
+                          className={`p-1 rounded hover:bg-gray-600 ${user.isVerified ? 'text-blue-400' : 'text-gray-400'}`}
+                          title={user.isVerified ? 'Unverify' : 'Verify'}
+                        >
+                          {user.isVerified ? <ShieldCheck size={16} /> : <ShieldX size={16} />}
                       </button>
-                      {user.status === 'active' && (
                         <button
-                          onClick={() => handleUserAction(user.id, 'suspend')}
-                          className="p-1 text-orange-400 hover:bg-orange-400/10 rounded"
-                          title="Suspend User"
+                          className="p-1 rounded hover:bg-gray-600 text-gray-400"
+                          title="More actions"
                         >
-                          <AlertTriangle size={14} />
+                          <MoreHorizontal size={16} />
                         </button>
-                      )}
-                      {user.status !== 'banned' && (
-                        <button
-                          onClick={() => handleUserAction(user.id, 'ban')}
-                          className="p-1 text-red-400 hover:bg-red-400/10 rounded"
-                          title="Ban User"
-                        >
-                          <Ban size={14} />
-                        </button>
-                      )}
-                      {user.role === 'user' && (
-                        <button
-                          onClick={() => handleUserAction(user.id, 'promote')}
-                          className="p-1 text-purple-400 hover:bg-purple-400/10 rounded"
-                          title="Promote to Moderator"
-                        >
-                          <Shield size={14} />
-                        </button>
-                      )}
                     </div>
                   </td>
                 </tr>
-              ))}
+                ))
+              )}
             </tbody>
           </table>
-        </div>
       </div>
 
-      {/* User Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="card text-center">
-          <div className="text-2xl font-bold text-blue-400 mb-1">
-            {users.filter(u => u.status === 'active').length}
+        {/* Pagination */}
+        {pagination.pages > 1 && (
+          <div className="p-4 border-t border-gray-700/50 flex items-center justify-between">
+            <div className="text-sm text-gray-400">
+              Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} users
           </div>
-          <div className="text-xs text-gray-400">Active Users</div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => goToPage(pagination.page - 1)}
+                disabled={pagination.page === 1}
+                className="p-2 rounded bg-gray-700 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="text-white text-sm">
+                Page {pagination.page} of {pagination.pages}
+              </span>
+              <button
+                onClick={() => goToPage(pagination.page + 1)}
+                disabled={pagination.page === pagination.pages}
+                className="p-2 rounded bg-gray-700 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600"
+              >
+                <ChevronRight size={16} />
+              </button>
         </div>
-        <div className="card text-center">
-          <div className="text-2xl font-bold text-yellow-400 mb-1">
-            {users.filter(u => u.status === 'pending').length}
           </div>
-          <div className="text-xs text-gray-400">Pending Approval</div>
-        </div>
-        <div className="card text-center">
-          <div className="text-2xl font-bold text-orange-400 mb-1">
-            {users.filter(u => u.status === 'suspended').length}
-          </div>
-          <div className="text-xs text-gray-400">Suspended</div>
-        </div>
-        <div className="card text-center">
-          <div className="text-2xl font-bold text-red-400 mb-1">
-            {users.filter(u => u.status === 'banned').length}
-          </div>
-          <div className="text-xs text-gray-400">Banned</div>
+        )}
         </div>
       </div>
-    </div>
-  )
-}
+  );
+};
 
-export default UserManagement
+export default UserManagement;

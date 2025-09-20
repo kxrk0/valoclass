@@ -1,5 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { env } from '../../config/env';
+import { prisma } from '../../lib/prisma';
+import { AuthService } from '../../lib/auth';
 
 const router = Router();
 
@@ -162,10 +164,12 @@ router.get('/riot/callback', async (req: Request, res: Response) => {
 // Google OAuth initiation - Real authentication
 router.get('/google', (req: Request, res: Response) => {
   const requestId = Math.random().toString(36).substring(7);
+  const isAdminFlow = req.query.redirect === 'admin';
   
   console.log(`[${requestId}] Starting Google OAuth flow`, {
     ip: req.ip,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    isAdminFlow
   });
 
   try {
@@ -181,7 +185,7 @@ router.get('/google', (req: Request, res: Response) => {
 
     const redirectUri = `${env.API_BASE_URL}/api/auth/oauth/google/callback`;
     const scope = 'openid email profile';
-    const state = requestId; // Use request ID as state for verification
+    const state = isAdminFlow ? `${requestId}:admin` : requestId; // Include admin flag in state
 
     // Build Google OAuth URL
     const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
@@ -208,7 +212,9 @@ router.get('/google', (req: Request, res: Response) => {
     console.error(`[${requestId}] Error in Google OAuth:`, error.message);
     
     const frontendUrl = env.FRONTEND_URL || 'http://localhost:3000';
-    const errorUrl = new URL('/auth/login', frontendUrl);
+    const errorUrl = isAdminFlow 
+      ? new URL('/admin/login', frontendUrl)
+      : new URL('/auth/login', frontendUrl);
     errorUrl.searchParams.set('error', 'Google OAuth configuration error');
     
     return res.redirect(302, errorUrl.toString());
@@ -219,27 +225,34 @@ router.get('/google', (req: Request, res: Response) => {
 // Google OAuth callback
 router.get('/google/callback', async (req: Request, res: Response) => {
   const { code, state, error } = req.query;
-  const requestId = (state as string) || 'unknown';
+  const stateParam = (state as string) || 'unknown';
+  const [requestId, adminFlag] = stateParam.split(':');
+  const isAdminFlow = adminFlag === 'admin';
 
   console.log(`[${requestId}] Google OAuth callback`, {
     hasCode: !!code,
     hasError: !!error,
     error: error || null,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    isAdminFlow
   });
 
   const frontendUrl = env.FRONTEND_URL || 'http://localhost:3000';
 
   if (error) {
     console.error(`[${requestId}] Google OAuth error:`, error);
-    const errorUrl = new URL('/auth/login', frontendUrl);
+    const errorUrl = isAdminFlow 
+      ? new URL('/admin/login', frontendUrl)
+      : new URL('/auth/login', frontendUrl);
     errorUrl.searchParams.set('error', `Google authentication failed: ${error}`);
     return res.redirect(302, errorUrl.toString());
   }
 
   if (!code) {
     console.error(`[${requestId}] No authorization code received`);
-    const errorUrl = new URL('/auth/login', frontendUrl);
+    const errorUrl = isAdminFlow 
+      ? new URL('/admin/login', frontendUrl)
+      : new URL('/auth/login', frontendUrl);
     errorUrl.searchParams.set('error', 'No authorization code received from Google');
     return res.redirect(302, errorUrl.toString());
   }
@@ -277,7 +290,9 @@ router.get('/google/callback', async (req: Request, res: Response) => {
         error: errorText
       });
       
-      const errorUrl = new URL('/auth/login', frontendUrl);
+      const errorUrl = isAdminFlow 
+        ? new URL('/admin/login', frontendUrl)
+        : new URL('/auth/login', frontendUrl);
       errorUrl.searchParams.set('error', 'Failed to exchange authorization code');
       return res.redirect(302, errorUrl.toString());
     }
@@ -299,7 +314,9 @@ router.get('/google/callback', async (req: Request, res: Response) => {
 
     if (!userInfoResponse.ok) {
       console.error(`[${requestId}] Failed to get user info:`, userInfoResponse.status);
-      const errorUrl = new URL('/auth/login', frontendUrl);
+      const errorUrl = isAdminFlow 
+        ? new URL('/admin/login', frontendUrl)
+        : new URL('/auth/login', frontendUrl);
       errorUrl.searchParams.set('error', 'Failed to get user information');
       return res.redirect(302, errorUrl.toString());
     }
@@ -312,13 +329,137 @@ router.get('/google/callback', async (req: Request, res: Response) => {
       hasProfile: !!userInfo
     });
 
-    // TODO: Save user to database, create session, etc.
-    // For now, redirect to success page with user info
+    // Save user to Prisma database
+    try {
+      // Create or update user in Prisma database
+      let dbUser;
+      try {
+        dbUser = await prisma.user.upsert({
+          where: { email: userInfo.email },
+          include: { accounts: true },
+          update: {
+            username: userInfo.name || userInfo.email.split('@')[0],
+            avatar: userInfo.picture,
+            isVerified: true, // Google OAuth users are automatically verified
+            lastLoginAt: new Date(),
+            updatedAt: new Date()
+          },
+          create: {
+            email: userInfo.email,
+            username: userInfo.name || userInfo.email.split('@')[0],
+            avatar: userInfo.picture,
+            role: isAdminFlow ? 'ADMIN' : 'USER',
+            isVerified: true,
+            isActive: true,
+            isPremium: false,
+            lastLoginAt: new Date(),
+            preferences: {
+              theme: 'dark',
+              language: 'en',
+              timezone: 'America/New_York',
+              notifications: {
+                email: true,
+                inApp: true,
+                newLineups: true,
+                crosshairUpdates: true,
+                weeklyDigest: true,
+                marketing: false
+              },
+              privacy: {
+                profileVisibility: 'public',
+                showStats: true,
+                showActivity: true,
+                allowMessages: 'everyone',
+                searchable: true
+              }
+            },
+            stats: {
+              lineupsCreated: 0,
+              crosshairsCreated: 0,
+              totalLikes: 0,
+              totalViews: 0,
+              reputation: 0,
+              followers: 0,
+              following: 0
+            }
+          }
+        });
 
-    const successUrl = new URL('/', frontendUrl);
-    successUrl.searchParams.set('google_login', 'success');
-    successUrl.searchParams.set('user_name', userInfo.name || 'Unknown');
-    successUrl.searchParams.set('user_email', userInfo.email || '');
+        // Create or update Google OAuth account record
+        if (dbUser) {
+          const existingAccount = await prisma.account.findFirst({
+            where: {
+              provider: 'google',
+              providerId: userInfo.id,
+              userId: dbUser.id
+            }
+          });
+
+          if (existingAccount) {
+            await prisma.account.update({
+              where: { id: existingAccount.id },
+              data: {
+                accessToken: tokens.access_token,
+                refreshToken: tokens.refresh_token,
+                expiresAt: tokens.expires_in ? new Date(Date.now() + tokens.expires_in * 1000) : null,
+                tokenType: tokens.token_type || 'Bearer',
+                scope: tokens.scope,
+                idToken: tokens.id_token
+              }
+            });
+          } else {
+            await prisma.account.create({
+              data: {
+                userId: dbUser.id,
+                type: 'oauth',
+                provider: 'google',
+                providerId: userInfo.id,
+                accessToken: tokens.access_token,
+                refreshToken: tokens.refresh_token,
+                expiresAt: tokens.expires_in ? new Date(Date.now() + tokens.expires_in * 1000) : null,
+                tokenType: tokens.token_type || 'Bearer',
+                scope: tokens.scope,
+                idToken: tokens.id_token
+              }
+            });
+          }
+        }
+
+        console.log(`✅ User ${isAdminFlow ? 'admin' : 'user'} saved to database:`, dbUser.id);
+
+      } catch (dbError) {
+        console.error('Database user creation error:', dbError);
+      }
+
+      // Generate JWT token for session
+      if (dbUser) {
+        const jwtToken = await AuthService.generateAccessToken(dbUser as any);
+        console.log('🔑 JWT token generated for user:', dbUser.id);
+      }
+
+      console.log(`🎉 ${isAdminFlow ? 'Admin' : 'User'} authentication complete:`, {
+        database: !!dbUser,
+        email: userInfo.email,
+        name: userInfo.name
+      });
+
+    } catch (error) {
+      console.error('User creation/update error:', error);
+    }
+
+    const successUrl = isAdminFlow 
+      ? new URL('/admin/dashboard', frontendUrl)
+      : new URL('/', frontendUrl);
+    
+    if (isAdminFlow) {
+      successUrl.searchParams.set('admin_google_login', 'success');
+      successUrl.searchParams.set('admin_name', userInfo.name || 'Unknown');
+      successUrl.searchParams.set('admin_email', userInfo.email || '');
+    } else {
+      successUrl.searchParams.set('google_login', 'success');
+      successUrl.searchParams.set('user_name', userInfo.name || 'Unknown');
+      successUrl.searchParams.set('user_email', userInfo.email || '');
+    }
     
     console.log(`[${requestId}] Redirecting to success page:`, successUrl.toString());
     return res.redirect(302, successUrl.toString());
@@ -326,7 +467,9 @@ router.get('/google/callback', async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error(`[${requestId}] Error in Google OAuth callback:`, error.message);
     
-    const errorUrl = new URL('/auth/login', frontendUrl);
+    const errorUrl = isAdminFlow 
+      ? new URL('/admin/login', frontendUrl)
+      : new URL('/auth/login', frontendUrl);
     errorUrl.searchParams.set('error', 'Google authentication process failed');
     return res.redirect(302, errorUrl.toString());
   }
@@ -485,8 +628,123 @@ router.get('/discord/callback', async (req: Request, res: Response) => {
       hasProfile: !!userInfo
     });
 
-    // TODO: Save user to database, create session, etc.
-    // For now, redirect to success page with user info
+    // Save user to Prisma database
+    try {
+      // Create or update user in Prisma database
+      let dbUser;
+      try {
+        const email = userInfo.email || `${userInfo.username}@discord.local`;
+        
+        dbUser = await prisma.user.upsert({
+          where: { email },
+          include: { accounts: true },
+          update: {
+            username: userInfo.username,
+            avatar: userInfo.avatar ? `https://cdn.discordapp.com/avatars/${userInfo.id}/${userInfo.avatar}.png` : undefined,
+            isVerified: !!userInfo.email, // Verify only if real email
+            lastLoginAt: new Date(),
+            updatedAt: new Date()
+          },
+          create: {
+            email,
+            username: userInfo.username,
+            avatar: userInfo.avatar ? `https://cdn.discordapp.com/avatars/${userInfo.id}/${userInfo.avatar}.png` : undefined,
+            role: 'USER',
+            isVerified: !!userInfo.email,
+            isActive: true,
+            isPremium: false,
+            lastLoginAt: new Date(),
+            preferences: {
+              theme: 'dark',
+              language: 'en',
+              timezone: 'America/New_York',
+              notifications: {
+                email: true,
+                inApp: true,
+                newLineups: true,
+                crosshairUpdates: true,
+                weeklyDigest: true,
+                marketing: false
+              },
+              privacy: {
+                profileVisibility: 'public',
+                showStats: true,
+                showActivity: true,
+                allowMessages: 'everyone',
+                searchable: true
+              }
+            },
+            stats: {
+              lineupsCreated: 0,
+              crosshairsCreated: 0,
+              totalLikes: 0,
+              totalViews: 0,
+              reputation: 0,
+              followers: 0,
+              following: 0
+            }
+          }
+        });
+
+        // Create or update Discord OAuth account record
+        if (dbUser) {
+          const existingAccount = await prisma.account.findFirst({
+            where: {
+              provider: 'discord',
+              providerId: userInfo.id,
+              userId: dbUser.id
+            }
+          });
+
+          if (existingAccount) {
+            await prisma.account.update({
+              where: { id: existingAccount.id },
+              data: {
+                accessToken: tokens.access_token,
+                refreshToken: tokens.refresh_token,
+                expiresAt: tokens.expires_in ? new Date(Date.now() + tokens.expires_in * 1000) : null,
+                tokenType: tokens.token_type || 'Bearer',
+                scope: tokens.scope
+              }
+            });
+          } else {
+            await prisma.account.create({
+              data: {
+                userId: dbUser.id,
+                type: 'oauth',
+                provider: 'discord',
+                providerId: userInfo.id,
+                accessToken: tokens.access_token,
+                refreshToken: tokens.refresh_token,
+                expiresAt: tokens.expires_in ? new Date(Date.now() + tokens.expires_in * 1000) : null,
+                tokenType: tokens.token_type || 'Bearer',
+                scope: tokens.scope
+              }
+            });
+          }
+        }
+
+        console.log('✅ Discord user saved to database:', dbUser.id);
+
+      } catch (dbError) {
+        console.error('Database Discord user creation error:', dbError);
+      }
+
+      // Generate JWT token for session
+      if (dbUser) {
+        const jwtToken = await AuthService.generateAccessToken(dbUser as any);
+        console.log('🔑 JWT token generated for user:', dbUser.id);
+      }
+
+      console.log('🎉 Discord user authentication complete:', {
+        database: !!dbUser,
+        username: userInfo.username,
+        email: userInfo.email
+      });
+
+    } catch (error) {
+      console.error('Discord user creation/update error:', error);
+    }
 
     const successUrl = new URL('/', frontendUrl);
     successUrl.searchParams.set('discord_login', 'success');

@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { AuthService } from '@/lib/auth'
-import { loginRateLimit, getClientIP, getUserAgent } from '@/lib/middleware'
+import { getClientIPNext, getUserAgentNext, checkRateLimit } from '@/lib/middleware'
 
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting by IP
-    const clientIP = getClientIP(request)
-    if (!loginRateLimit(clientIP)) {
+    const clientIP = getClientIPNext(request)
+    if (!checkRateLimit(clientIP, 900000, 5)) {
       return NextResponse.json(
         { error: 'Too many login attempts. Please try again in 15 minutes.' },
         { status: 429 }
@@ -45,6 +45,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        { error: 'Invalid credentials' },
+        { status: 401 }
+      )
+    }
+    
     const isPasswordValid = await AuthService.verifyPassword(password, user.passwordHash)
     if (!isPasswordValid) {
       return NextResponse.json(

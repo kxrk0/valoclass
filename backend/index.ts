@@ -8,9 +8,12 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import { Server as SocketIOServer } from 'socket.io';
+import { createServer } from 'http';
 import { env } from './config/env';
 import { corsOptions } from './config/cors';
 import { connectDatabase, isDatabaseHealthy } from './config/database';
+import { prisma } from './lib/prisma';
 import { healthCheckHandler, readinessHandler, livenessHandler } from './lib/monitoring';
 import { 
   ipFilterMiddleware, 
@@ -28,6 +31,19 @@ import {
 
 // Initialize Express app
 const app = express();
+
+// Create HTTP server
+const server = createServer(app);
+
+// Initialize Socket.IO
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: env.FRONTEND_URL,
+    methods: ["GET", "POST"],
+    credentials: true
+  },
+  transports: ['websocket', 'polling']
+});
 
 // Trust proxy for accurate IP addresses
 app.set('trust proxy', 1);
@@ -98,6 +114,84 @@ app.get('/status', async (req, res) => {
   });
 });
 
+// Socket.IO authentication and admin events
+import { adminAuthMiddleware, emitToAdmins, logAdminActivity, AuthenticatedSocket } from './lib/adminAuth';
+
+// Admin WebSocket namespace with authentication
+const adminNamespace = io.of('/admin');
+adminNamespace.use(adminAuthMiddleware);
+
+adminNamespace.on('connection', (socket) => {
+  const authSocket = socket as AuthenticatedSocket;
+  console.log(`🔗 Admin ${authSocket.user.username} connected to admin namespace`);
+  
+  // Join admin room for broadcasting
+  authSocket.join('admins');
+  
+  // Send welcome message with user info
+  authSocket.emit('admin:welcome', {
+    user: authSocket.user,
+    connectedAt: new Date().toISOString()
+  });
+
+  // Real-time stats request
+  authSocket.on('admin:request_stats', async () => {
+    try {
+      const stats = await getAdminStats();
+      authSocket.emit('admin:stats_update', stats);
+    } catch (error) {
+      authSocket.emit('admin:error', { message: 'Failed to fetch stats' });
+    }
+  });
+
+  // User activity monitoring
+  authSocket.on('admin:subscribe_user_activity', () => {
+    authSocket.join('user_activity_subscribers');
+    console.log(`Admin ${authSocket.user.username} subscribed to user activity`);
+  });
+
+  // Report monitoring
+  authSocket.on('admin:subscribe_reports', () => {
+    authSocket.join('report_subscribers');
+    console.log(`Admin ${authSocket.user.username} subscribed to reports`);
+  });
+
+  // Handle disconnect
+  authSocket.on('disconnect', () => {
+    console.log(`🔌 Admin ${authSocket.user.username} disconnected`);
+    logAdminActivity(authSocket.userId, 'DISCONNECT', {
+      disconnectedAt: new Date().toISOString()
+    });
+  });
+
+  // Log admin connection
+  logAdminActivity(authSocket.userId, 'CONNECT', {
+    connectedAt: new Date().toISOString(),
+    userAgent: authSocket.handshake.headers['user-agent']
+  });
+});
+
+// Helper function to get admin stats
+const getAdminStats = async () => {
+  const [userCount, lineupCount, crosshairCount, reportCount] = await Promise.all([
+    prisma.user.count(),
+    prisma.lineup.count(),
+    prisma.crosshair.count(),
+    prisma.report.count({ where: { status: 'PENDING' } })
+  ]);
+
+  return {
+    totalUsers: userCount,
+    totalLineups: lineupCount,
+    totalCrosshairs: crosshairCount,
+    pendingReports: reportCount,
+    timestamp: new Date().toISOString()
+  };
+};
+
+// Export socket instance for use in other modules
+export { io, adminNamespace, emitToAdmins };
+
 // API routes
 import apiRouter from './api';
 app.use('/api', apiRouter);
@@ -124,21 +218,27 @@ const startServer = async () => {
       console.log('✅ Database connected successfully');
     }
     
-    // Start HTTP server
-    const server = app.listen(env.PORT, () => {
+    // Start HTTP server with Socket.IO
+    server.listen(env.PORT, () => {
       console.log(`🚀 Backend server running on port ${env.PORT}`);
       console.log(`📍 API available at: ${env.API_BASE_URL}`);
       console.log(`🌍 Environment: ${env.NODE_ENV}`);
       console.log(`🔗 Frontend URL: ${env.FRONTEND_URL}`);
+      console.log(`🔌 WebSocket server ready for admin connections`);
     });
     
     // Graceful shutdown
     const gracefulShutdown = (signal: string) => {
       console.log(`\n${signal} received. Shutting down gracefully...`);
       
-      server.close(() => {
-        console.log('HTTP server closed.');
-        process.exit(0);
+      // Close Socket.IO connections
+      io.close(() => {
+        console.log('WebSocket server closed.');
+        
+        server.close(() => {
+          console.log('HTTP server closed.');
+          process.exit(0);
+        });
       });
       
       // Force close after 30 seconds
