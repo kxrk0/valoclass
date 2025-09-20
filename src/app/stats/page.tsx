@@ -79,7 +79,7 @@ export default function StatsPage() {
             <p className={`text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-8 leading-relaxed transition-all duration-1000 delay-400 ${
               isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
             }`}>
-              Get comprehensive Valorant statistics with real-time data from Riot's API. 
+              Get comprehensive Valorant statistics with real-time data from Riot&apos;s API. 
               Track matches, analyze performance, and climb the ranks with data-driven insights.
             </p>
 

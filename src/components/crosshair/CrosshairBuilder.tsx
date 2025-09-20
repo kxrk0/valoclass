@@ -450,8 +450,8 @@ const CrosshairBuilder = () => {
                   <p><span className="text-yellow-400 font-medium">1.</span> Copy the crosshair code above</p>
                   <p><span className="text-yellow-400 font-medium">2.</span> Launch Valorant and enter a match or practice range</p>
                   <p><span className="text-yellow-400 font-medium">3.</span> Press <kbd className="px-1 py-0.5 bg-gray-700 rounded text-xs">ESC</kbd> → Settings → Crosshair</p>
-                  <p><span className="text-yellow-400 font-medium">4.</span> Click "Import Profile Code" button</p>
-                  <p><span className="text-yellow-400 font-medium">5.</span> Paste the code and click "Import"</p>
+                  <p><span className="text-yellow-400 font-medium">4.</span> Click &quot;Import Profile Code&quot; button</p>
+                  <p><span className="text-yellow-400 font-medium">5.</span> Paste the code and click &quot;Import&quot;</p>
                   <p><span className="text-yellow-400 font-medium">6.</span> Your crosshair is now applied!</p>
                 </div>
                 <div className="mt-3 pt-2 border-t border-gray-700">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Heart, Copy, Download, Search, Filter, Star, Trending, Clock, Users, Eye, ChevronDown } from 'lucide-react'
+import { Heart, Copy, Download, Search, Filter, Star, TrendingUp, Clock, Users, Eye, ChevronDown } from 'lucide-react'
 import CrosshairPreview from './CrosshairPreview'
 import type { Crosshair, ValorantCrosshairSettings } from '@/types'
 import { PRO_PRESETS, encodeValorantCrosshair, generateShareCode } from '@/utils/valorantCrosshair'

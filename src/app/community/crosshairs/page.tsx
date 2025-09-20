@@ -232,7 +232,7 @@ export default function CommunityCrosshairsPage() {
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-300 max-w-5xl mx-auto mb-12 leading-relaxed">
-              Valorant topluluğunun en iyi crosshair'leri. Profesyonel oyunculardan ilham alın, 
+              Valorant topluluğunun en iyi crosshair&apos;leri. Profesyonel oyunculardan ilham alın, 
               kendi yaratımlarınızı paylaşın ve mükemmel nişanı bulun.
             </p>
 
@@ -333,8 +333,8 @@ export default function CommunityCrosshairsPage() {
                     <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl mx-auto mb-4 flex items-center justify-center animate-pulse">
                       <Target className="w-8 h-8 text-white" />
                     </div>
-                    <h3 className="text-xl font-semibold text-white mb-2">Crosshair'ler Yükleniyor...</h3>
-                    <p className="text-gray-400 mb-4">En popüler topluluk crosshair'leri getiriliyor</p>
+                    <h3 className="text-xl font-semibold text-white mb-2">Crosshair&apos;ler Yükleniyor...</h3>
+                    <p className="text-gray-400 mb-4">En popüler topluluk crosshair&apos;leri getiriliyor</p>
                     <div className="w-64 bg-white/10 rounded-full h-2 mx-auto overflow-hidden">
                       <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full animate-pulse w-3/4" />
         </div>

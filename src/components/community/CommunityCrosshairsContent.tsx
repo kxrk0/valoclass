@@ -340,13 +340,16 @@ const mockCrosshairs: SharedCrosshair[] = [
       outerLines: false,
       outerLineOpacity: 1,
       outerLineLength: 2,
+      outerLineThickness: 2,
       outerLineOffset: 10
     },
     valorantCode: '0;P;c;1;o;1;d;0;z;1;f;0;0t;1;0l;4;0o;2;0a;1;0f;1;1t;3;1l;2;1o;6;1a;1;1m;1;1f;1',
     likes: 1247,
     downloads: 5632,
     featured: true,
-    createdAt: '2024-01-15T10:30:00Z'
+    createdAt: '2024-01-15T10:30:00Z',
+    updatedAt: '2024-01-15T10:30:00Z',
+    isPublic: true
   },
   {
     id: '2',
@@ -378,13 +381,16 @@ const mockCrosshairs: SharedCrosshair[] = [
       outerLines: false,
       outerLineOpacity: 1,
       outerLineLength: 0,
+      outerLineThickness: 2,
       outerLineOffset: 5
     },
     valorantCode: '0;P;c;1;o;0;d;1;z;2;f;0;0t;1;0l;0;0o;1;0a;1;0f;0;1t;1;1l;0;1o;5;1a;1;1m;0;1f;0',
     likes: 832,
     downloads: 3421,
     featured: false,
-    createdAt: '2024-01-12T14:22:00Z'
+    createdAt: '2024-01-12T14:22:00Z',
+    updatedAt: '2024-01-12T14:22:00Z',
+    isPublic: true
   }
 ]
 

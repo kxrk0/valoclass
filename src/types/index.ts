@@ -95,8 +95,6 @@ export interface ValorantCrosshairSettings {
 // Legacy crosshair settings for backward compatibility
 export interface CrosshairSettings extends ValorantCrosshairSettings {
   color: string; // deprecated, use colorType and customColor instead
-  movementError: number; // deprecated, use movementErrorMultiplier
-  firingError: number; // deprecated, use firingErrorMultiplier
 }
 
 export interface CrosshairPreset {

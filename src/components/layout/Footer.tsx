@@ -87,7 +87,7 @@ const Footer = () => {
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Newsletter signup logic here
-    console.log('Newsletter signup:', email)
+    // TODO: Implement newsletter API call
     setEmail('')
   }
   
@@ -297,7 +297,7 @@ const Footer = () => {
                   <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-red-500 to-transparent transition-all duration-300 group-hover:w-full"></div>
                 </h3>
                 <ul className="space-y-4">
-                  {links.map((link, linkIndex) => {
+                  {links.map((link) => {
                     const LinkIcon = 'icon' in link ? link.icon : null
                     return (
                       <li key={link.name}>
@@ -340,7 +340,7 @@ const Footer = () => {
                   { name: t.footer.links.privacyPolicy, href: '/privacy' },
                   { name: t.footer.links.termsOfService, href: '/terms' },
                   { name: t.footer.links.cookiePolicy, href: '/cookies' }
-                ].map((link, index) => (
+                ].map((link) => (
                   <Link 
                     key={link.name} 
                     href={link.href} 

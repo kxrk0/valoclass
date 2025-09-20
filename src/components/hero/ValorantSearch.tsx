@@ -185,7 +185,7 @@ const ValorantSearch = () => {
         {showResults && searchResults.length === 0 && searchQuery.length >= 2 && !isLoading && (
           <div className="absolute top-full left-0 right-0 mt-2 bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl p-4 z-50">
             <div className="text-center text-gray-400">
-              No players found for "{searchQuery}"
+              No players found for &quot;{searchQuery}&quot;
             </div>
           </div>
         )}

@@ -6,11 +6,7 @@ import {
   ArrowRight, 
   Target, 
   Crosshair, 
-  TrendingUp, 
-  Users, 
-  Star, 
-  Shield, 
-  Award 
+  TrendingUp 
 } from 'lucide-react'
 import { useTranslation } from '@/contexts/LanguageContext'
 import ValorantSearch from '@/components/hero/ValorantSearch'
