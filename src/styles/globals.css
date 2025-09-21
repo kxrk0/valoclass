@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Test Page Styles */
+@import './testpage.scss';
+
 /* Custom Animations for Hero Section */
 @keyframes floatRotate {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
