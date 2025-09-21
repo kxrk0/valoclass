@@ -59,7 +59,7 @@ const Hero = () => {
 
       <div className="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[85vh] items-center justify-center">
-          <div className="flex flex-col justify-center items-center lg:items-start text-center lg:text-left py-12 lg:py-0">
+          <div className="flex flex-col justify-center items-center text-center py-12 lg:py-0">
             <div className="hero-title transition-all duration-1000 opacity-100 transform translate-y-0">
               <span className="title-line primary">Master</span>
               <span className="title-line gradient">Valorant</span>

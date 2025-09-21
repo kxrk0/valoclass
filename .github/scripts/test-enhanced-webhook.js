@@ -45,23 +45,33 @@ function createTestPayload(authorName = 'TestUser') {
       color: 3066993,
       fields: [
         {
-          name: `${CUSTOM_EMOJIS.verified} Geliştirme İstatistikleri`,
+          name: `${CUSTOM_EMOJIS.verified} ━━━━━ Geliştirme İstatistikleri ━━━━━`,
           value: summary,
           inline: false
         },
         {
-          name: `${CUSTOM_EMOJIS.crown} Proje Sağlığı`,
+          name: "⠀",
+          value: "⠀",
+          inline: false
+        },
+        {
+          name: `${CUSTOM_EMOJIS.crown} ━━━━━ Proje Sağlığı ━━━━━`,
           value: "🟢 **Yapı Durumu:** Başarılı\\n🔒 **Güvenlik:** Tüm kontroller geçti\\n⚡ **Performans:** Optimize edildi\\n🧪 **Test Kapsamı:** Aktif izleme",
           inline: false
         },
         {
-          name: `${CUSTOM_EMOJIS.online} Son Aktiviteler`,
+          name: "⠀",
+          value: "⠀",
+          inline: false
+        },
+        {
+          name: `${CUSTOM_EMOJIS.online} ━━━━━ Son Aktiviteler ━━━━━`,
           value: "💾 Veritabanı optimizasyonları\\n🎨 UI/UX iyileştirmeleri\\n🔧 Backend geliştirmeleri\\n📱 Mobil uyumluluk çalışmaları",
           inline: false
         }
       ],
       footer: {
-        text: `PLAYVALORANTGUIDES.COM ${CUSTOM_EMOJIS.online} Profesyonel Valorant Rehber Platformu`,
+        text: "PLAYVALORANTGUIDES.COM • Profesyonel Valorant Rehber Platformu",
         icon_url: "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg"
       },
       timestamp: new Date().toISOString(),
