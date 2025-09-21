@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { LoadingOverlay } from '@/components/ui/LoadingSpinner'
 import { useNotifications } from '@/contexts/NotificationContext'
+import { AdminSocketProvider } from '@/contexts/AdminSocketContext'
 
 interface AdminAuthGuardProps {
   children: React.ReactNode
@@ -197,8 +198,12 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({ children }) => {
     )
   }
 
-  // Render protected content
-  return <>{children}</>
+  // Render protected content with socket provider
+  return (
+    <AdminSocketProvider>
+      {children}
+    </AdminSocketProvider>
+  )
 }
 
 export default AdminAuthGuard

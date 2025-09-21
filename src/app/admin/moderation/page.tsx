@@ -2,7 +2,6 @@ import { Metadata } from 'next'
 import AdminLayout from '@/components/admin/AdminLayout'
 import AdminAuthGuard from '@/components/admin/AdminAuthGuard'
 import ContentModeration from '@/components/admin/ContentModeration'
-import { AdminSocketProvider } from '@/contexts/AdminSocketContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
 
 export const metadata: Metadata = {
@@ -15,11 +14,9 @@ export default function AdminModerationPage() {
   return (
     <NotificationProvider>
       <AdminAuthGuard>
-        <AdminSocketProvider>
-          <AdminLayout>
-            <ContentModeration />
-          </AdminLayout>
-        </AdminSocketProvider>
+        <AdminLayout>
+          <ContentModeration />
+        </AdminLayout>
       </AdminAuthGuard>
     </NotificationProvider>
   )

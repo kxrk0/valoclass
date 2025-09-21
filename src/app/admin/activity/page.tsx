@@ -1,7 +1,6 @@
 import { Metadata } from 'next'
 import AdminLayout from '@/components/admin/AdminLayout'
 import AdminAuthGuard from '@/components/admin/AdminAuthGuard'
-import { AdminSocketProvider } from '@/contexts/AdminSocketContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
 import { 
   Activity, 
@@ -346,11 +345,9 @@ export default function AdminActivityPage() {
   return (
     <NotificationProvider>
       <AdminAuthGuard>
-        <AdminSocketProvider>
-          <AdminLayout>
-            <ActivityLog />
-          </AdminLayout>
-        </AdminSocketProvider>
+        <AdminLayout>
+          <ActivityLog />
+        </AdminLayout>
       </AdminAuthGuard>
     </NotificationProvider>
   )
