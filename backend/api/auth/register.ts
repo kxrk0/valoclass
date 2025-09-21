@@ -82,7 +82,7 @@ router.post('/register', apiRateLimit, async (req: Request, res: Response) => {
       data: {
         username,
         email,
-        password: hashedPassword,
+        passwordHash: hashedPassword,
         role: 'USER'
       }
     });

@@ -6,7 +6,6 @@ import { Search, Filter, Download, Copy, Eye, Heart, Users, Plus, Star, Trending
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { useTranslation } from '@/contexts/LanguageContext'
-
 interface Crosshair {
   id: string
   name: string

@@ -93,7 +93,48 @@ export interface ValorantCrosshairSettings {
 }
 
 // Legacy crosshair settings for backward compatibility
-export interface CrosshairSettings extends ValorantCrosshairSettings {
+export interface CrosshairSettings {
+  // All ValorantCrosshairSettings properties
+  profile: number;
+  colorType: number;
+  customColor: string;
+  
+  // Outlines
+  outlines: boolean;
+  outlineOpacity: number;
+  outlineThickness: number;
+  
+  // Center Dot
+  centerDot: boolean;
+  centerDotOpacity: number;
+  centerDotThickness: number;
+  
+  // Inner Lines
+  innerLines: boolean;
+  innerLineOpacity: number;
+  innerLineLength: number;
+  innerLineThickness: number;
+  innerLineOffset: number;
+  
+  // Movement Error (legacy as number)
+  movementError: number; // deprecated, use movementErrorMultiplier and movementError boolean
+  movementErrorMultiplier: number;
+  
+  // Firing Error (legacy as number)
+  firingError: number; // deprecated, use firingErrorMultiplier and firingError boolean
+  firingErrorMultiplier: number;
+  
+  // ADS (Aim Down Sight) specific
+  adsError: boolean;
+  
+  // Outer Lines
+  outerLines: boolean;
+  outerLineOpacity: number;
+  outerLineLength: number;
+  outerLineThickness: number;
+  outerLineOffset: number;
+  
+  // Legacy properties
   color: string; // deprecated, use colorType and customColor instead
 }
 

@@ -1366,4 +1366,4 @@ export const translations: Record<Language, TranslationKeys> = {
   }
 }
 
-export const defaultLanguage: Language = 'en'
+export const defaultLanguage: Language = 'tr'

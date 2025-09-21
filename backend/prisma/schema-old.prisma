@@ -1,0 +1,480 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  username  String   @unique
+  displayName String?
+  avatar    String?
+  
+  // Authentication
+  passwordHash String?
+  isVerified   Boolean @default(false)
+  isActive     Boolean @default(true)
+  isPremium    Boolean @default(false)
+  
+  // Role and permissions
+  role     UserRole @default(USER)
+  
+  // Profile data
+  bio          String?
+  country      String?
+  favoriteAgent String?
+  
+  // Game stats (JSON for flexibility)
+  gameStats    Json?
+  preferences  Json?
+  stats        Json?
+  
+  // Social
+  followers Int @default(0)
+  following Int @default(0)
+  
+  // Relations
+  lineups         Lineup[]
+  crosshairs      Crosshair[]
+  comments        Comment[]
+  likes           Like[]
+  bookmarks       Bookmark[]
+  reports         Report[]
+  sessions        Session[]
+  accounts        Account[]
+  achievements    UserAchievement[]
+  activities      Activity[]
+  authEvents      AuthEvent[]
+  followers_rel   Follow[] @relation("UserFollowers")
+  following_rel   Follow[] @relation("UserFollowing")
+  
+  // Timestamps
+  lastLoginAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Lineup {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  
+  // Game data
+  agent       String
+  ability     String
+  map         String
+  side        String // ATTACKER, DEFENDER
+  difficulty  String // EASY, MEDIUM, HARD
+  
+  // Position data (JSON for flexibility)
+  position     Json
+  instructions String[]
+  
+  // Media
+  images       String[]
+  video        String?
+  
+  // Author
+  createdById  String @db.ObjectId
+  author       User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  
+  // Stats
+  views        Int @default(0)
+  likes        Int @default(0)
+  bookmarks    Int @default(0)
+  
+  // Status
+  status       String @default("ACTIVE") // ACTIVE, HIDDEN, DELETED
+  isPublic     Boolean @default(true)
+  isFeatured   Boolean @default(false)
+  
+  // Relations
+  comments     Comment[]
+  userLikes    Like[]
+  userBookmarks Bookmark[]
+  reports      Report[]
+  
+  // Timestamps
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("lineups")
+}
+
+model Crosshair {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  shareCode   String  @unique
+  
+  // Crosshair settings (JSON for all settings)
+  settings    Json
+  
+  // Author
+  createdById String  @db.ObjectId
+  author      User    @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  
+  // Stats
+  views       Int     @default(0)
+  likes       Int     @default(0)
+  downloads   Int     @default(0)
+  
+  // Status
+  status      String  @default("ACTIVE") // ACTIVE, HIDDEN, DELETED
+  isPublic    Boolean @default(true)
+  isFeatured  Boolean @default(false)
+  
+  // Relations
+  comments    Comment[]
+  userLikes   Like[]
+  userBookmarks Bookmark[]
+  reports     Report[]
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("crosshairs")
+}
+
+model Comment {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  content  String
+  
+  // Author
+  userId   String  @db.ObjectId
+  author   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Entity info
+  entityType  String   // LINEUP, CROSSHAIR, USER
+  entityId    String   @db.ObjectId
+  
+  // Optional relations (manually handled in application logic)
+  lineup      Lineup?    @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  crosshair   Crosshair? @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  
+  // Nested comments
+  parentId    String?  @db.ObjectId
+  parent      Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies     Comment[] @relation("CommentReplies")
+  
+  // Status
+  status      String   @default("ACTIVE") // ACTIVE, HIDDEN, DELETED
+  isEdited    Boolean  @default(false)
+  
+  // Stats
+  likes       Int      @default(0)
+  stats       Json     @default("{}")
+  
+  // Relations
+  userLikes   Like[]
+  reports     Report[]
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("comments")
+}
+
+model Like {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // User
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Entity
+  entityType String  // LINEUP, CROSSHAIR, COMMENT
+  entityId   String  @db.ObjectId
+  
+  // Optional relations (manually handled in application logic)
+  lineup    Lineup?    @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  crosshair Crosshair? @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  comment   Comment?   @relation(fields: [entityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@unique([userId, entityType, entityId])
+  @@map("likes")
+}
+
+model Bookmark {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  collectionId String?
+  
+  // User
+  userId       String  @db.ObjectId
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Entity
+  entityType   String  // LINEUP, CROSSHAIR
+  entityId     String  @db.ObjectId
+  
+  // Optional relations (manually handled in application logic)
+  lineup    Lineup?    @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  crosshair Crosshair? @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@unique([userId, entityType, entityId])
+  @@map("bookmarks")
+}
+
+model Follow {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  followerId  String @db.ObjectId
+  followingId String @db.ObjectId
+  
+  follower  User @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Report {
+  id     String       @id @default(auto()) @map("_id") @db.ObjectId
+  reason ReportReason
+  description String?
+  
+  // Reporter
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Entity
+  entityType String // LINEUP, CROSSHAIR, COMMENT, USER
+  entityId   String @db.ObjectId
+  
+  // Optional relations (manually handled in application logic)
+  lineup    Lineup?    @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  crosshair Crosshair? @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  comment   Comment?   @relation(fields: [entityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  
+  // Status
+  status       String   @default("PENDING") // PENDING, REVIEWED, RESOLVED, DISMISSED
+  reviewedAt   DateTime?
+  reviewedById String?  @db.ObjectId
+  resolution   String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reports")
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  token        String   @unique
+  refreshToken String?  @unique
+  
+  // User
+  userId       String   @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Session data  
+  userAgent    String?
+  ipAddress    String?
+  isActive     Boolean  @default(true)
+  
+  // Device/Context info (Enhanced)
+  deviceInfo   Json?    // browser, OS, device type, screen resolution
+  location     Json?    // city, country, timezone based on IP
+  
+  // Session lifecycle (Enhanced)
+  lastActivity DateTime @default(now())
+  loginMethod  String?  // oauth_google, oauth_discord, credentials
+  
+  // Admin specific (New)
+  isAdminSession Boolean @default(false)
+  adminRights    Json?   // specific admin permissions, features accessed
+  
+  // Security (New)
+  riskScore      Float?  @default(0) // suspicious activity score
+  isVerified     Boolean @default(true) // email/2FA verification status
+  
+  // Timestamps
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("sessions")
+}
+
+model AuthEvent {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // User
+  userId    String?  @db.ObjectId // Nullable for failed login attempts
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Event details
+  eventType String   // LOGIN, LOGOUT, ADMIN_ACCESS, FAILED_LOGIN, PERMISSION_CHANGE, SESSION_EXPIRED
+  success   Boolean  @default(true)
+  
+  // Context
+  ipAddress String?
+  userAgent String? 
+  location  Json?    // Geolocation data
+  details   Json?    // Additional event-specific data
+  
+  // Security
+  riskLevel String?  // LOW, MEDIUM, HIGH, CRITICAL
+  blocked   Boolean  @default(false)
+  
+  // Admin specific
+  adminAction   String? // If this was an admin action: USER_CREATED, USER_BANNED, etc
+  targetUserId  String? @db.ObjectId // If action was performed on another user
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@map("auth_events")
+}
+
+model Account {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  type       AccountType
+  provider   String
+  providerId String
+  
+  // OAuth tokens
+  accessToken      String?
+  refreshToken     String?
+  expiresAt        DateTime?
+  tokenType        String?
+  scope            String?
+  idToken          String?
+  sessionState     String?
+  
+  // Relations
+  userId String @db.ObjectId
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, providerId])
+  @@map("accounts")
+}
+
+model Achievement {
+  id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  icon        String
+  category    String
+  
+  // Requirements (JSON for flexibility)
+  requirements Json
+  
+  // Reward
+  points       Int     @default(0)
+  badge        String?
+  
+  // Status
+  isActive     Boolean @default(true)
+  rarity       String  @default("COMMON") // COMMON, RARE, EPIC, LEGENDARY
+  
+  // Relations
+  userAchievements UserAchievement[]
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  
+  userId        String      @db.ObjectId
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  achievementId String      @db.ObjectId
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  
+  // Progress
+  progress      Json?
+  completedAt   DateTime?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+model Activity {
+  id   String       @id @default(auto()) @map("_id") @db.ObjectId
+  type ActivityType
+  
+  // User
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Activity data
+  entityType String? // LINEUP, CROSSHAIR, COMMENT, USER
+  entityId   String? @db.ObjectId
+  
+  // Additional data (JSON for flexibility)
+  metadata   Json?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@map("activities")
+}
+
+// Enums
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum ReportReason {
+  SPAM
+  INAPPROPRIATE_CONTENT
+  HARASSMENT
+  COPYRIGHT
+  MISLEADING_INFO
+  DUPLICATE
+  OTHER
+}
+
+enum ActivityType {
+  LINEUP_CREATED
+  LINEUP_LIKED
+  LINEUP_BOOKMARKED
+  CROSSHAIR_CREATED
+  CROSSHAIR_LIKED
+  CROSSHAIR_DOWNLOADED
+  COMMENT_POSTED
+  USER_FOLLOWED
+  ACHIEVEMENT_EARNED
+  LOGIN
+  LOGOUT
+}
+
+enum AccountType {
+  oauth
+  credentials
+}
