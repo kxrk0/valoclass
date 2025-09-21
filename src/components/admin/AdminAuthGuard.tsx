@@ -54,7 +54,7 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({ children }) => {
   const { success, error: showError } = useNotifications()
 
   // Backend-centric authentication check
-  const checkAuthWithBackend = async () => {
+  const checkAuthWithBackend = async (showFailureMessage = true) => {
     try {
       console.log('🔍 AdminAuthGuard: Checking auth with backend...')
       
@@ -70,6 +70,11 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({ children }) => {
 
       if (!response.ok || !data.success) {
         console.log('❌ Backend auth check failed:', data.message)
+        
+        if (showFailureMessage && response.status !== 401) {
+          showError('Auth Error', `Authentication failed: ${data.message}`)
+        }
+        
         setIsAuthenticated(false)
         router.push('/admin/login')
         return
@@ -118,8 +123,11 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({ children }) => {
           cleanUrl.searchParams.delete('admin_login')
           window.history.replaceState({}, '', cleanUrl.toString())
 
-          // Check auth with backend (cookies should be set)
-          await checkAuthWithBackend()
+          // Give a small delay for cookies to be set properly
+          await new Promise(resolve => setTimeout(resolve, 500))
+
+          // Check auth with backend (cookies should be set) - don't show error for 401
+          await checkAuthWithBackend(false)
           
           if (user) {
             success('Welcome!', `Admin login successful: ${user.username}`)
@@ -129,10 +137,10 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({ children }) => {
           
         } catch (error) {
           console.error('Error processing OAuth:', error)
-          showError('OAuth Error', 'Failed to process login')
+          showError('Login Failed', 'OAuth authentication was not completed properly. Please try again.')
           setIsProcessingOAuth(false)
           setIsAuthenticated(false)
-          router.push('/admin/login')
+          router.push('/admin/login?error=oauth_failed')
           return
         }
       }
@@ -163,7 +171,7 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({ children }) => {
       }
 
       // Default: Check authentication with backend
-      await checkAuthWithBackend()
+      await checkAuthWithBackend(false)
     }
 
     checkAuth()

@@ -18,6 +18,15 @@ self.addEventListener('install', event => {
 
 // Fetch event
 self.addEventListener('fetch', event => {
+  // Skip service worker for admin routes and API calls
+  const url = new URL(event.request.url)
+  
+  if (url.pathname.startsWith('/admin') || 
+      url.pathname.startsWith('/api') ||
+      url.hostname === 'localhost' && url.port === '8000') {
+    return; // Let browser handle these requests directly
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then(response => {
