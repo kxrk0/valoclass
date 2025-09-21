@@ -1,351 +1,462 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { Search, Filter, Download, Copy, Eye, Heart, Users, Plus, Star, TrendingUp, Clock, Grid, Tag } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import CrosshairBuilder from '@/components/crosshair/CrosshairBuilder'
+import { useTranslation } from '@/contexts/LanguageContext'
 
-// Metadata is handled by layout since this is a client component
+interface Crosshair {
+  id: string
+  name: string
+  author: string
+  code: string
+  category: 'Pro Player' | 'Community' | 'Team' | 'Fun' | 'Other'
+  tags: string[]
+  likes: number
+  downloads: number
+  views: number
+  isNew?: boolean
+  isFeatured?: boolean
+  preview: {
+    outline: number
+    outlineOpacity: number
+    centerDot: number
+    centerDotOpacity: number
+    innerLines: number
+    innerLinesOpacity: number
+    outerLines: number
+    outerLinesOpacity: number
+    movementError: number
+    firingError: number
+    color: number
+  }
+}
+
+const SAMPLE_CROSSHAIRS: Crosshair[] = [
+  {
+    id: '1',
+    name: 'TenZ Classic',
+    author: 'TenZ',
+    code: '0;s;1;P;c;5;h;0;f;0;0l;4;0o;2;0a;1;0f;0;1b;0',
+    category: 'Pro Player',
+    tags: ['Pro', 'TenZ', 'Sentinels', 'Classic'],
+    likes: 2847,
+    downloads: 15420,
+    views: 24589,
+    isFeatured: true,
+    preview: {
+      outline: 1,
+      outlineOpacity: 1,
+      centerDot: 1,
+      centerDotOpacity: 1,
+      innerLines: 4,
+      innerLinesOpacity: 1,
+      outerLines: 2,
+      outerLinesOpacity: 1,
+      movementError: 0,
+      firingError: 0,
+      color: 5
+    }
+  },
+  {
+    id: '2',
+    name: 'Shroud Dot',
+    author: 'Shroud',
+    code: '0;s;1;P;c;1;t;4;o;1;d;1;z;1;0t;6;0l;3;0o;1;0a;1;0f;0;1t;3;1l;2;1o;2;1a;1;1m;0;1f;0',
+    category: 'Pro Player',
+    tags: ['Pro', 'Shroud', 'Dot', 'Minimal'],
+    likes: 1956,
+    downloads: 9873,
+    views: 18542,
+    preview: {
+      outline: 1,
+      outlineOpacity: 1,
+      centerDot: 1,
+      centerDotOpacity: 1,
+      innerLines: 0,
+      innerLinesOpacity: 1,
+      outerLines: 0,
+      outerLinesOpacity: 1,
+      movementError: 0,
+      firingError: 0,
+      color: 1
+    }
+  },
+  {
+    id: '3',
+    name: 'Valorant Default+',
+    author: 'Community',
+    code: '0;s;1;P;c;5;h;0;m;1;0l;5;0o;2;0a;1;0f;0;1b;0',
+    category: 'Community',
+    tags: ['Default', 'Enhanced', 'Beginner'],
+    likes: 834,
+    downloads: 4521,
+    views: 7892,
+    isNew: true,
+    preview: {
+      outline: 1,
+      outlineOpacity: 1,
+      centerDot: 0,
+      centerDotOpacity: 1,
+      innerLines: 5,
+      innerLinesOpacity: 1,
+      outerLines: 2,
+      outerLinesOpacity: 1,
+      movementError: 1,
+      firingError: 0,
+      color: 5
+    }
+  },
+  {
+    id: '4',
+    name: 'ScreaM Crosshair',
+    author: 'ScreaM',
+    code: '0;s;1;P;c;1;h;0;m;1;0l;4;0o;1;0a;1;0f;0;1b;0',
+    category: 'Pro Player',
+    tags: ['Pro', 'ScreaM', 'Team Liquid', 'Classic'],
+    likes: 1645,
+    downloads: 8234,
+    views: 14567,
+    preview: {
+      outline: 1,
+      outlineOpacity: 1,
+      centerDot: 0,
+      centerDotOpacity: 1,
+      innerLines: 4,
+      innerLinesOpacity: 1,
+      outerLines: 1,
+      outerLinesOpacity: 1,
+      movementError: 1,
+      firingError: 0,
+      color: 1
+    }
+  }
+]
 
 export default function CrosshairsPage() {
-  const [isVisible, setIsVisible] = useState(false)
-  const [activeFeature, setActiveFeature] = useState(0)
+  const t = useTranslation()
+  const [crosshairs, setCrosshairs] = useState<Crosshair[]>([])
+  const [filteredCrosshairs, setFilteredCrosshairs] = useState<Crosshair[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('All')
+  const [sortBy, setSortBy] = useState<'newest' | 'popular' | 'downloads' | 'az'>('popular')
+  const [loading, setLoading] = useState(true)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+
+  const categories = ['All', 'Pro Player', 'Community', 'Team', 'Fun', 'Other']
 
   useEffect(() => {
-    setIsVisible(true)
-    // Rotate active feature for dynamic effect
-    const interval = setInterval(() => {
-      setActiveFeature(prev => (prev + 1) % 3)
-    }, 3000)
-    return () => clearInterval(interval)
+    // Simulate API call to fetch crosshairs
+    setTimeout(() => {
+      setCrosshairs(SAMPLE_CROSSHAIRS)
+      setFilteredCrosshairs(SAMPLE_CROSSHAIRS)
+      setLoading(false)
+    }, 1000)
   }, [])
 
-  const features = [
-    { label: '100% Accurate Codes', color: 'green', icon: '🎯' },
-    { label: 'Pro Player Presets', color: 'blue', icon: '👑' },
-    { label: 'Community Sharing', color: 'purple', icon: '🌟' }
-  ]
+  useEffect(() => {
+    let filtered = crosshairs
+
+    // Filter by category
+    if (selectedCategory !== 'All') {
+      filtered = filtered.filter(crosshair => crosshair.category === selectedCategory)
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      filtered = filtered.filter(crosshair =>
+        crosshair.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        crosshair.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        crosshair.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    }
+
+    // Sort crosshairs
+    switch (sortBy) {
+      case 'popular':
+        filtered.sort((a, b) => b.likes - a.likes)
+        break
+      case 'downloads':
+        filtered.sort((a, b) => b.downloads - a.downloads)
+        break
+      case 'newest':
+        filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0))
+        break
+      case 'az':
+        filtered.sort((a, b) => a.name.localeCompare(b.name))
+        break
+    }
+
+    setFilteredCrosshairs(filtered)
+  }, [crosshairs, selectedCategory, searchQuery, sortBy])
+
+  const handleCopyCode = async (code: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopiedId(id)
+      setTimeout(() => setCopiedId(null), 2000)
+    } catch (err) {
+      console.error('Failed to copy code:', err)
+    }
+  }
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'Pro Player': return <Star size={16} />
+      case 'Community': return <Users size={16} />
+      case 'Team': return <Grid size={16} />
+      case 'Fun': return <Tag size={16} />
+      default: return <Tag size={16} />
+    }
+  }
+
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'Pro Player': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+      case 'Community': return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+      case 'Team': return 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+      case 'Fun': return 'bg-green-500/20 text-green-400 border-green-500/30'
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+    }
+  }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Enhanced Background Elements */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800" />
-        <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-red-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1.5s'}} />
-        <div className="absolute top-2/3 left-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '3s'}} />
-        <div className="absolute inset-0 bg-[url('/patterns/crosshair-grid.svg')] opacity-5 animate-slow-spin" />
-        
-        {/* Animated Particles */}
-        <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-yellow-400/30 rounded-full animate-float"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${3 + Math.random() * 4}s`
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
       <Header />
-      <main className="pt-20">
-        <div className="container py-8">
-          {/* Enhanced Animated Header */}
-          <div className="text-center mb-12">
-            <div className={`inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-400/20 to-red-400/20 border border-yellow-400/30 rounded-full text-yellow-400 text-sm font-medium mb-6 backdrop-blur-sm transition-all duration-1000 ${
-              isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
-            }`}>
-              🎯 Professional Crosshair Builder
-              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-ping ml-2" />
+      
+      {/* Hero Section */}
+      <section className="pt-32 pb-16 px-4">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="inline-flex items-center space-x-2 bg-yellow-500/10 border border-yellow-500/20 rounded-full px-4 py-2 mb-6">
+            <Star size={16} className="text-yellow-400" />
+            <span className="text-yellow-400 text-sm font-medium">Community Database</span>
+          </div>
+          
+          <h1 className="text-4xl md:text-6xl font-heading font-bold text-white mb-6">
+            Valorant <span className="text-yellow-400">Crosshairs</span>
+          </h1>
+          
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
+            Discover and share the best Valorant crosshairs from pro players and the community. 
+            Copy codes instantly and improve your aim today.
+          </p>
+
+          {/* Create Button */}
+          <Link
+            href="/crosshairs/builder"
+            className="inline-flex items-center space-x-2 bg-gradient-to-r from-yellow-500 to-red-500 hover:from-yellow-600 hover:to-red-600 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg"
+          >
+            <Plus size={20} />
+            <span>Create Your Own Crosshair</span>
+          </Link>
+        </div>
+      </section>
+
+      {/* Search and Filters */}
+      <section className="px-4 pb-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="glass rounded-2xl border border-white/10 p-6 mb-8">
+            <div className="flex flex-col lg:flex-row gap-4 items-center">
+              {/* Search Bar */}
+              <div className="relative flex-1 max-w-md">
+                <Search size={20} className="absolute left-3 top-3 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search crosshairs, players, or tags..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500 transition-colors"
+                />
+              </div>
+
+              {/* Category Filter */}
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                      selectedCategory === category
+                        ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/25'
+                        : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+
+              {/* Sort Options */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-yellow-500 transition-colors"
+              >
+                <option value="popular">Most Popular</option>
+                <option value="downloads">Most Downloads</option>
+                <option value="newest">Newest</option>
+                <option value="az">A-Z</option>
+              </select>
             </div>
-            
-            <h1 className={`font-heading font-black text-5xl md:text-7xl mb-6 leading-tight transition-all duration-1000 delay-200 ${
-              isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
-            }`}>
-              <span className="text-white">Perfect Your</span>{' '}
-              <span className="bg-gradient-to-r from-yellow-400 via-red-400 to-orange-400 bg-clip-text text-transparent animate-gradient-x">
-                Crosshair
-              </span>
-            </h1>
-            
-            <p className={`text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-8 leading-relaxed transition-all duration-1000 delay-400 ${
-              isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
-            }`}>
-              Create tournament-ready crosshairs with pixel-perfect accuracy. 
-              Featuring pro player presets, real-time preview, and instant Valorant codes.
+          </div>
+
+          {/* Results Count */}
+          <div className="mb-6">
+            <p className="text-gray-400">
+              {loading ? 'Loading...' : `${filteredCrosshairs.length} crosshairs found`}
             </p>
-            
-            {/* Enhanced Animated Stats */}
-            <div className={`flex justify-center gap-8 flex-wrap mb-8 transition-all duration-1000 delay-600 ${
-              isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
-            }`}>
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  className={`flex items-center gap-3 px-4 py-2 rounded-xl backdrop-blur-sm transition-all duration-500 hover:scale-110 cursor-pointer ${
-                    activeFeature === index 
-                      ? `bg-${feature.color}-500/20 border border-${feature.color}-500/40 shadow-lg shadow-${feature.color}-500/20 scale-105` 
-                      : `bg-${feature.color}-500/10 border border-${feature.color}-500/20`
-                  }`}
-                  style={{
-                    animationDelay: `${index * 200}ms`
-                  }}
-                >
-                  <div className={`w-3 h-3 bg-${feature.color}-400 rounded-full ${
-                    activeFeature === index ? 'animate-ping' : 'animate-pulse'
-                  }`}></div>
-                  <span className={`text-${feature.color}-400 font-semibold transition-all duration-300 ${
-                    activeFeature === index ? 'text-white' : ''
-                  }`}>{feature.label}</span>
-                  <span className="text-lg">{feature.icon}</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Crosshairs Grid */}
+      <section className="px-4 pb-20">
+        <div className="max-w-7xl mx-auto">
+          {loading ? (
+            <div className="text-center py-20">
+              <div className="animate-spin w-8 h-8 border-2 border-yellow-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-gray-400">Loading crosshairs...</p>
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filteredCrosshairs.map((crosshair) => (
+                <div key={crosshair.id} className="glass rounded-2xl border border-white/10 overflow-hidden group hover:border-yellow-500/30 transition-all duration-300">
+                  {/* Crosshair Preview */}
+                  <div className="relative h-32 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                    {crosshair.isFeatured && (
+                      <div className="absolute top-2 left-2 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded-full">
+                        FEATURED
+                      </div>
+                    )}
+                    {crosshair.isNew && (
+                      <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        NEW
+                      </div>
+                    )}
+                    
+                    {/* Simple crosshair preview */}
+                    <div className="relative">
+                      {/* Center dot */}
+                      {crosshair.preview.centerDot > 0 && (
+                        <div 
+                          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full"
+                          style={{
+                            width: `${crosshair.preview.centerDot * 2}px`,
+                            height: `${crosshair.preview.centerDot * 2}px`,
+                            backgroundColor: crosshair.preview.color === 1 ? '#00ff00' : 
+                                            crosshair.preview.color === 5 ? '#ffff00' : '#ffffff',
+                            opacity: crosshair.preview.centerDotOpacity
+                          }}
+                        />
+                      )}
+                      
+                      {/* Inner lines */}
+                      {crosshair.preview.innerLines > 0 && (
+                        <>
+                          <div 
+                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                            style={{
+                              width: `${crosshair.preview.innerLines * 2}px`,
+                              height: '2px',
+                              backgroundColor: crosshair.preview.color === 1 ? '#00ff00' : 
+                                              crosshair.preview.color === 5 ? '#ffff00' : '#ffffff',
+                              opacity: crosshair.preview.innerLinesOpacity
+                            }}
+                          />
+                          <div 
+                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                            style={{
+                              width: '2px',
+                              height: `${crosshair.preview.innerLines * 2}px`,
+                              backgroundColor: crosshair.preview.color === 1 ? '#00ff00' : 
+                                              crosshair.preview.color === 5 ? '#ffff00' : '#ffffff',
+                              opacity: crosshair.preview.innerLinesOpacity
+                            }}
+                          />
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="p-4">
+                    {/* Category Badge */}
+                    <div className={`inline-flex items-center space-x-2 px-2 py-1 rounded-full text-xs font-medium border mb-3 ${getCategoryColor(crosshair.category)}`}>
+                      {getCategoryIcon(crosshair.category)}
+                      <span>{crosshair.category}</span>
+                    </div>
+
+                    {/* Name and Author */}
+                    <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-yellow-300 transition-colors duration-200">
+                      {crosshair.name}
+                    </h3>
+                    <p className="text-sm text-gray-400 mb-3">by {crosshair.author}</p>
+
+                    {/* Stats */}
+                    <div className="flex items-center space-x-4 text-xs text-gray-400 mb-3">
+                      <div className="flex items-center space-x-1">
+                        <Heart size={12} />
+                        <span>{crosshair.likes}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Download size={12} />
+                        <span>{crosshair.downloads}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Eye size={12} />
+                        <span>{crosshair.views}</span>
+                      </div>
+                    </div>
+
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {crosshair.tags.slice(0, 3).map((tag) => (
+                        <span 
+                          key={tag}
+                          className="px-2 py-1 bg-gray-800/50 text-gray-400 text-xs rounded-md"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleCopyCode(crosshair.code, crosshair.id)}
+                        className={`flex-1 flex items-center justify-center space-x-2 py-2 rounded-lg font-medium transition-all duration-200 ${
+                          copiedId === crosshair.id
+                            ? 'bg-green-500 text-white'
+                            : 'bg-yellow-500 hover:bg-yellow-600 text-black'
+                        }`}
+                      >
+                        <Copy size={14} />
+                        <span>{copiedId === crosshair.id ? 'Copied!' : 'Copy Code'}</span>
+                      </button>
+                      <button className="px-3 py-2 bg-gray-800/50 hover:bg-gray-700/50 text-gray-400 hover:text-white rounded-lg transition-colors duration-200">
+                        <Heart size={14} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
+          )}
 
-            {/* Enhanced Quick Actions */}
-            <div className={`flex justify-center gap-4 mb-12 transition-all duration-1000 delay-800 ${
-              isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
-            }`}>
-              <button className="group relative px-8 py-4 bg-gradient-to-r from-yellow-500 to-red-500 hover:from-yellow-600 hover:to-red-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400/20 shadow-lg overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                <span className="relative">Start Building</span>
-              </button>
-              <button className="group relative px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/20 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                <span className="relative">Browse Presets</span>
-              </button>
-              <a 
-                href="/community/crosshairs"
-                className="group relative px-8 py-4 bg-gradient-to-r from-purple-500/80 to-blue-500/80 hover:from-purple-600 hover:to-blue-600 backdrop-blur-sm border border-purple-400/30 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-400/20 shadow-lg overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                <span className="relative flex items-center gap-2">
-                  <span>👥</span>
-                  Community Crosshairs
-                </span>
-              </a>
+          {filteredCrosshairs.length === 0 && !loading && (
+            <div className="text-center py-20">
+              <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search size={32} className="text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">No Crosshairs Found</h3>
+              <p className="text-gray-400">Try adjusting your search criteria or browse all crosshairs.</p>
             </div>
-          </div>
-
-          {/* Enhanced Main Builder */}
-          <div className={`max-w-7xl mx-auto transition-all duration-1000 delay-1000 ${
-            isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
-          }`}>
-            <div className="relative group">
-              {/* Enhanced Decorative elements */}
-              <div className="absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-br from-yellow-400/20 to-red-400/20 rounded-full blur-xl animate-pulse" />
-              <div className="absolute -bottom-8 -right-8 w-20 h-20 bg-gradient-to-br from-purple-400/20 to-blue-400/20 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}} />
-              <div className="absolute -top-12 -right-12 w-12 h-12 bg-gradient-to-br from-cyan-400/30 to-green-400/30 rounded-full blur-lg animate-bounce" style={{animationDelay: '2s'}} />
-              <div className="absolute -bottom-12 -left-12 w-14 h-14 bg-gradient-to-br from-pink-400/25 to-purple-400/25 rounded-full blur-lg animate-bounce" style={{animationDelay: '3s'}} />
-              
-              {/* Glow effect on hover */}
-              <div className="absolute -inset-4 bg-gradient-to-r from-yellow-500/20 via-red-500/20 to-purple-500/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              
-              <div className="relative">
-                <CrosshairBuilder />
-              </div>
-            </div>
-          </div>
-
-          {/* Enhanced Animated Features Grid */}
-          <div className={`mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 transition-all duration-1000 delay-1200 ${
-            isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
-          }`}>
-            {[
-              {
-                icon: '🎯',
-                title: 'Pixel-Perfect Accuracy',
-                description: 'Every crosshair code is tested and validated to match exactly what you see in Valorant. No more guesswork - what you build is what you get in-game.',
-                badge: '100% Compatible',
-                color: 'green',
-                delay: '0ms'
-              },
-              {
-                icon: '👑',
-                title: 'Pro Player Arsenal',
-                description: 'Use the exact same crosshairs as TenZ, ScreaM, cNed, aspas, and other tournament champions. Battle-tested in professional matches.',
-                badge: '15+ Pro Presets',
-                color: 'blue',
-                delay: '200ms'
-              },
-              {
-                icon: '🌟',
-                title: 'Community Powered',
-                description: 'Share your creations with thousands of players worldwide. Discover unique styles and vote on the best community crosshairs.',
-                badge: '10K+ Shared',
-                color: 'purple',
-                delay: '400ms'
-              }
-            ].map((feature, index) => (
-              <div
-                key={index}
-                className={`group relative p-8 rounded-3xl text-center overflow-hidden backdrop-blur-sm border border-${feature.color}-500/20 hover:border-${feature.color}-400/40 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-${feature.color}-500/20`}
-                style={{
-                  background: `linear-gradient(135deg, rgba(${feature.color === 'green' ? '34, 197, 94' : feature.color === 'blue' ? '59, 130, 246' : '168, 85, 247'}, 0.1) 0%, rgba(${feature.color === 'green' ? '34, 197, 94' : feature.color === 'blue' ? '59, 130, 246' : '168, 85, 247'}, 0.05) 100%)`,
-                  animationDelay: feature.delay
-                }}
-              >
-                {/* Animated background effect */}
-                <div className={`absolute inset-0 bg-gradient-to-br from-${feature.color}-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500">
-                  <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-${feature.color}-400/20 to-transparent animate-shimmer`} />
-                </div>
-                
-                <div className="relative">
-                  <div className={`w-16 h-16 bg-gradient-to-br from-${feature.color}-500 to-${feature.color}-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
-                    <span className="text-3xl">{feature.icon}</span>
-                  </div>
-                  <h3 className={`font-heading font-bold text-xl mb-4 text-${feature.color}-400 group-hover:text-white transition-colors duration-300`}>{feature.title}</h3>
-                  <p className="text-gray-300 leading-relaxed group-hover:text-gray-100 transition-colors duration-300">
-                    {feature.description}
-                  </p>
-                  <div className={`mt-6 px-4 py-2 bg-${feature.color}-500/20 group-hover:bg-${feature.color}-500/30 rounded-full inline-block transition-all duration-300 group-hover:scale-105`}>
-                    <span className={`text-${feature.color}-400 group-hover:text-${feature.color}-300 text-sm font-semibold`}>{feature.badge}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Enhanced How to Use Section */}
-          <div className={`mt-20 transition-all duration-1000 delay-1400 ${
-            isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
-          }`}>
-            <div 
-              className="relative p-8 rounded-3xl overflow-hidden group"
-              style={{
-                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
-              }}
-            >
-              {/* Animated background pattern */}
-              <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
-                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-red-500/10 to-purple-500/10" />
-              </div>
-              
-              <div className="relative">
-                <h2 className="font-heading font-bold text-3xl mb-8 text-center text-white group-hover:text-yellow-300 transition-colors duration-300">
-                  ⚡ How to Use Your Crosshair in Valorant
-                </h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  {[
-                    { step: 1, title: 'Create', description: 'Design your crosshair using our builder with real-time preview', delay: '0ms' },
-                    { step: 2, title: 'Copy Code', description: 'Click "Share & Codes" and copy the Valorant crosshair code', delay: '100ms' },
-                    { step: 3, title: 'Open Valorant', description: 'Go to Settings → Crosshair → Import Profile Code', delay: '200ms' },
-                    { step: 4, title: 'Paste & Play', description: 'Paste the code and enjoy your new crosshair in-game!', delay: '300ms' }
-                  ].map((item, index) => (
-                    <div 
-                      key={index}
-                      className="text-center group/item hover:scale-105 transition-transform duration-300"
-                      style={{ animationDelay: item.delay }}
-                    >
-                      <div className="relative mb-4">
-                        <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full flex items-center justify-center text-black font-bold text-xl mx-auto group-hover/item:shadow-lg group-hover/item:shadow-yellow-500/30 transition-all duration-300 group-hover/item:scale-110">
-                          {item.step}
-                        </div>
-                        {/* Connecting line (except for last item) */}
-                        {index < 3 && (
-                          <div className="hidden md:block absolute top-8 left-16 w-full h-0.5 bg-gradient-to-r from-yellow-400/50 to-red-400/50 opacity-30" />
-                        )}
-                      </div>
-                      <h4 className="font-semibold mb-2 text-white group-hover/item:text-yellow-300 transition-colors duration-300">{item.title}</h4>
-                      <p className="text-sm text-gray-400 group-hover/item:text-gray-300 transition-colors duration-300">{item.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
-      </main>
+      </section>
+
       <Footer />
-      
-      <style jsx>{`
-        @keyframes gradient-x {
-          0%, 100% {
-            background-size: 200% 200%;
-            background-position: left center;
-          }
-          50% {
-            background-size: 200% 200%;
-            background-position: right center;
-          }
-        }
-
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-
-        @keyframes slow-spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-
-        @keyframes shimmer {
-          0% { transform: translateX(-100%) skewX(-12deg); }
-          100% { transform: translateX(200%) skewX(-12deg); }
-        }
-
-        @keyframes pulse-glow {
-          0%, 100% { 
-            box-shadow: 0 0 5px currentColor;
-            opacity: 1;
-          }
-          50% { 
-            box-shadow: 0 0 20px currentColor, 0 0 30px currentColor;
-            opacity: 0.8;
-          }
-        }
-
-        .animate-gradient-x {
-          animation: gradient-x 3s ease infinite;
-        }
-
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-
-        .animate-slow-spin {
-          animation: slow-spin 20s linear infinite;
-        }
-
-        .animate-shimmer {
-          animation: shimmer 1.5s infinite;
-        }
-
-        .animate-pulse-glow {
-          animation: pulse-glow 2s ease-in-out infinite;
-        }
-
-        /* Enhanced hover effects */
-        .group:hover .animate-shimmer {
-          animation-duration: 0.8s;
-        }
-
-        /* Staggered animation delays */
-        .delay-0 { animation-delay: 0ms; }
-        .delay-100 { animation-delay: 100ms; }
-        .delay-200 { animation-delay: 200ms; }
-        .delay-300 { animation-delay: 300ms; }
-        .delay-400 { animation-delay: 400ms; }
-        .delay-500 { animation-delay: 500ms; }
-        .delay-600 { animation-delay: 600ms; }
-        .delay-700 { animation-delay: 700ms; }
-        .delay-800 { animation-delay: 800ms; }
-        .delay-900 { animation-delay: 900ms; }
-        .delay-1000 { animation-delay: 1000ms; }
-        .delay-1200 { animation-delay: 1200ms; }
-        .delay-1400 { animation-delay: 1400ms; }
-      `}</style>
     </div>
   )
 }

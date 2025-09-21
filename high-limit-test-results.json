@@ -1,0 +1,134 @@
+[
+  {
+    "urlPath": "/?limit=10000",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?limit=9000",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?limit=8542",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?limit=5000",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?limit=2000",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?limit=1000",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?all=true",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?show=all",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?per_page=10000",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?count=10000",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?size=10000",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/api?limit=10000",
+    "lineupCount": 0,
+    "totalSize": 0,
+    "status": 404
+  },
+  {
+    "urlPath": "/data?all=true",
+    "lineupCount": 0,
+    "totalSize": 0,
+    "status": 404
+  },
+  {
+    "urlPath": "/export",
+    "lineupCount": 0,
+    "totalSize": 0,
+    "status": 404
+  },
+  {
+    "urlPath": "/dump",
+    "lineupCount": 0,
+    "totalSize": 0,
+    "status": 404
+  },
+  {
+    "urlPath": "/all",
+    "lineupCount": 0,
+    "totalSize": 0,
+    "status": 404
+  },
+  {
+    "urlPath": "/?format=json&limit=10000",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?output=json",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?export=json",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?no_pagination=true",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?disable_limit=true",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  },
+  {
+    "urlPath": "/?unlimited=true",
+    "lineupCount": 20,
+    "totalSize": 74113,
+    "status": 200
+  }
+]

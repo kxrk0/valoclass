@@ -407,7 +407,7 @@ export default function CommunityCrosshairsPage() {
                         <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full">
                           {crosshair.agent}
                         </span>
-                      </div>
+      </div>
 
       {/* Actions */}
                       <div className="flex gap-2 pt-2">

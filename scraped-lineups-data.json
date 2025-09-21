@@ -1,0 +1,25 @@
+{
+  "agents": [
+    "'+c+'"
+  ],
+  "agentAbilities": {
+    "'+c+'": []
+  },
+  "maps": [
+    "all"
+  ],
+  "lineupTypes": [],
+  "sides": [
+    "All",
+    "Defense",
+    "Attack"
+  ],
+  "callouts": [],
+  "lineups": [],
+  "metadata": {
+    "scrapedAt": "2025-09-20T19:50:13.164Z",
+    "totalAgents": 1,
+    "totalMaps": 1,
+    "totalLineups": 0
+  }
+}

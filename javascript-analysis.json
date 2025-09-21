@@ -1,0 +1,41 @@
+{
+  "index.html": {
+    "endpoints": [
+      "id",
+      "setup",
+      "map",
+      "start",
+      "end",
+      "agent",
+      "id",
+      "setup",
+      "source"
+    ]
+  },
+  "index.html@agent=Sova.html": {
+    "endpoints": [
+      "id",
+      "setup",
+      "map",
+      "start",
+      "end",
+      "agent",
+      "id",
+      "setup",
+      "source"
+    ]
+  },
+  "index.html@map=Bind.html": {
+    "endpoints": [
+      "id",
+      "setup",
+      "map",
+      "start",
+      "end",
+      "agent",
+      "id",
+      "setup",
+      "source"
+    ]
+  }
+}

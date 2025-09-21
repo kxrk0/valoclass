@@ -1,11 +1,14 @@
 'use client'
 
 import { TrendingUp, Users, Target, Crosshair, MessageCircle, Calendar } from 'lucide-react'
+import { useTranslation } from '@/contexts/LanguageContext'
 
 const CommunityStats = () => {
+  const t = useTranslation()
+  
   const stats = [
     {
-      label: 'Total Members',
+      label: t.community.stats.labels.totalMembers,
       value: '25,847',
       change: '+1,234',
       changeType: 'increase',
@@ -13,7 +16,7 @@ const CommunityStats = () => {
       color: 'text-blue-400'
     },
     {
-      label: 'Active Today',
+      label: t.community.stats.labels.activeToday,
       value: '3,456',
       change: '+234',
       changeType: 'increase',
@@ -21,7 +24,7 @@ const CommunityStats = () => {
       color: 'text-green-400'
     },
     {
-      label: 'Lineups Shared',
+      label: t.community.stats.labels.lineupsShared,
       value: '5,234',
       change: '+89',
       changeType: 'increase',
@@ -29,7 +32,7 @@ const CommunityStats = () => {
       color: 'text-red-400'
     },
     {
-      label: 'Crosshairs Created',
+      label: t.community.stats.labels.crosshairsCreated,
       value: '12,567',
       change: '+156',
       changeType: 'increase',
@@ -83,7 +86,7 @@ const CommunityStats = () => {
       <div className="card">
         <div className="flex items-center gap-3 mb-6">
           <TrendingUp className="text-green-400" size={24} />
-          <h2 className="font-heading font-bold text-xl">Community Stats</h2>
+          <h2 className="font-heading font-bold text-xl">{t.community.stats.title}</h2>
         </div>
 
         <div className="space-y-4">
@@ -99,7 +102,7 @@ const CommunityStats = () => {
                 </div>
                 <div className="text-right">
                   <div className="font-semibold">{stat.value}</div>
-                  <div className="text-xs text-green-400">{stat.change} this week</div>
+                  <div className="text-xs text-green-400">{stat.change} {t.community.stats.thisWeek}</div>
                 </div>
               </div>
             )
@@ -109,7 +112,7 @@ const CommunityStats = () => {
 
       {/* Weekly Activity Chart */}
       <div className="card">
-        <h3 className="font-semibold text-lg mb-4">Weekly Activity</h3>
+        <h3 className="font-semibold text-lg mb-4">{t.community.stats.weeklyActivity}</h3>
         <div className="space-y-3">
           {weeklyActivity.map((day) => (
             <div key={day.day} className="flex items-center gap-3">
@@ -157,7 +160,7 @@ const CommunityStats = () => {
 
       {/* Top Countries */}
       <div className="card">
-        <h3 className="font-semibold text-lg mb-4">Members by Country</h3>
+        <h3 className="font-semibold text-lg mb-4">{t.community.stats.membersByCountry}</h3>
         <div className="space-y-3">
           {topCountries.map((country, index) => (
             <div key={country.country} className="flex items-center gap-3">
@@ -186,7 +189,7 @@ const CommunityStats = () => {
       <div className="card">
         <div className="flex items-center gap-3 mb-4">
           <Calendar className="text-purple-400" size={20} />
-          <h3 className="font-semibold text-lg">Recent Milestones</h3>
+          <h3 className="font-semibold text-lg">{t.community.stats.recentMilestones}</h3>
         </div>
         
         <div className="space-y-3">
@@ -211,12 +214,12 @@ const CommunityStats = () => {
       <div className="card bg-gradient-to-r from-purple-900/20 to-pink-900/20 border-purple-500/20">
         <div className="text-center">
           <MessageCircle className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-          <h3 className="font-semibold text-lg mb-2">Join the Discussion</h3>
+          <h3 className="font-semibold text-lg mb-2">{t.community.joinDiscord.title}</h3>
           <p className="text-gray-400 text-sm mb-4">
-            Connect with players, share your strategies, and learn from the community.
+            {t.community.joinDiscord.description}
           </p>
           <button className="btn btn-primary w-full">
-            Join Discord
+            {t.community.joinDiscord.button}
           </button>
         </div>
       </div>
