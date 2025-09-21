@@ -32,36 +32,41 @@ function createTestPayload(authorName = 'TestUser') {
     userEmoji = CUSTOM_EMOJIS.o_special;
   }
 
-  const description = `**Repository:** \`valoclass\`\\n**Branch:** \`main\`\\n**Developer:** ${userEmoji}`;
+  const description = `**Proje:** \`valoclass\`
+**Dal:** \`main\`
+**Geliştirici:** ${userEmoji}`;
   
-  const summary = `📊 **3** commits pushed\\n📁 **8** files modified\\n➕ **47** lines added • ➖ **12** lines removed\\n🏗️ Total repository commits: **156**`;
+  const summary = `📊 **3** commit gönderildi
+📁 **8** dosya değiştirildi
+➕ **47** satır eklendi • ➖ **12** satır silindi
+🏗️ Toplam proje commit sayısı: **156**`;
 
   return {
-    username: "ValoClass Development",
+    username: "PLAYVALORANTGUIDES.COM",
     avatar_url: "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg",
     embeds: [{
-      title: `${CUSTOM_EMOJIS.uzi} ValoClass Development Update`,
+      title: `${CUSTOM_EMOJIS.uzi} PLAYVALORANTGUIDES.COM - Geliştirme Güncellemesi`,
       description: description,
       color: 3066993,
       fields: [
         {
-          name: "📊 Development Statistics",
+          name: "📊 Geliştirme İstatistikleri",
           value: summary,
           inline: false
         },
         {
-          name: `${CUSTOM_EMOJIS.crown} Repository Health`,
-          value: "🟢 **Build Status:** Passing\\n🔒 **Security:** All checks passed\\n⚡ **Performance:** Optimized\\n🧪 **Test Coverage:** Active monitoring",
-          inline: true
+          name: `${CUSTOM_EMOJIS.crown} Proje Sağlığı`,
+          value: "🟢 **Yapı Durumu:** Başarılı\n🔒 **Güvenlik:** Tüm kontroller geçti\n⚡ **Performans:** Optimize edildi\n🧪 **Test Kapsamı:** Aktif izleme",
+          inline: false
         },
         {
-          name: "🚀 Recent Activity",
-          value: "💾 Database optimizations\\n🎨 UI/UX improvements\\n🔧 Backend enhancements\\n📱 Mobile responsiveness",
-          inline: true
+          name: "🚀 Son Aktiviteler",
+          value: "💾 Veritabanı optimizasyonları\n🎨 UI/UX iyileştirmeleri\n🔧 Backend geliştirmeleri\n📱 Mobil uyumluluk çalışmaları",
+          inline: false
         }
       ],
       footer: {
-        text: "ValoClass • Professional Valorant Guides Platform",
+        text: "PLAYVALORANTGUIDES.COM • Profesyonel Valorant Rehber Platformu",
         icon_url: "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg"
       },
       timestamp: new Date().toISOString(),

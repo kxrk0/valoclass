@@ -1,0 +1,39 @@
+{
+  "username": "PLAYVALORANTGUIDES.COM",
+  "avatar_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg",
+  "embeds": [
+    {
+      "title": "<a:uzi:1419286915194290326> PLAYVALORANTGUIDES.COM - Geliştirme Güncellemesi",
+      "description": "**Proje:** `valoclass`\n**Dal:** `main`\n**Geliştirici:** <a:ogi:1419286667965108327>",
+      "color": 3066993,
+      "fields": [
+        {
+          "name": "📊 Geliştirme İstatistikleri",
+          "value": "📊 **3** commit gönderildi\n📁 **8** dosya değiştirildi\n➕ **47** satır eklendi • ➖ **12** satır silindi\n🏗️ Toplam proje commit sayısı: **156**",
+          "inline": false
+        },
+        {
+          "name": "<a:crown:1419286909389377576> Proje Sağlığı",
+          "value": "🟢 **Yapı Durumu:** Başarılı\n🔒 **Güvenlik:** Tüm kontroller geçti\n⚡ **Performans:** Optimize edildi\n🧪 **Test Kapsamı:** Aktif izleme",
+          "inline": false
+        },
+        {
+          "name": "🚀 Son Aktiviteler",
+          "value": "💾 Veritabanı optimizasyonları\n🎨 UI/UX iyileştirmeleri\n🔧 Backend geliştirmeleri\n📱 Mobil uyumluluk çalışmaları",
+          "inline": false
+        }
+      ],
+      "footer": {
+        "text": "PLAYVALORANTGUIDES.COM • Profesyonel Valorant Rehber Platformu",
+        "icon_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg"
+      },
+      "timestamp": "2025-09-21T12:12:26.231Z",
+      "thumbnail": {
+        "url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Github-Dark.svg"
+      },
+      "image": {
+        "url": "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGdwcWR1dWhkczR0eHI3dDNreGI3dTUwYnV0ZGduZXo2YWo2dzE4ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L1R1tvI9svkIWwpVYr/giphy.gif"
+      }
+    }
+  ]
+}

@@ -120,12 +120,12 @@ jobs:
           USER_EMOJI="${O_EMOJI}"
         fi
         
-        # Clean update type
-        UPDATE_TYPE="${UZI_EMOJI} ValoClass Development Update"
+        # Turkish update type with site name
+        UPDATE_TYPE="${UZI_EMOJI} PLAYVALORANTGUIDES.COM - Geliştirme Güncellemesi"
         COLOR=3447003  # Varsayılan mavi
         
         if [ "${{ github.event_name }}" = "pull_request" ]; then
-          UPDATE_TYPE="${UZI_EMOJI} Pull Request Merged: ${{ steps.generate-log.outputs.PR_TITLE }}"
+          UPDATE_TYPE="${UZI_EMOJI} PLAYVALORANTGUIDES.COM - Pull Request Birleştirildi: ${{ steps.generate-log.outputs.PR_TITLE }}"
           COLOR=7419530  # PR'lar için mor
         fi
         
@@ -138,16 +138,21 @@ jobs:
           COLOR=15158332  # Red for hotfixes
         fi
         
-        # Clean and comprehensive description
-        DESCRIPTION="**Repository:** \`${{ steps.generate-log.outputs.REPOSITORY }}\`\\n**Branch:** \`${{ steps.generate-log.outputs.BRANCH_NAME }}\`\\n**Developer:** ${USER_EMOJI}"
+        # Turkish description with proper formatting
+        DESCRIPTION="**Proje:** \`${{ steps.generate-log.outputs.REPOSITORY }}\`
+**Dal:** \`${{ steps.generate-log.outputs.BRANCH_NAME }}\`
+**Geliştirici:** ${USER_EMOJI}"
         
-        # Comprehensive summary with detailed metrics
-        SUMMARY_VALUE="📊 **${COMMIT_COUNT}** commits pushed\\n📁 **${{ steps.generate-log.outputs.FILES_CHANGED }}** files modified\\n➕ **${{ steps.generate-log.outputs.LINES_ADDED }}** lines added • ➖ **${{ steps.generate-log.outputs.LINES_DELETED }}** lines removed\\n🏗️ Total repository commits: **${{ steps.generate-log.outputs.TOTAL_COMMITS }}**"
+        # Turkish summary with detailed metrics - proper newlines
+        SUMMARY_VALUE="📊 **${COMMIT_COUNT}** commit gönderildi
+📁 **${{ steps.generate-log.outputs.FILES_CHANGED }}** dosya değiştirildi
+➕ **${{ steps.generate-log.outputs.LINES_ADDED }}** satır eklendi • ➖ **${{ steps.generate-log.outputs.LINES_DELETED }}** satır silindi
+🏗️ Toplam proje commit sayısı: **${{ steps.generate-log.outputs.TOTAL_COMMITS }}**"
         
         # Get current timestamp
         TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
         
-        # Create comprehensive Discord payload with detailed information
+        # Create Turkish Discord payload with proper formatting
         jq -n --arg title "$UPDATE_TYPE" \
               --arg description "$DESCRIPTION" \
               --argjson color $COLOR \
@@ -156,7 +161,7 @@ jobs:
               --arg crown_emoji "$CROWN_EMOJI" \
               --arg commits_json "$COMMITS_JSON" \
               '{
-                "username": "ValoClass Development",
+                "username": "PLAYVALORANTGUIDES.COM",
                 "avatar_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg",
                 "embeds": [{
                   "title": $title,
@@ -164,23 +169,23 @@ jobs:
                   "color": $color,
                   "fields": [
                     {
-                      "name": "📊 Development Statistics",
+                      "name": "📊 Geliştirme İstatistikleri",
                       "value": $summary,
                       "inline": false
                     },
                     {
-                      "name": ($crown_emoji + " Repository Health"),
-                      "value": "🟢 **Build Status:** Passing\\n🔒 **Security:** All checks passed\\n⚡ **Performance:** Optimized\\n🧪 **Test Coverage:** Active monitoring",
-                      "inline": true
+                      "name": ($crown_emoji + " Proje Sağlığı"),
+                      "value": "🟢 **Yapı Durumu:** Başarılı\n🔒 **Güvenlik:** Tüm kontroller geçti\n⚡ **Performans:** Optimize edildi\n🧪 **Test Kapsamı:** Aktif izleme",
+                      "inline": false
                     },
                     {
-                      "name": "🚀 Recent Activity",
-                      "value": "💾 Database optimizations\\n🎨 UI/UX improvements\\n🔧 Backend enhancements\\n📱 Mobile responsiveness",
-                      "inline": true
+                      "name": "🚀 Son Aktiviteler",
+                      "value": "💾 Veritabanı optimizasyonları\n🎨 UI/UX iyileştirmeleri\n🔧 Backend geliştirmeleri\n📱 Mobil uyumluluk çalışmaları",
+                      "inline": false
                     }
                   ],
                   "footer": {
-                    "text": "ValoClass • Professional Valorant Guides Platform",
+                    "text": "PLAYVALORANTGUIDES.COM • Profesyonel Valorant Rehber Platformu",
                     "icon_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg"
                   },
                   "timestamp": $timestamp,
