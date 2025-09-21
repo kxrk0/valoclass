@@ -139,15 +139,10 @@ jobs:
         fi
         
         # Turkish description with proper formatting
-        DESCRIPTION="**Proje:** \`${{ steps.generate-log.outputs.REPOSITORY }}\`
-**Dal:** \`${{ steps.generate-log.outputs.BRANCH_NAME }}\`
-**Geliştirici:** ${USER_EMOJI}"
+        DESCRIPTION="**Proje:** \`${{ steps.generate-log.outputs.REPOSITORY }}\`\\n**Dal:** \`${{ steps.generate-log.outputs.BRANCH_NAME }}\`\\n**Geliştirici:** ${USER_EMOJI}"
         
         # Turkish summary with detailed metrics - proper newlines
-        SUMMARY_VALUE="📊 **${COMMIT_COUNT}** commit gönderildi
-📁 **${{ steps.generate-log.outputs.FILES_CHANGED }}** dosya değiştirildi
-➕ **${{ steps.generate-log.outputs.LINES_ADDED }}** satır eklendi • ➖ **${{ steps.generate-log.outputs.LINES_DELETED }}** satır silindi
-🏗️ Toplam proje commit sayısı: **${{ steps.generate-log.outputs.TOTAL_COMMITS }}**"
+        SUMMARY_VALUE="📊 **${COMMIT_COUNT}** commit gönderildi\\n📁 **${{ steps.generate-log.outputs.FILES_CHANGED }}** dosya değiştirildi\\n➕ **${{ steps.generate-log.outputs.LINES_ADDED }}** satır eklendi • ➖ **${{ steps.generate-log.outputs.LINES_DELETED }}** satır silindi\\n🏗️ Toplam proje commit sayısı: **${{ steps.generate-log.outputs.TOTAL_COMMITS }}**"
         
         # Get current timestamp
         TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
