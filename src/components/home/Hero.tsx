@@ -56,10 +56,10 @@ const Hero = () => {
         <div className="particle" style={{ left: '87.4%', top: '56.2%', animationDelay: '5.7s' }}></div>
         <div className="particle" style={{ left: '32.9%', top: '89.6%', animationDelay: '14.1s' }}></div>
       </div>
-
+      
       <div className="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[85vh] items-center justify-center">
-          <div className="flex flex-col justify-center items-center text-center py-12 lg:py-0">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-screen">
+          <div className="lg:col-span-8 flex flex-col justify-center py-16 lg:py-0">
             <div className="hero-title transition-all duration-1000 opacity-100 transform translate-y-0">
               <span className="title-line primary">Master</span>
               <span className="title-line gradient">Valorant</span>
@@ -122,24 +122,24 @@ const Hero = () => {
               </div>
             </div>
           </div>
-          <div className="relative flex items-center justify-center">
+          <div className="lg:col-span-4 relative flex items-center justify-center">
             <div className="relative">
               <div className="grid grid-cols-1 gap-6">
-                <div className="group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer opacity-100 transform translate-y-0 transition-all duration-1000 delay-1000" style={{background: 'rgba(255, 70, 84, 0.1)', border: '1px solid rgba(255, 70, 84, 0.2)', boxShadow: 'rgba(255, 70, 84, 0.1) 0px 8px 32px'}}>
-                  <div className="inline-flex p-3 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" style={{background: 'rgba(255, 70, 84, 0.2)'}}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-target" style={{color: 'rgb(255, 70, 84)'}}>
+                <div className="group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer opacity-100 transform translate-y-0 transition-all duration-1000 delay-1000" style={{ background: 'rgba(255, 70, 84, 0.1)', border: '1px solid rgba(255, 70, 84, 0.2)', boxShadow: 'rgba(255, 70, 84, 0.1) 0px 8px 32px' }}>
+                  <div className="inline-flex p-3 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" style={{ background: 'rgba(255, 70, 84, 0.2)' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-target" style={{ color: 'rgb(255, 70, 84)' }}>
                       <circle cx="12" cy="12" r="10"></circle>
                       <circle cx="12" cy="12" r="6"></circle>
                       <circle cx="12" cy="12" r="2"></circle>
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-red-300 transition-colors" style={{color: 'var(--text-main)'}}>Pro Lineups</h3>
-                  <p className="text-sm leading-relaxed" style={{color: 'var(--text-muted)'}}>Learn and apply smoke, flash and molotov lineups from professional players.</p>
+                  <h3 className="text-lg font-semibold mb-2 group-hover:text-red-300 transition-colors" style={{ color: 'var(--text-main)' }}>Pro Lineups</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>Learn and apply smoke, flash and molotov lineups from professional players.</p>
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 </div>
-                <div className="group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer opacity-100 transform translate-y-0 transition-all duration-1000 delay-1200" style={{background: 'rgba(0, 212, 255, 0.1)', border: '1px solid rgba(0, 212, 255, 0.2)', boxShadow: 'rgba(0, 212, 255, 0.1) 0px 8px 32px'}}>
-                  <div className="inline-flex p-3 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" style={{background: 'rgba(0, 212, 255, 0.2)'}}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-crosshair" style={{color: 'rgb(0, 212, 255)'}}>
+                <div className="group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer opacity-100 transform translate-y-0 transition-all duration-1000 delay-1200" style={{ background: 'rgba(0, 212, 255, 0.1)', border: '1px solid rgba(0, 212, 255, 0.2)', boxShadow: 'rgba(0, 212, 255, 0.1) 0px 8px 32px' }}>
+                  <div className="inline-flex p-3 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" style={{ background: 'rgba(0, 212, 255, 0.2)' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-crosshair" style={{ color: 'rgb(0, 212, 255)' }}>
                       <circle cx="12" cy="12" r="10"></circle>
                       <line x1="22" x2="18" y1="12" y2="12"></line>
                       <line x1="6" x2="2" y1="12" y2="12"></line>
@@ -147,26 +147,26 @@ const Hero = () => {
                       <line x1="12" x2="12" y1="22" y2="18"></line>
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-cyan-300 transition-colors" style={{color: 'var(--text-main)'}}>Crosshair Editor</h3>
-                  <p className="text-sm leading-relaxed" style={{color: 'var(--text-muted)'}}>Create the perfect crosshair with advanced customization tools.</p>
+                  <h3 className="text-lg font-semibold mb-2 group-hover:text-cyan-300 transition-colors" style={{ color: 'var(--text-main)' }}>Crosshair Editor</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>Create the perfect crosshair with advanced customization tools.</p>
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 </div>
-                <div className="group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer opacity-100 transform translate-y-0 transition-all duration-1000 delay-1400" style={{background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.2)', boxShadow: 'rgba(168, 85, 247, 0.1) 0px 8px 32px'}}>
-                  <div className="inline-flex p-3 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" style={{background: 'rgba(168, 85, 247, 0.2)'}}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trending-up" style={{color: 'rgb(168, 85, 247)'}}>
+                <div className="group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer opacity-100 transform translate-y-0 transition-all duration-1000 delay-1400" style={{ background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.2)', boxShadow: 'rgba(168, 85, 247, 0.1) 0px 8px 32px' }}>
+                  <div className="inline-flex p-3 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" style={{ background: 'rgba(168, 85, 247, 0.2)' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trending-up" style={{ color: 'rgb(168, 85, 247)' }}>
                       <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
                       <polyline points="16 7 22 7 22 13"></polyline>
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2 group-hover:text-purple-300 transition-colors" style={{color: 'var(--text-main)'}}>Live Statistics</h3>
-                  <p className="text-sm leading-relaxed" style={{color: 'var(--text-muted)'}}>Track your progress and compare with other players.</p>
+                  <h3 className="text-lg font-semibold mb-2 group-hover:text-purple-300 transition-colors" style={{ color: 'var(--text-main)' }}>Live Statistics</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>Track your progress and compare with other players.</p>
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 </div>
               </div>
               <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-r from-red-500/30 to-purple-500/30 rounded-full blur-2xl animate-pulse opacity-100 scale-100 transition-all duration-1000 delay-1600"></div>
-              <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-r from-cyan-500/20 to-yellow-500/20 rounded-full blur-3xl animate-pulse opacity-100 scale-100 transition-all duration-1000 delay-1800" style={{animationDelay: '1s'}}></div>
-              <div className="absolute -top-4 left-1/3 w-16 h-16 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full blur-xl animate-pulse opacity-100 scale-100 transition-all duration-1000 delay-2000" style={{animationDelay: '2s'}}></div>
-              <div className="absolute top-1/2 -right-4 w-12 h-12 bg-gradient-to-r from-pink-500/25 to-rose-500/20 rounded-full blur-lg animate-pulse opacity-100 scale-100 transition-all duration-1000 delay-2200" style={{animationDelay: '2.5s'}}></div>
+              <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-r from-cyan-500/20 to-yellow-500/20 rounded-full blur-3xl animate-pulse opacity-100 scale-100 transition-all duration-1000 delay-1800" style={{ animationDelay: '1s' }}></div>
+              <div className="absolute -top-4 left-1/3 w-16 h-16 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full blur-xl animate-pulse opacity-100 scale-100 transition-all duration-1000 delay-2000" style={{ animationDelay: '2s' }}></div>
+              <div className="absolute top-1/2 -right-4 w-12 h-12 bg-gradient-to-r from-pink-500/25 to-rose-500/20 rounded-full blur-lg animate-pulse opacity-100 scale-100 transition-all duration-1000 delay-2200" style={{ animationDelay: '2.5s' }}></div>
             </div>
           </div>
         </div>
