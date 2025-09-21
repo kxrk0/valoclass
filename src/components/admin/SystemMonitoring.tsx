@@ -209,7 +209,7 @@ const SystemMonitoring: React.FC = () => {
   };
 
   const MetricCard = ({ title, value, subtitle, icon: Icon, color, progress, status }: any) => (
-    <div className="bg-gradient-to-br from-[#242738] to-[#2A2D47] p-6 rounded-xl border border-gray-600/50 hover:border-gray-500/50 transition-all duration-300 group">
+    <div className="bg-gradient-to-br from-white/5 via-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-2xl shadow-lg p-6 hover:border-white/20 transition-all duration-300 group">
       <div className="flex items-center justify-between mb-4">
         <div className={`w-12 h-12 ${color} rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
           <Icon size={24} className="text-white" />
@@ -332,7 +332,7 @@ const SystemMonitoring: React.FC = () => {
       {/* Services Status & Database Health */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Services Status */}
-        <div className="bg-gradient-to-br from-[#242738] to-[#2A2D47] p-6 rounded-xl border border-gray-600/50">
+        <div className="bg-gradient-to-br from-white/5 via-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-2xl shadow-lg p-6">
           <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
             <Activity size={20} />
             Services Status
@@ -374,7 +374,7 @@ const SystemMonitoring: React.FC = () => {
         </div>
 
         {/* Database Health */}
-        <div className="bg-gradient-to-br from-[#242738] to-[#2A2D47] p-6 rounded-xl border border-gray-600/50">
+        <div className="bg-gradient-to-br from-white/5 via-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-2xl shadow-lg p-6">
           <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
             <Database size={20} />
             Database Health
@@ -415,7 +415,7 @@ const SystemMonitoring: React.FC = () => {
       {/* Network & Security */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Network Stats */}
-        <div className="bg-gradient-to-br from-[#242738] to-[#2A2D47] p-6 rounded-xl border border-gray-600/50">
+        <div className="bg-gradient-to-br from-white/5 via-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-2xl shadow-lg p-6">
           <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
             <Wifi size={20} />
             Network Activity
@@ -457,7 +457,7 @@ const SystemMonitoring: React.FC = () => {
         </div>
 
         {/* Security Status */}
-        <div className="bg-gradient-to-br from-[#242738] to-[#2A2D47] p-6 rounded-xl border border-gray-600/50">
+        <div className="bg-gradient-to-br from-white/5 via-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-2xl shadow-lg p-6">
           <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
             <Shield size={20} />
             Security Status
@@ -501,7 +501,7 @@ const SystemMonitoring: React.FC = () => {
       </div>
 
       {/* System Load Chart */}
-      <div className="bg-gradient-to-br from-[#242738] to-[#2A2D47] p-6 rounded-xl border border-gray-600/50">
+      <div className="bg-gradient-to-br from-white/5 via-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-2xl shadow-lg p-6">
         <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
           <Monitor size={20} />
           System Load Average
@@ -524,7 +524,7 @@ const SystemMonitoring: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-gradient-to-br from-[#242738] to-[#2A2D47] p-6 rounded-xl border border-gray-600/50">
+      <div className="bg-gradient-to-br from-white/5 via-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-2xl shadow-lg p-6">
         <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
           <Zap size={20} />
           System Actions

@@ -1,4 +1,5 @@
-import { Metadata } from 'next'
+'use client'
+
 import AdminLayout from '@/components/admin/AdminLayout'
 import { 
   Crosshair, 
@@ -20,12 +21,6 @@ import {
   Trash2
 } from 'lucide-react'
 import * as React from 'react'
-
-export const metadata: Metadata = {
-  title: 'Crosshairs Management - Admin Dashboard',
-  description: 'Manage community crosshairs and featured content',
-  robots: { index: false, follow: false }
-}
 
 function CrosshairsManagement() {
   const [searchQuery, setSearchQuery] = React.useState('')
@@ -204,14 +199,14 @@ function CrosshairsManagement() {
               placeholder="Search crosshairs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+              className="w-full bg-gray-800/50 text-white pl-10 pr-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
             />
           </div>
 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+            className="bg-gray-800/50 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
           >
             <option value="all">All Status</option>
             <option value="approved">Approved</option>
@@ -222,7 +217,7 @@ function CrosshairsManagement() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+            className="bg-gray-800/50 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
@@ -230,7 +225,7 @@ function CrosshairsManagement() {
             <option value="downloads">Most Downloads</option>
           </select>
 
-          <button className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg border border-gray-600 flex items-center gap-2">
+          <button className="bg-gray-800/50 hover:bg-gray-600 text-white px-4 py-2 rounded-lg border border-gray-600 flex items-center gap-2">
             <Filter size={16} />
             More Filters
           </button>
@@ -259,7 +254,7 @@ function CrosshairsManagement() {
               {filteredCrosshairs.map((crosshair) => {
                 const StatusIcon = getStatusIcon(crosshair.status)
                 return (
-                  <tr key={crosshair.id} className="hover:bg-gray-700/20">
+                  <tr key={crosshair.id} className="hover:bg-gray-800/50/20">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
@@ -321,7 +316,7 @@ function CrosshairsManagement() {
                         <button className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all duration-200">
                           <Trash2 size={16} />
                         </button>
-                        <button className="p-2 text-gray-400 hover:text-gray-300 hover:bg-gray-700/50 rounded-lg transition-all duration-200">
+                        <button className="p-2 text-gray-400 hover:text-gray-300 hover:bg-gray-800/50/50 rounded-lg transition-all duration-200">
                           <MoreHorizontal size={16} />
                         </button>
                       </div>
