@@ -322,17 +322,44 @@ router.get('/google/callback', async (req: Request, res: Response) => {
     }
 
     const userInfo = await userInfoResponse.json();
+    
+    // Check if user is in admin whitelist
+    const adminUIDs = process.env.ADMIN_GOOGLE_UIDS ? process.env.ADMIN_GOOGLE_UIDS.split(',').map(uid => uid.trim()) : [];
+    const userGoogleId = userInfo.id?.toString().trim();
+    const isAuthorizedAdmin = adminUIDs.includes(userGoogleId);
+    
     console.log(`[${requestId}] User info retrieved:`, {
       id: userInfo.id,
       email: userInfo.email,
       name: userInfo.name,
-      hasProfile: !!userInfo
+      hasProfile: !!userInfo,
+      isAuthorizedAdmin,
+      adminUIDs: adminUIDs,
+      adminUIDsCount: adminUIDs.length,
+      rawUserInfo: userInfo
+    });
+    
+    console.log(`[${requestId}] UID DEBUG:`, {
+      'Google OAuth ID': userGoogleId,
+      'Google ID Type': typeof userInfo.id,
+      'Google ID Length': userGoogleId?.length,
+      'Admin UIDs Array': adminUIDs,
+      'Admin UIDs Types': adminUIDs.map(uid => typeof uid),
+      'Admin UIDs Lengths': adminUIDs.map(uid => uid.length),
+      'Is ID in array?': adminUIDs.includes(userGoogleId),
+      'Manual check matches': adminUIDs.map(uid => uid === userGoogleId),
+      'Match found?': isAuthorizedAdmin,
+      'Admin flow?': isAdminFlow,
+      'Should be admin?': isAdminFlow || isAuthorizedAdmin
     });
 
-    // Save user to Prisma database
+    // Enhanced user creation and session management
+    let dbUser;
+    let jwtToken = null;
+    let sessionRecord = null;
+    
     try {
       // Create or update user in Prisma database
-      let dbUser;
       try {
         dbUser = await prisma.user.upsert({
           where: { email: userInfo.email },
@@ -340,6 +367,7 @@ router.get('/google/callback', async (req: Request, res: Response) => {
           update: {
             username: userInfo.name || userInfo.email.split('@')[0],
             avatar: userInfo.picture,
+            role: (isAdminFlow || isAuthorizedAdmin) ? 'ADMIN' : undefined, // Update role only if admin
             isVerified: true, // Google OAuth users are automatically verified
             lastLoginAt: new Date(),
             updatedAt: new Date()
@@ -348,7 +376,7 @@ router.get('/google/callback', async (req: Request, res: Response) => {
             email: userInfo.email,
             username: userInfo.name || userInfo.email.split('@')[0],
             avatar: userInfo.picture,
-            role: isAdminFlow ? 'ADMIN' : 'USER',
+            role: (isAdminFlow || isAuthorizedAdmin) ? 'ADMIN' : 'USER',
             isVerified: true,
             isActive: true,
             isPremium: false,
@@ -431,37 +459,178 @@ router.get('/google/callback', async (req: Request, res: Response) => {
         console.error('Database user creation error:', dbError);
       }
 
-      // Generate JWT token for session
+      // Generate JWT token and create enhanced session
+      console.log(`[${requestId}] 🔍 Checking dbUser for token generation:`, {
+        hasDbUser: !!dbUser,
+        dbUserId: dbUser?.id || 'none',
+        dbUserEmail: dbUser?.email || 'none'
+      });
+      
       if (dbUser) {
-        const jwtToken = await AuthService.generateAccessToken(dbUser as any);
-        console.log('🔑 JWT token generated for user:', dbUser.id);
+        console.log(`[${requestId}] 🔑 Generating JWT token for user:`, dbUser.id);
+        jwtToken = await AuthService.generateAccessToken(dbUser as any);
+        console.log(`[${requestId}] 🔑 JWT token generated:`, !!jwtToken);
+        
+        // Create enhanced session record
+        const deviceInfo = {
+          userAgent: req.headers['user-agent'] || 'Unknown',
+          browser: req.headers['user-agent']?.includes('Chrome') ? 'Chrome' : 'Unknown',
+          platform: req.headers['user-agent']?.includes('Windows') ? 'Windows' : 'Unknown',
+          timestamp: new Date().toISOString()
+        };
+
+        console.log(`[${requestId}] 🔑 Generating refresh token...`);
+        const refreshToken = await AuthService.generateRefreshToken(dbUser.id);
+        console.log(`[${requestId}] 🔑 Refresh token generated:`, !!refreshToken);
+        
+        console.log(`[${requestId}] 🗑️ Cleaning up existing sessions for user...`);
+        await prisma.session.deleteMany({
+          where: { 
+            userId: dbUser.id,
+            isActive: true
+          }
+        });
+        
+        console.log(`[${requestId}] 📝 Creating session record...`);
+        sessionRecord = await prisma.session.create({
+          data: {
+            userId: dbUser.id,
+            token: jwtToken,
+            refreshToken: refreshToken,
+            ipAddress: req.ip || req.connection.remoteAddress || 'Unknown',
+            userAgent: req.headers['user-agent'] || 'Unknown',
+            deviceInfo: deviceInfo,
+            loginMethod: 'oauth_google',
+            isAdminSession: isAdminFlow || isAuthorizedAdmin,
+            adminRights: (isAdminFlow || isAuthorizedAdmin) ? {
+              fullAccess: true,
+              grantedAt: new Date().toISOString(),
+              grantedBy: 'oauth_system'
+            } : null,
+            lastActivity: new Date(),
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+            isActive: true,
+            isVerified: true
+          }
+        });
+        console.log(`[${requestId}] ✅ Session record created:`, sessionRecord.id);
+
+        // Log authentication event
+        await prisma.authEvent.create({
+          data: {
+            userId: dbUser.id,
+            eventType: isAdminFlow ? 'ADMIN_LOGIN' : 'LOGIN',
+            success: true,
+            ipAddress: req.ip || req.connection.remoteAddress || 'Unknown',
+            userAgent: req.headers['user-agent'] || 'Unknown',
+            details: {
+              provider: 'google',
+              isAdminFlow,
+              isAuthorizedAdmin,
+              userInfo: {
+                name: userInfo.name,
+                email: userInfo.email,
+                picture: userInfo.picture
+              }
+            },
+            riskLevel: 'LOW'
+          }
+        });
+
+        console.log('🔑 Enhanced session created for user:', dbUser.id);
+        console.log('📊 Auth event logged:', isAdminFlow ? 'ADMIN_LOGIN' : 'LOGIN');
+      } else {
+        console.log(`[${requestId}] ❌ Cannot generate tokens - dbUser is null/undefined`);
       }
 
-      console.log(`🎉 ${isAdminFlow ? 'Admin' : 'User'} authentication complete:`, {
+      console.log(`[${requestId}] 🎉 ${isAdminFlow ? 'Admin' : 'User'} authentication complete:`, {
         database: !!dbUser,
         email: userInfo.email,
-        name: userInfo.name
+        name: userInfo.name,
+        hasToken: !!jwtToken,
+        hasSessionRecord: !!sessionRecord,
+        tokenLength: jwtToken ? jwtToken.length : 0,
+        dbUserId: dbUser?.id || 'none'
       });
 
     } catch (error) {
       console.error('User creation/update error:', error);
     }
 
-    const successUrl = isAdminFlow 
+    // Set httpOnly cookies for secure session management
+    if (jwtToken && sessionRecord) {
+      console.log(`[${requestId}] 🍪 Setting cookies - NODE_ENV:`, process.env.NODE_ENV);
+      
+      // Cookie options - simplified for localhost development
+      const cookieOptions = {
+        httpOnly: true,
+        secure: false, // Always false for localhost development
+        sameSite: 'lax' as const,
+        path: '/'
+      };
+      
+      console.log(`[${requestId}] 🍪 Cookie options:`, cookieOptions);
+      
+      // Set authentication cookie (7 days)
+      res.cookie('authToken', jwtToken, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000
+      });
+
+      // Also set access_token for middleware compatibility
+      res.cookie('access_token', jwtToken, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000
+      });
+
+      // Set refresh token cookie (30 days)
+      if (sessionRecord.refreshToken) {
+        res.cookie('refreshToken', sessionRecord.refreshToken, {
+          ...cookieOptions,
+          maxAge: 30 * 24 * 60 * 60 * 1000
+        });
+
+        // Also set refresh_token for middleware compatibility
+        res.cookie('refresh_token', sessionRecord.refreshToken, {
+          ...cookieOptions,
+          maxAge: 30 * 24 * 60 * 60 * 1000
+        });
+      }
+
+      console.log(`[${requestId}] 🍪 Cookie debug:`, {
+        authTokenSet: true,
+        accessTokenSet: true,
+        refreshTokenSet: !!sessionRecord.refreshToken,
+        tokenPreview: jwtToken.substring(0, 20) + '...',
+        refreshPreview: sessionRecord.refreshToken ? sessionRecord.refreshToken.substring(0, 20) + '...' : 'none',
+        environment: process.env.NODE_ENV
+      });
+      
+      console.log(`[${requestId}] 🍪 HttpOnly cookies set successfully`);
+    } else {
+      console.log(`[${requestId}] ❌ Cannot set cookies:`, {
+        hasJwtToken: !!jwtToken,
+        hasSessionRecord: !!sessionRecord,
+        dbUser: !!dbUser,
+        jwtTokenError: jwtToken ? 'OK' : 'MISSING',
+        sessionRecordError: sessionRecord ? 'OK' : 'MISSING'
+      });
+    }
+
+    // Backend-centric redirect (no tokens in URL)
+    const shouldRedirectToAdmin = isAdminFlow || isAuthorizedAdmin;
+    const successUrl = shouldRedirectToAdmin 
       ? new URL('/admin/dashboard', frontendUrl)
       : new URL('/', frontendUrl);
     
-    if (isAdminFlow) {
-      successUrl.searchParams.set('admin_google_login', 'success');
-      successUrl.searchParams.set('admin_name', userInfo.name || 'Unknown');
-      successUrl.searchParams.set('admin_email', userInfo.email || '');
+    // Only add success indicator, no sensitive data in URL
+    if (shouldRedirectToAdmin) {
+      successUrl.searchParams.set('admin_login', 'success');
     } else {
       successUrl.searchParams.set('google_login', 'success');
-      successUrl.searchParams.set('user_name', userInfo.name || 'Unknown');
-      successUrl.searchParams.set('user_email', userInfo.email || '');
     }
     
-    console.log(`[${requestId}] Redirecting to success page:`, successUrl.toString());
+    console.log(`[${requestId}] Backend-centric redirect to:`, successUrl.toString());
     return res.redirect(302, successUrl.toString());
 
   } catch (error: any) {
@@ -629,6 +798,9 @@ router.get('/discord/callback', async (req: Request, res: Response) => {
     });
 
     // Save user to Prisma database
+    let jwtToken = null;
+    let sessionRecord = null;
+    
     try {
       // Create or update user in Prisma database
       let dbUser;
@@ -730,27 +902,104 @@ router.get('/discord/callback', async (req: Request, res: Response) => {
         console.error('Database Discord user creation error:', dbError);
       }
 
-      // Generate JWT token for session
+      // Generate JWT token and create session
       if (dbUser) {
-        const jwtToken = await AuthService.generateAccessToken(dbUser as any);
-        console.log('🔑 JWT token generated for user:', dbUser.id);
+        jwtToken = await AuthService.generateAccessToken(dbUser as any);
+        
+        // Create session record like Google OAuth
+        const deviceInfo = {
+          userAgent: req.headers['user-agent'] || 'Unknown',
+          browser: req.headers['user-agent']?.includes('Chrome') ? 'Chrome' : 'Unknown',
+          platform: req.headers['user-agent']?.includes('Windows') ? 'Windows' : 'Unknown',
+          timestamp: new Date().toISOString()
+        };
+
+        const refreshToken = await AuthService.generateRefreshToken(dbUser.id);
+        
+        console.log(`[${requestId}] 🗑️ Cleaning up existing Discord sessions for user...`);
+        await prisma.session.deleteMany({
+          where: { 
+            userId: dbUser.id,
+            isActive: true
+          }
+        });
+        
+        sessionRecord = await prisma.session.create({
+          data: {
+            userId: dbUser.id,
+            token: jwtToken,
+            refreshToken: refreshToken,
+            ipAddress: req.ip || req.connection.remoteAddress || 'Unknown',
+            userAgent: req.headers['user-agent'] || 'Unknown',
+            deviceInfo: deviceInfo,
+            loginMethod: 'oauth_discord',
+            isAdminSession: false,
+            lastActivity: new Date(),
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+            isActive: true,
+            isVerified: true
+          }
+        });
+        
+        console.log('🔑 JWT token generated and session created for Discord user:', dbUser.id);
       }
 
       console.log('🎉 Discord user authentication complete:', {
         database: !!dbUser,
         username: userInfo.username,
-        email: userInfo.email
+        email: userInfo.email,
+        hasToken: !!jwtToken
       });
 
     } catch (error) {
       console.error('Discord user creation/update error:', error);
     }
+    
+    // Set httpOnly cookies for secure session management (like Google OAuth)
+    if (jwtToken && sessionRecord) {
+      console.log(`[${requestId}] 🍪 Setting Discord OAuth cookies...`);
+      
+      // Cookie options - simplified for localhost development
+      const cookieOptions = {
+        httpOnly: true,
+        secure: false, // Always false for localhost development
+        sameSite: 'lax' as const,
+        path: '/'
+      };
+      
+      console.log(`[${requestId}] 🍪 Cookie options:`, cookieOptions);
+      
+      // Set authentication cookie (7 days)
+      res.cookie('authToken', jwtToken, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000
+      });
+
+      // Also set access_token for middleware compatibility
+      res.cookie('access_token', jwtToken, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000
+      });
+
+      // Set refresh token cookie (30 days)
+      if (sessionRecord.refreshToken) {
+        res.cookie('refreshToken', sessionRecord.refreshToken, {
+          ...cookieOptions,
+          maxAge: 30 * 24 * 60 * 60 * 1000
+        });
+
+        // Also set refresh_token for middleware compatibility
+        res.cookie('refresh_token', sessionRecord.refreshToken, {
+          ...cookieOptions,
+          maxAge: 30 * 24 * 60 * 60 * 1000
+        });
+      }
+
+      console.log('🍪 HttpOnly cookies set for Discord session management');
+    }
 
     const successUrl = new URL('/', frontendUrl);
     successUrl.searchParams.set('discord_login', 'success');
-    successUrl.searchParams.set('user_name', userInfo.username || 'Unknown');
-    successUrl.searchParams.set('user_email', userInfo.email || '');
-    successUrl.searchParams.set('user_id', userInfo.id || '');
 
     console.log(`[${requestId}] Redirecting to success page:`, successUrl.toString());
     return res.redirect(302, successUrl.toString());
@@ -765,5 +1014,3 @@ router.get('/discord/callback', async (req: Request, res: Response) => {
 });
 
 export default router;
-
-

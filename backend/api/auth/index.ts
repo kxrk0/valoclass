@@ -4,6 +4,7 @@ import registerRouter from './register';
 import logoutRouter from './logout';
 import refreshRouter from './refresh';
 import oauthRouter from './oauth';
+import statusRouter from './status';
 import { adminLogin } from './admin/login';
 
 const router = Router();
@@ -14,6 +15,7 @@ router.use('/', registerRouter);
 router.use('/', logoutRouter);
 router.use('/', refreshRouter);
 router.use('/oauth', oauthRouter);
+router.use('/', statusRouter);
 
 // Admin routes
 router.post('/admin/login', adminLogin);

@@ -35,14 +35,30 @@ const app = express();
 // Create HTTP server
 const server = createServer(app);
 
-// Initialize Socket.IO
+// Initialize Socket.IO with enhanced authentication support
 const io = new SocketIOServer(server, {
   cors: {
     origin: env.FRONTEND_URL,
     methods: ["GET", "POST"],
     credentials: true
   },
-  transports: ['websocket', 'polling']
+  transports: ['websocket', 'polling'],
+  cookie: {
+    name: "io",
+    httpOnly: true,
+    sameSite: "lax"
+  }
+});
+
+// Add cookie-parser middleware to Engine.IO for httpOnly cookie support
+io.engine.use((req, res, next) => {
+  const isHandshake = req._query.sid === undefined;
+  if (isHandshake) {
+    // Apply cookie parsing only for handshake requests
+    cookieParser()(req, res, next);
+  } else {
+    next();
+  }
 });
 
 // Trust proxy for accurate IP addresses

@@ -1,0 +1,626 @@
+/* 🎨 ADMIN PANELİ GELİŞMİŞ ANIMASYONLAR */
+
+/* =====================================================
+   TEMEL ANİMASYON DEĞİŞKENLERİ
+===================================================== */
+:root {
+  /* Renk paleti */
+  --admin-primary: #00ff88;
+  --admin-secondary: #ff6b6b;
+  --admin-accent: #4ecdc4;
+  --admin-warning: #ffe66d;
+  --admin-danger: #ff6b6b;
+  --admin-success: #00ff88;
+  --admin-info: #74c0fc;
+  
+  /* Animasyon süreleri */
+  --animation-fast: 0.2s;
+  --animation-normal: 0.5s;
+  --animation-slow: 1s;
+  --animation-very-slow: 2s;
+  
+  /* Gölgeler */
+  --glow-shadow: 0 0 20px currentColor;
+  --pulse-shadow: 0 0 30px rgba(0, 255, 136, 0.7);
+  --danger-shadow: 0 0 25px rgba(255, 107, 107, 0.6);
+}
+
+/* =====================================================
+   KEYFRAME ANİMASYONLARI
+===================================================== */
+
+/* 💓 PULSE ANİMASYONU */
+@keyframes adminPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
+  }
+}
+
+/* 🌟 GLOW EFEKTİ */
+@keyframes adminGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--admin-primary);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow: 0 0 25px var(--admin-primary), 0 0 35px var(--admin-primary);
+    filter: brightness(1.2);
+  }
+}
+
+/* 🎳 BOUNCE ANİMASYONU */
+@keyframes adminBounce {
+  0%, 20%, 53%, 80%, 100% {
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+    transform: translate3d(0, -15px, 0);
+  }
+  70% {
+    animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+    transform: translate3d(0, -8px, 0);
+  }
+  90% {
+    transform: translate3d(0, -3px, 0);
+  }
+}
+
+/* 🔄 ROTATE ANİMASYONU */
+@keyframes adminRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ⚡ SHAKE ANİMASYONU */
+@keyframes adminShake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+/* 👻 FADE ANİMASYONU */
+@keyframes adminFade {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 🌊 WAVE EFEKTİ */
+@keyframes adminWave {
+  0% {
+    transform: translateY(0px);
+  }
+  25% {
+    transform: translateY(-10px);
+  }
+  50% {
+    transform: translateY(0px);
+  }
+  75% {
+    transform: translateY(5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* 💫 SPARKLE EFEKTİ */
+@keyframes adminSparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 📊 BAR YÜKLENİMİ */
+@keyframes adminLoadingBar {
+  0% {
+    width: 0%;
+    background: linear-gradient(90deg, var(--admin-primary), var(--admin-accent));
+  }
+  50% {
+    width: 70%;
+    background: linear-gradient(90deg, var(--admin-accent), var(--admin-primary));
+  }
+  100% {
+    width: 100%;
+    background: linear-gradient(90deg, var(--admin-primary), var(--admin-success));
+  }
+}
+
+/* 🎯 ZOOM-IN EFEKTİ */
+@keyframes adminZoomIn {
+  from {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+  50% {
+    opacity: 1;
+  }
+  to {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+/* 🎯 ZOOM-OUT EFEKTİ */
+@keyframes adminZoomOut {
+  from {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* =====================================================
+   ANİMASYON SINIFLARI
+===================================================== */
+
+/* Ana animasyon konteyner'ı */
+.admin-animation-container {
+  position: relative;
+  transition: all var(--animation-normal) ease-in-out;
+}
+
+/* 💓 Pulse animasyonu */
+.admin-pulse {
+  animation: adminPulse var(--animation-slow) ease-in-out;
+  transform-origin: center;
+}
+
+/* 🌟 Glow efekti */
+.admin-glow {
+  animation: adminGlow var(--animation-very-slow) ease-in-out;
+  filter: brightness(1);
+}
+
+/* 🎳 Bounce animasyonu */
+.admin-bounce {
+  animation: adminBounce var(--animation-slow) ease-out;
+  transform-origin: center bottom;
+}
+
+/* 🔄 Rotate animasyonu */
+.admin-rotate {
+  animation: adminRotate var(--animation-very-slow) linear;
+  transform-origin: center;
+}
+
+/* ⚡ Shake animasyonu */
+.admin-shake {
+  animation: adminShake 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* 👻 Fade animasyonu */
+.admin-fade {
+  animation: adminFade var(--animation-slow) ease-in-out;
+}
+
+/* 🌊 Wave animasyonu */
+.admin-wave {
+  animation: adminWave var(--animation-slow) ease-in-out infinite;
+}
+
+/* 💫 Sparkle efekti */
+.admin-sparkle {
+  position: relative;
+  overflow: visible;
+}
+
+.admin-sparkle::before,
+.admin-sparkle::after {
+  content: '✨';
+  position: absolute;
+  animation: adminSparkle var(--animation-slow) ease-in-out infinite;
+  font-size: 1.2em;
+  color: var(--admin-primary);
+}
+
+.admin-sparkle::before {
+  top: -10px;
+  left: -10px;
+  animation-delay: 0s;
+}
+
+.admin-sparkle::after {
+  bottom: -10px;
+  right: -10px;
+  animation-delay: 0.5s;
+}
+
+/* 📊 Loading bar */
+.admin-loading-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.admin-loading-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  animation: adminLoadingBar var(--animation-very-slow) ease-in-out;
+  border-radius: 2px;
+}
+
+/* 🎯 Zoom animasyonları */
+.admin-zoom-in {
+  animation: adminZoomIn var(--animation-normal) ease-out;
+}
+
+.admin-zoom-out {
+  animation: adminZoomOut var(--animation-normal) ease-in;
+}
+
+/* =====================================================
+   BAĞLANTI DURUMU ANİMASYONLARI
+===================================================== */
+
+/* 🟢 Bağlı durumu */
+.admin-status-connected {
+  color: var(--admin-success);
+  position: relative;
+}
+
+.admin-status-connected::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--admin-success);
+  border-radius: 50%;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  animation: adminPulse var(--animation-slow) infinite;
+  box-shadow: 0 0 10px var(--admin-success);
+}
+
+/* 🔴 Bağlantı kesildi */
+.admin-status-disconnected {
+  color: var(--admin-danger);
+  position: relative;
+}
+
+.admin-status-disconnected::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--admin-danger);
+  border-radius: 50%;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  animation: adminFade var(--animation-normal) infinite;
+}
+
+/* 🟡 Bağlanıyor */
+.admin-status-connecting {
+  color: var(--admin-warning);
+  position: relative;
+}
+
+.admin-status-connecting::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--admin-warning);
+  border-radius: 50%;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  animation: adminRotate var(--animation-slow) linear infinite;
+}
+
+/* =====================================================
+   PERFORMANS METRİKLERİ ANİMASYONLARI
+===================================================== */
+
+/* Ping göstergesi */
+.admin-ping-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-ping-excellent {
+  color: var(--admin-success);
+}
+
+.admin-ping-good {
+  color: var(--admin-primary);
+}
+
+.admin-ping-poor {
+  color: var(--admin-warning);
+}
+
+.admin-ping-critical {
+  color: var(--admin-danger);
+  animation: adminPulse var(--animation-normal) infinite;
+}
+
+/* Sistem sağlığı çubukları */
+.admin-health-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.admin-health-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width var(--animation-normal) ease-out;
+  position: relative;
+}
+
+.admin-health-good {
+  background: linear-gradient(90deg, var(--admin-success), var(--admin-primary));
+}
+
+.admin-health-warning {
+  background: linear-gradient(90deg, var(--admin-warning), var(--admin-accent));
+  animation: adminPulse var(--animation-slow) infinite;
+}
+
+.admin-health-critical {
+  background: linear-gradient(90deg, var(--admin-danger), #ff4757);
+  animation: adminShake 0.5s infinite;
+}
+
+/* =====================================================
+   AKTIVITE HARİTASI ANİMASYONLARI
+===================================================== */
+
+/* Harita noktaları */
+.admin-map-point {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  animation: adminPulse var(--animation-very-slow) infinite;
+  cursor: pointer;
+  transition: all var(--animation-fast) ease-in-out;
+}
+
+.admin-map-point:hover {
+  transform: scale(1.5);
+  animation: adminGlow var(--animation-normal) ease-in-out;
+}
+
+.admin-map-point-high {
+  background: var(--admin-danger);
+  box-shadow: 0 0 15px var(--admin-danger);
+}
+
+.admin-map-point-medium {
+  background: var(--admin-warning);
+  box-shadow: 0 0 12px var(--admin-warning);
+}
+
+.admin-map-point-low {
+  background: var(--admin-success);
+  box-shadow: 0 0 10px var(--admin-success);
+}
+
+/* =====================================================
+   BİLDİRİM ANİMASYONLARI
+===================================================== */
+
+/* Bildirim kartları */
+.admin-notification-enter {
+  animation: adminZoomIn var(--animation-normal) ease-out;
+}
+
+.admin-notification-exit {
+  animation: adminZoomOut var(--animation-normal) ease-in;
+}
+
+/* Kritik uyarı */
+.admin-critical-alert {
+  background: linear-gradient(135deg, var(--admin-danger), #ff6b6b);
+  border: 2px solid var(--admin-danger);
+  animation: adminShake 0.8s ease-in-out;
+  box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+}
+
+/* Başarı bildirimi */
+.admin-success-notification {
+  background: linear-gradient(135deg, var(--admin-success), #00ff88);
+  border: 2px solid var(--admin-success);
+  animation: adminBounce var(--animation-slow) ease-out;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+/* =====================================================
+   HOVER VE FOCUS EFEKTLERİ
+===================================================== */
+
+/* Genel hover efekti */
+.admin-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: all var(--animation-fast) ease-out;
+}
+
+.admin-interactive:active {
+  transform: translateY(0);
+  transition: all var(--animation-fast) ease-out;
+}
+
+/* Focus efekti */
+.admin-interactive:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.3);
+}
+
+/* =====================================================
+   RESPONSIVE ANİMASYONLAR
+===================================================== */
+
+/* Düşük performanslı cihazlarda animasyonları azalt */
+@media (prefers-reduced-motion: reduce) {
+  .admin-animation-container,
+  .admin-pulse,
+  .admin-glow,
+  .admin-bounce,
+  .admin-rotate,
+  .admin-shake,
+  .admin-fade,
+  .admin-wave,
+  .admin-sparkle,
+  .admin-loading-bar::before,
+  .admin-zoom-in,
+  .admin-zoom-out {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .admin-status-connected::before,
+  .admin-status-disconnected::before,
+  .admin-status-connecting::before {
+    animation: none !important;
+  }
+}
+
+/* Mobil cihazlarda daha hafif animasyonlar */
+@media (max-width: 768px) {
+  :root {
+    --animation-fast: 0.15s;
+    --animation-normal: 0.3s;
+    --animation-slow: 0.6s;
+    --animation-very-slow: 1s;
+  }
+  
+  .admin-sparkle::before,
+  .admin-sparkle::after {
+    display: none;
+  }
+}
+
+/* =====================================================
+   DARK MODE UYUMLU RENKLER
+===================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --admin-primary: #00ff88;
+    --admin-secondary: #ff6b6b;
+    --admin-accent: #4ecdc4;
+    --admin-warning: #feca57;
+    --admin-danger: #ff6b6b;
+    --admin-success: #00ff88;
+    --admin-info: #3742fa;
+  }
+}
+
+/* =====================================================
+   ÖZEL ADMIN KARTLARI
+===================================================== */
+
+.admin-dashboard-card {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(78, 205, 196, 0.1));
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all var(--animation-normal) ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-dashboard-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: adminLoadingBar 3s infinite;
+}
+
+.admin-dashboard-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--admin-primary);
+  box-shadow: 0 10px 25px rgba(0, 255, 136, 0.2);
+}
+
+/* =====================================================
+   ADMIN MENÜ ANİMASYONLARI
+===================================================== */
+
+.admin-menu-item {
+  transition: all var(--animation-fast) ease-out;
+  position: relative;
+}
+
+.admin-menu-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--admin-primary);
+  transition: width var(--animation-fast) ease-out;
+}
+
+.admin-menu-item:hover::before {
+  width: 100%;
+}
+
+.admin-menu-item.active {
+  color: var(--admin-primary);
+  animation: adminGlow var(--animation-slow) ease-in-out infinite;
+}

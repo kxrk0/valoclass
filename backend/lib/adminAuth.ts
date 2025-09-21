@@ -1,7 +1,6 @@
 import { Socket } from 'socket.io';
-import { verifyToken } from './auth';
+import { AuthService } from './auth';
 import { prisma } from './prisma';
-import { UserRole } from '@prisma/client';
 
 export interface AuthenticatedSocket extends Socket {
   userId: string;
@@ -9,35 +8,63 @@ export interface AuthenticatedSocket extends Socket {
     id: string;
     username: string;
     email: string;
-    role: UserRole;
+    role: string;
+    avatar?: string; // ✅ Avatar field eklendi
   };
 }
 
 export const adminAuthMiddleware = async (socket: Socket, next: Function) => {
   try {
-    const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.replace('Bearer ', '');
+    console.log('🔍 AdminAuthMiddleware: Starting unified auth...');
+    
+    let token = null;
+    const authToken = socket.handshake.auth.token;
+    
+    // Check if frontend sent dummy token (cookie-based auth)
+    if (authToken === 'authenticated-via-cookies') {
+      console.log('🍪 Cookie-based auth detected, reading from cookies...');
+      
+      // Try to get token from parsed cookies (thanks to engine.use(cookieParser()))
+      const req = socket.request as any;
+      console.log('🔍 Request cookies available:', !!req.cookies);
+      
+      if (req.cookies) {
+        token = req.cookies.authToken || req.cookies.access_token;
+        if (token) {
+          console.log('🍪 Token found in httpOnly cookies');
+        }
+      }
+      
+      // Fallback: manual cookie parsing
+      if (!token) {
+        const cookies = socket.handshake.headers.cookie;
+        if (cookies) {
+          const parsedCookies = cookies.split(';').reduce((acc: any, cookie: string) => {
+            const [key, value] = cookie.trim().split('=');
+            acc[key] = value;
+            return acc;
+          }, {});
+          
+          token = parsedCookies.authToken || parsedCookies.access_token;
+          if (token) {
+            console.log('🍪 Token found via manual cookie parsing');
+          }
+        }
+      }
+    } else {
+      // Direct token auth
+      token = authToken || socket.handshake.headers.authorization?.replace('Bearer ', '');
+    }
     
     if (!token) {
+      console.log('❌ No valid token found for WebSocket auth');
       return next(new Error('No authentication token provided'));
     }
+    
+    console.log('✅ Token found for verification, length:', token.length);
 
-    // Development mode bypass for testing
-    if (process.env.NODE_ENV === 'development' && token === 'dev-admin-token-mock-jwt-for-testing-only') {
-      const mockUser = {
-        id: 'dev-admin-id-mock',
-        username: 'DevAdmin', 
-        email: 'dev@admin.test',
-        role: 'ADMIN',
-        isActive: true
-      };
-      
-      (socket as any).userId = mockUser.id;
-      (socket as any).user = mockUser;
-      return next();
-    }
-
-    // Verify JWT token
-    const decoded = verifyToken(token);
+    // Verify JWT token using same method as HTTP auth
+    const decoded = await AuthService.verifyToken(token);
     if (!decoded || !decoded.userId) {
       return next(new Error('Invalid token'));
     }
@@ -50,7 +77,8 @@ export const adminAuthMiddleware = async (socket: Socket, next: Function) => {
         username: true,
         email: true,
         role: true,
-        isActive: true
+        isActive: true,
+        avatar: true // ✅ Avatar field dahil et
       }
     });
 
@@ -63,7 +91,7 @@ export const adminAuthMiddleware = async (socket: Socket, next: Function) => {
     }
 
     // Check if user is admin
-    if (user.role !== UserRole.ADMIN) {
+    if (user.role !== 'ADMIN') {
       return next(new Error('Admin access required'));
     }
 

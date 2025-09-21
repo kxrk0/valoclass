@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import AdminLayout from '@/components/admin/AdminLayout'
+import AdminAuthGuard from '@/components/admin/AdminAuthGuard'
 import UserManagement from '@/components/admin/UserManagement'
 import { AdminSocketProvider } from '@/contexts/AdminSocketContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
@@ -13,11 +14,13 @@ export const metadata: Metadata = {
 export default function AdminUsersPage() {
   return (
     <NotificationProvider>
-      <AdminSocketProvider>
-        <AdminLayout>
-          <UserManagement />
-        </AdminLayout>
-      </AdminSocketProvider>
+      <AdminAuthGuard>
+        <AdminSocketProvider>
+          <AdminLayout>
+            <UserManagement />
+          </AdminLayout>
+        </AdminSocketProvider>
+      </AdminAuthGuard>
     </NotificationProvider>
   )
 }

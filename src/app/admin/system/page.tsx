@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import AdminLayout from '@/components/admin/AdminLayout'
+import AdminAuthGuard from '@/components/admin/AdminAuthGuard'
 import { AdminSocketProvider } from '@/contexts/AdminSocketContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
 import { 
@@ -411,11 +412,13 @@ import * as React from 'react';
 export default function AdminSystemPage() {
   return (
     <NotificationProvider>
-      <AdminSocketProvider>
-        <AdminLayout>
-          <SystemPage />
-        </AdminLayout>
-      </AdminSocketProvider>
+      <AdminAuthGuard>
+        <AdminSocketProvider>
+          <AdminLayout>
+            <SystemPage />
+          </AdminLayout>
+        </AdminSocketProvider>
+      </AdminAuthGuard>
     </NotificationProvider>
   )
 }

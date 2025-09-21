@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import AdminLayout from '@/components/admin/AdminLayout'
+import AdminAuthGuard from '@/components/admin/AdminAuthGuard'
 import { AdminSocketProvider } from '@/contexts/AdminSocketContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
 import { 
@@ -311,11 +312,13 @@ function AnalyticsPage() {
 export default function AdminAnalyticsPage() {
   return (
     <NotificationProvider>
-      <AdminSocketProvider>
-        <AdminLayout>
-          <AnalyticsPage />
-        </AdminLayout>
-      </AdminSocketProvider>
+      <AdminAuthGuard>
+        <AdminSocketProvider>
+          <AdminLayout>
+            <AnalyticsPage />
+          </AdminLayout>
+        </AdminSocketProvider>
+      </AdminAuthGuard>
     </NotificationProvider>
   )
 }

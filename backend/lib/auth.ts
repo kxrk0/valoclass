@@ -288,15 +288,17 @@ export class AuthService {
 
   // Logout user
   static async logout(req: Request, res: Response): Promise<void> {
-    const refreshToken = req.cookies?.refresh_token;
+    const refreshToken = req.cookies?.refresh_token || req.cookies?.refreshToken;
 
     if (refreshToken) {
       await this.revokeSession(refreshToken);
     }
 
-    // Clear cookies
+    // Clear all auth cookies for consistency
     res.clearCookie('access_token');
+    res.clearCookie('authToken');
     res.clearCookie('refresh_token');
+    res.clearCookie('refreshToken');
   }
 }
 

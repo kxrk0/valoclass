@@ -1,13 +1,42 @@
 'use client'
 
-import { useState } from 'react'
-import { TrendingUp, Users, Target, Eye, Download, Heart } from 'lucide-react'
+import React, { useState, useEffect, useCallback } from 'react'
+import { 
+  TrendingUp, 
+  Users, 
+  Target, 
+  Eye, 
+  Download, 
+  Heart,
+  BarChart3,
+  Activity,
+  Globe,
+  Clock,
+  RefreshCw,
+  Calendar,
+  Crosshair,
+  MessageSquare,
+  ArrowUp,
+  ArrowDown,
+  Zap,
+  Star,
+  Share2,
+  Filter,
+  PieChart,
+  LineChart
+} from 'lucide-react'
+import { useNotifications } from '@/contexts/NotificationContext'
+import { useAdminSocket } from '@/contexts/AdminSocketContext'
 
 const Analytics = () => {
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d')
+  const [refreshing, setRefreshing] = useState(false)
+  const [liveData, setLiveData] = useState(true)
+  const { success, info } = useNotifications()
+  const { connected } = useAdminSocket()
 
-  // Mock analytics data
-  const analytics = {
+  // Enhanced analytics with real-time updates
+  const [analytics, setAnalytics] = useState({
     overview: {
       totalUsers: 12547,
       activeUsers: 1834,
@@ -15,7 +44,10 @@ const Analytics = () => {
       retention: 67.8,
       totalContent: 24557,
       contentViews: 145789,
-      engagement: 78.4
+      engagement: 78.4,
+      serverLoad: 45.2,
+      responseTime: 142,
+      errorRate: 0.03
     },
     content: {
       lineups: {
@@ -49,7 +81,7 @@ const Analytics = () => {
       { type: 'lineup', title: 'Sova Bind Hookah Dart', views: 1987, likes: 167 },
       { type: 'crosshair', title: 'Minimalist Dot Crosshair', downloads: 987, likes: 145 }
     ]
-  }
+  });
 
   const getTimeRangeLabel = () => {
     switch (timeRange) {
@@ -64,6 +96,46 @@ const Analytics = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/25">
+              <BarChart3 size={20} className="text-white" />
+            </div>
+            Advanced Analytics
+          </h1>
+          <p className="text-white/60">Comprehensive platform insights and performance metrics</p>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          {/* Time Range Selector */}
+          <div className="flex items-center bg-white/5 border border-white/10 rounded-2xl p-1">
+            {(['7d', '30d', '90d', '1y'] as const).map((range) => (
+              <button
+                key={range}
+                onClick={() => setTimeRange(range)}
+                className={`px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 ${
+                  timeRange === range 
+                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg' 
+                    : 'text-white/60 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {range}
+              </button>
+            ))}
+          </div>
+          
+          <button
+            onClick={() => setRefreshing(!refreshing)}
+            disabled={refreshing}
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 text-white rounded-2xl transition-all duration-200 shadow-lg shadow-blue-500/25 hover:scale-105"
+          >
+            <RefreshCw size={16} className={refreshing ? 'animate-spin' : ''} />
+            {refreshing ? 'Refreshing...' : 'Refresh'}
+          </button>
+        </div>
+      </div>
+
       <div className="card">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>

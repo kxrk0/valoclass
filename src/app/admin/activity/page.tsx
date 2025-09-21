@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import AdminLayout from '@/components/admin/AdminLayout'
+import AdminAuthGuard from '@/components/admin/AdminAuthGuard'
 import { AdminSocketProvider } from '@/contexts/AdminSocketContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
 import { 
@@ -339,15 +340,18 @@ function ActivityMonitorPage() {
 
 // Add React import
 import * as React from 'react';
+import ActivityLog from '@/components/admin/ActivityLog'
 
 export default function AdminActivityPage() {
   return (
     <NotificationProvider>
-      <AdminSocketProvider>
-        <AdminLayout>
-          <ActivityMonitorPage />
-        </AdminLayout>
-      </AdminSocketProvider>
+      <AdminAuthGuard>
+        <AdminSocketProvider>
+          <AdminLayout>
+            <ActivityLog />
+          </AdminLayout>
+        </AdminSocketProvider>
+      </AdminAuthGuard>
     </NotificationProvider>
   )
 }

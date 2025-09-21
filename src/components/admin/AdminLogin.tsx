@@ -47,6 +47,29 @@ const AdminLogin: React.FC = () => {
     setError('');
 
     try {
+      // TEMP: TEST LOGIN - Google Console ayarlanana kadar
+      if (adminId === 'admin' && password === 'admin123') {
+        // Mock successful admin login
+        const mockAdminUser = {
+          id: 'admin_test_001',
+          username: 'DevAdmin',
+          email: 'admin@valorantguides.com',
+          role: 'ADMIN',
+          loginType: 'manual',
+          loginTime: new Date().toISOString()
+        };
+        
+        const mockToken = `temp_admin_${Date.now()}_${mockAdminUser.id}`;
+        
+        localStorage.setItem('authToken', mockToken);
+        localStorage.setItem('adminUser', JSON.stringify(mockAdminUser));
+        
+        // Redirect to admin dashboard
+        router.push('/admin/dashboard');
+        return;
+      }
+
+      // Real backend call
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/auth/admin/login`, {
         method: 'POST',
         headers: {
@@ -69,7 +92,7 @@ const AdminLogin: React.FC = () => {
       localStorage.setItem('adminUser', JSON.stringify(data.user));
 
       // Redirect to admin dashboard
-      router.push('/admin');
+      router.push('/admin/dashboard');
       
     } catch (err: any) {
       setError(err.message || 'Login failed');
@@ -165,7 +188,7 @@ const AdminLogin: React.FC = () => {
               Admin Panel
             </h1>
             <p className="text-gray-400 text-sm font-light">
-              Secure access to <span className="text-red-400 font-medium">ValoClass</span> management
+              Secure access to <span className="text-red-400 font-medium">ValorantGuides</span> management
             </p>
             
             {/* Status indicators - Minimal */}
@@ -317,6 +340,17 @@ const AdminLogin: React.FC = () => {
                 <p className="text-gray-400 text-sm">Enter your admin credentials</p>
               </div>
 
+              {/* TEST CREDENTIALS INFO */}
+              <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg backdrop-blur-20">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                  <span className="text-blue-400 font-medium text-xs">TEST LOGIN</span>
+                </div>
+                <p className="text-blue-200 text-xs">
+                  <span className="font-medium">ID:</span> admin | <span className="font-medium">Password:</span> admin123
+                </p>
+              </div>
+
               <form onSubmit={handleIdLogin} className="space-y-4">
                 {/* Admin ID Field */}
                 <div className="space-y-2">
@@ -409,7 +443,7 @@ const AdminLogin: React.FC = () => {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/30 hover:bg-gray-800/50 rounded-lg border border-gray-600/30 hover:border-gray-500 text-red-400 hover:text-white text-sm font-medium transition-all duration-300 backdrop-blur-20"
               >
                 <span>←</span>
-                <span>Back to ValoClass</span>
+                <span>Back to ValorantGuides</span>
               </Link>
             </motion.div>
           </div>
