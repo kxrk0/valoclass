@@ -54,6 +54,8 @@ model User {
   authEvents      AuthEvent[]
   followers_rel   Follow[] @relation("UserFollowers")
   following_rel   Follow[] @relation("UserFollowing")
+  pageViews       PageView[]
+  errorLogs       ErrorLog[]
   
   // Timestamps
   lastLoginAt DateTime?
@@ -435,13 +437,188 @@ model Activity {
   entityType String? // LINEUP, CROSSHAIR, COMMENT, USER
   entityId   String? @db.ObjectId
   
+  // Context information
+  ipAddress   String?
+  userAgent   String?
+  sessionId   String?
+  deviceInfo  Json?   // browser, OS, screen size, etc.
+  location    Json?   // geolocation data
+  
+  // Performance metrics
+  duration    Int?    // milliseconds for timed actions
+  success     Boolean @default(true)
+  errorCode   String?
+  
   // Additional data (JSON for flexibility)
   metadata   Json?
+  
+  // Visibility
+  isPublic   Boolean @default(true)
   
   // Timestamps
   createdAt DateTime @default(now())
 
+  @@index([userId, type, createdAt])
+  @@index([type, createdAt])
+  @@index([createdAt])
   @@map("activities")
+}
+
+// New comprehensive analytics model
+model Analytics {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // Time period
+  date     DateTime
+  hour     Int      // 0-23 for hourly analytics
+  
+  // User metrics
+  activeUsers        Int @default(0)
+  newUsers          Int @default(0)
+  returningUsers    Int @default(0)
+  premiumUsers      Int @default(0)
+  
+  // Content metrics
+  lineupsCreated    Int @default(0)
+  lineupsViewed     Int @default(0)
+  lineupsLiked      Int @default(0)
+  crosshairsCreated Int @default(0)
+  crosshairsViewed  Int @default(0)
+  crosshairsDownloaded Int @default(0)
+  commentsPosted    Int @default(0)
+  
+  // Engagement metrics
+  avgSessionDuration Float? // minutes
+  pageViews         Int @default(0)
+  uniquePageViews   Int @default(0)
+  bounceRate        Float? // percentage
+  
+  // System metrics
+  apiRequests       Int @default(0)
+  errors            Int @default(0)
+  responseTime      Float? // average response time in ms
+  
+  // Additional metrics (JSON for flexibility)
+  additionalMetrics Json?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([date, hour])
+  @@index([date])
+  @@map("analytics")
+}
+
+// Page views and user behavior tracking
+model PageView {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // User (optional for guest tracking)
+  userId String? @db.ObjectId
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  // Page information
+  path        String
+  title       String?
+  referrer    String?
+  
+  // Session information
+  sessionId   String
+  
+  // Device/Browser information
+  userAgent   String?
+  ipAddress   String?
+  deviceType  String? // mobile, tablet, desktop
+  browser     String?
+  os          String?
+  screenSize  String?
+  
+  // Location information
+  country     String?
+  city        String?
+  
+  // Performance metrics
+  loadTime    Int?    // page load time in ms
+  timeOnPage  Int?    // time spent on page in seconds
+  
+  // Engagement metrics
+  scrollDepth Float?  // percentage of page scrolled
+  clicks      Int     @default(0)
+  
+  // Timestamps
+  viewedAt DateTime @default(now())
+  leftAt   DateTime?
+  
+  @@index([userId, viewedAt])
+  @@index([path, viewedAt])
+  @@index([viewedAt])
+  @@map("page_views")
+}
+
+// System performance monitoring
+model SystemMetric {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // Metric information
+  metricType String  // cpu_usage, memory_usage, response_time, error_rate, etc.
+  value      Float
+  unit       String? // percentage, ms, mb, etc.
+  
+  // Context
+  source     String? // server_name, service_name, etc.
+  endpoint   String? // for API metrics
+  
+  // Metadata
+  metadata   Json?
+  
+  // Timestamps
+  recordedAt DateTime @default(now())
+  
+  @@index([metricType, recordedAt])
+  @@index([recordedAt])
+  @@map("system_metrics")
+}
+
+// Enhanced error tracking
+model ErrorLog {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // User (optional)
+  userId String? @db.ObjectId
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  // Error information
+  errorType    String
+  errorMessage String
+  errorCode    String?
+  statusCode   Int?
+  
+  // Request information
+  method       String?
+  endpoint     String?
+  userAgent    String?
+  ipAddress    String?
+  
+  // Stack trace and context
+  stackTrace   String?
+  requestBody  Json?
+  queryParams  Json?
+  headers      Json?
+  
+  // Resolution tracking
+  isResolved   Boolean @default(false)
+  resolvedAt   DateTime?
+  resolvedBy   String?
+  resolution   String?
+  
+  // Timestamps
+  occurredAt DateTime @default(now())
+  
+  @@index([userId, occurredAt])
+  @@index([errorType, occurredAt])
+  @@index([occurredAt])
+  @@map("error_logs")
 }
 
 // Enums
@@ -462,17 +639,69 @@ enum ReportReason {
 }
 
 enum ActivityType {
-  LINEUP_CREATED
-  LINEUP_LIKED
-  LINEUP_BOOKMARKED
-  CROSSHAIR_CREATED
-  CROSSHAIR_LIKED
-  CROSSHAIR_DOWNLOADED
-  COMMENT_POSTED
-  USER_FOLLOWED
-  ACHIEVEMENT_EARNED
+  // User Authentication
   LOGIN
   LOGOUT
+  ACCOUNT_CREATED
+  EMAIL_VERIFIED
+  PASSWORD_CHANGED
+  
+  // Content Creation
+  LINEUP_CREATED
+  LINEUP_UPDATED
+  LINEUP_DELETED
+  CROSSHAIR_CREATED
+  CROSSHAIR_UPDATED
+  CROSSHAIR_DELETED
+  COMMENT_POSTED
+  COMMENT_EDITED
+  COMMENT_DELETED
+  
+  // Content Interaction
+  LINEUP_VIEWED
+  LINEUP_LIKED
+  LINEUP_UNLIKED
+  LINEUP_BOOKMARKED
+  LINEUP_UNBOOKMARKED
+  CROSSHAIR_VIEWED
+  CROSSHAIR_LIKED
+  CROSSHAIR_UNLIKED
+  CROSSHAIR_DOWNLOADED
+  CROSSHAIR_SHARED
+  COMMENT_LIKED
+  COMMENT_UNLIKED
+  
+  // Social Interactions
+  USER_FOLLOWED
+  USER_UNFOLLOWED
+  USER_BLOCKED
+  USER_UNBLOCKED
+  
+  // Achievements & Gamification
+  ACHIEVEMENT_EARNED
+  LEVEL_UP
+  STREAK_EARNED
+  
+  // Content Moderation
+  CONTENT_REPORTED
+  REPORT_SUBMITTED
+  REPORT_REVIEWED
+  CONTENT_MODERATED
+  
+  // Admin Actions
+  ADMIN_ACTION
+  USER_PROMOTED
+  USER_DEMOTED
+  USER_BANNED
+  USER_UNBANNED
+  BULK_ACTION_PERFORMED
+  
+  // System Events
+  PROFILE_UPDATED
+  SETTINGS_CHANGED
+  SEARCH_PERFORMED
+  ERROR_ENCOUNTERED
+  API_REQUEST_MADE
 }
 
 enum AccountType {
