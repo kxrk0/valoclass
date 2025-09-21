@@ -58,8 +58,8 @@ const Hero = () => {
       </div>
 
       <div className="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-screen">
-          <div className="lg:col-span-8 flex flex-col justify-center py-16 lg:py-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[85vh] items-center justify-center">
+          <div className="flex flex-col justify-center items-center lg:items-start text-center lg:text-left py-12 lg:py-0">
             <div className="hero-title transition-all duration-1000 opacity-100 transform translate-y-0">
               <span className="title-line primary">Master</span>
               <span className="title-line gradient">Valorant</span>
@@ -122,7 +122,7 @@ const Hero = () => {
               </div>
             </div>
           </div>
-          <div className="lg:col-span-4 relative flex items-center justify-center">
+          <div className="relative flex items-center justify-center">
             <div className="relative">
               <div className="grid grid-cols-1 gap-6">
                 <div className="group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer opacity-100 transform translate-y-0 transition-all duration-1000 delay-1000" style={{background: 'rgba(255, 70, 84, 0.1)', border: '1px solid rgba(255, 70, 84, 0.2)', boxShadow: 'rgba(255, 70, 84, 0.1) 0px 8px 32px'}}>

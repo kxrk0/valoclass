@@ -32,20 +32,20 @@ function createTestPayload(authorName = 'TestUser') {
     userEmoji = CUSTOM_EMOJIS.o_special;
   }
 
-  const description = `**Proje:** \`valoclass\`\\n**Dal:** \`main\`\\n**Geliştirici:** ${userEmoji}`;
+  const description = `**Geliştirici:** ${userEmoji}`;
   
-  const summary = `📊 **3** commit gönderildi\\n📁 **8** dosya değiştirildi\\n➕ **47** satır eklendi • ➖ **12** satır silindi\\n🏗️ Toplam proje commit sayısı: **156**`;
+  const summary = `${CUSTOM_EMOJIS.arrow} **3** commit gönderildi\\n${CUSTOM_EMOJIS.arrow} **8** dosya değiştirildi\\n${CUSTOM_EMOJIS.arrow} **47** satır eklendi • **12** satır silindi\\n${CUSTOM_EMOJIS.crown} Toplam proje commit sayısı: **156**`;
 
   return {
     username: "PLAYVALORANTGUIDES.COM",
     avatar_url: "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg",
     embeds: [{
-      title: `${CUSTOM_EMOJIS.uzi} PLAYVALORANTGUIDES.COM - Geliştirme Güncellemesi`,
+      title: `${CUSTOM_EMOJIS.verified} PLAYVALORANTGUIDES.COM - Geliştirme Güncellemesi ${CUSTOM_EMOJIS.online}`,
       description: description,
       color: 3066993,
       fields: [
         {
-          name: "📊 Geliştirme İstatistikleri",
+          name: `${CUSTOM_EMOJIS.verified} Geliştirme İstatistikleri`,
           value: summary,
           inline: false
         },
@@ -55,13 +55,13 @@ function createTestPayload(authorName = 'TestUser') {
           inline: false
         },
         {
-          name: "🚀 Son Aktiviteler",
+          name: `${CUSTOM_EMOJIS.online} Son Aktiviteler`,
           value: "💾 Veritabanı optimizasyonları\\n🎨 UI/UX iyileştirmeleri\\n🔧 Backend geliştirmeleri\\n📱 Mobil uyumluluk çalışmaları",
           inline: false
         }
       ],
       footer: {
-        text: "PLAYVALORANTGUIDES.COM • Profesyonel Valorant Rehber Platformu",
+        text: `PLAYVALORANTGUIDES.COM ${CUSTOM_EMOJIS.online} Profesyonel Valorant Rehber Platformu`,
         icon_url: "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg"
       },
       timestamp: new Date().toISOString(),

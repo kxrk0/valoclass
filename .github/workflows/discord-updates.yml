@@ -106,11 +106,16 @@ jobs:
         COMMITS_JSON='${{ steps.generate-log.outputs.COMMITS_JSON }}'
         COMMIT_COUNT=$(echo "$COMMITS_JSON" | jq '. | length' 2>/dev/null || echo "0")
         
-        # Define custom emojis - minimal and clean
-        UZI_EMOJI="<a:uzi:1419286915194290326>"
+        # Define custom emojis - only specified ones (NO UZI)
         Z_EMOJI="<a:z_:1419286712668000256>"
         O_EMOJI="<a:ogi:1419286667965108327>"
+        ONLINE_EMOJI="<a:online:1419285611012952074>"
+        VERIFIED_EMOJI="<a:verified:1419285858753970179>"
         CROWN_EMOJI="<a:crown:1419286909389377576>"
+        SHUTDOWN_EMOJI="<a:shutdown:1419285612854382662>"
+        ARROW_EMOJI="<a:arrow:1419286458543378492>"
+        UNLEM_EMOJI="<a:unlem:1419286534326059089>"
+        HAC_EMOJI="<a:hac:1419286912203489400>"
         
         # Determine user-specific emoji - NO NAMES, just emojis
         USER_EMOJI="${CROWN_EMOJI}"
@@ -120,12 +125,12 @@ jobs:
           USER_EMOJI="${O_EMOJI}"
         fi
         
-        # Turkish update type with site name
-        UPDATE_TYPE="${UZI_EMOJI} PLAYVALORANTGUIDES.COM - Geliştirme Güncellemesi"
+        # Turkish update type with site name (NO UZI)
+        UPDATE_TYPE="${VERIFIED_EMOJI} PLAYVALORANTGUIDES.COM - Geliştirme Güncellemesi ${ONLINE_EMOJI}"
         COLOR=3447003  # Varsayılan mavi
         
         if [ "${{ github.event_name }}" = "pull_request" ]; then
-          UPDATE_TYPE="${UZI_EMOJI} PLAYVALORANTGUIDES.COM - Pull Request Birleştirildi: ${{ steps.generate-log.outputs.PR_TITLE }}"
+          UPDATE_TYPE="${HAC_EMOJI} PLAYVALORANTGUIDES.COM - Pull Request Birleştirildi: ${{ steps.generate-log.outputs.PR_TITLE }} ${VERIFIED_EMOJI}"
           COLOR=7419530  # PR'lar için mor
         fi
         
@@ -138,11 +143,11 @@ jobs:
           COLOR=15158332  # Red for hotfixes
         fi
         
-        # Turkish description with proper formatting
-        DESCRIPTION="**Proje:** \`${{ steps.generate-log.outputs.REPOSITORY }}\`\\n**Dal:** \`${{ steps.generate-log.outputs.BRANCH_NAME }}\`\\n**Geliştirici:** ${USER_EMOJI}"
+        # Turkish description - only developer info
+        DESCRIPTION="**Geliştirici:** ${USER_EMOJI}"
         
-        # Turkish summary with detailed metrics - proper newlines
-        SUMMARY_VALUE="📊 **${COMMIT_COUNT}** commit gönderildi\\n📁 **${{ steps.generate-log.outputs.FILES_CHANGED }}** dosya değiştirildi\\n➕ **${{ steps.generate-log.outputs.LINES_ADDED }}** satır eklendi • ➖ **${{ steps.generate-log.outputs.LINES_DELETED }}** satır silindi\\n🏗️ Toplam proje commit sayısı: **${{ steps.generate-log.outputs.TOTAL_COMMITS }}**"
+        # Turkish summary with detailed metrics using custom emojis
+        SUMMARY_VALUE="${ARROW_EMOJI} **${COMMIT_COUNT}** commit gönderildi\\n${ARROW_EMOJI} **${{ steps.generate-log.outputs.FILES_CHANGED }}** dosya değiştirildi\\n${ARROW_EMOJI} **${{ steps.generate-log.outputs.LINES_ADDED }}** satır eklendi • **${{ steps.generate-log.outputs.LINES_DELETED }}** satır silindi\\n${CROWN_EMOJI} Toplam proje commit sayısı: **${{ steps.generate-log.outputs.TOTAL_COMMITS }}**"
         
         # Get current timestamp
         TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -154,6 +159,8 @@ jobs:
               --arg summary "$SUMMARY_VALUE" \
               --arg timestamp "$TIMESTAMP" \
               --arg crown_emoji "$CROWN_EMOJI" \
+              --arg verified_emoji "$VERIFIED_EMOJI" \
+              --arg online_emoji "$ONLINE_EMOJI" \
               --arg commits_json "$COMMITS_JSON" \
               '{
                 "username": "PLAYVALORANTGUIDES.COM",
@@ -164,7 +171,7 @@ jobs:
                   "color": $color,
                   "fields": [
                     {
-                      "name": "📊 Geliştirme İstatistikleri",
+                      "name": ($verified_emoji + " Geliştirme İstatistikleri"),
                       "value": $summary,
                       "inline": false
                     },
@@ -174,13 +181,13 @@ jobs:
                       "inline": false
                     },
                     {
-                      "name": "🚀 Son Aktiviteler",
+                      "name": ($online_emoji + " Son Aktiviteler"),
                       "value": "💾 Veritabanı optimizasyonları\n🎨 UI/UX iyileştirmeleri\n🔧 Backend geliştirmeleri\n📱 Mobil uyumluluk çalışmaları",
                       "inline": false
                     }
                   ],
                   "footer": {
-                    "text": "PLAYVALORANTGUIDES.COM • Profesyonel Valorant Rehber Platformu",
+                    "text": ("PLAYVALORANTGUIDES.COM " + $online_emoji + " Profesyonel Valorant Rehber Platformu"),
                     "icon_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg"
                   },
                   "timestamp": $timestamp,
