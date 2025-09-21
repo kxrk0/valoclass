@@ -1,7 +1,5 @@
 import { Metadata } from 'next'
 import AdminLayout from '@/components/admin/AdminLayout'
-import AdminAuthGuard from '@/components/admin/AdminAuthGuard'
-import { NotificationProvider } from '@/contexts/NotificationContext'
 import { 
   Crosshair, 
   Eye, 
@@ -341,12 +339,8 @@ function CrosshairsManagement() {
 
 export default function AdminCrosshairsPage() {
   return (
-    <NotificationProvider>
-      <AdminAuthGuard>
-        <AdminLayout>
-          <CrosshairsManagement />
-        </AdminLayout>
-      </AdminAuthGuard>
-    </NotificationProvider>
+    <AdminLayout>
+      <CrosshairsManagement />
+    </AdminLayout>
   )
 }

@@ -1,7 +1,5 @@
 import { Metadata } from 'next'
 import AdminLayout from '@/components/admin/AdminLayout'
-import AdminAuthGuard from '@/components/admin/AdminAuthGuard'
-import { NotificationProvider } from '@/contexts/NotificationContext'
 import { 
   Target, 
   Eye, 
@@ -418,12 +416,8 @@ function LineupsManagement() {
 
 export default function AdminLineupsPage() {
   return (
-    <NotificationProvider>
-      <AdminAuthGuard>
-        <AdminLayout>
-          <LineupsManagement />
-        </AdminLayout>
-      </AdminAuthGuard>
-    </NotificationProvider>
+    <AdminLayout>
+      <LineupsManagement />
+    </AdminLayout>
   )
 }

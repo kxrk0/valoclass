@@ -1,7 +1,5 @@
 import { Metadata } from 'next'
 import AdminLayout from '@/components/admin/AdminLayout'
-import AdminAuthGuard from '@/components/admin/AdminAuthGuard'
-import { NotificationProvider } from '@/contexts/NotificationContext'
 import { 
   BarChart3, 
   TrendingUp, 
@@ -310,12 +308,8 @@ function AnalyticsPage() {
 
 export default function AdminAnalyticsPage() {
   return (
-    <NotificationProvider>
-      <AdminAuthGuard>
-        <AdminLayout>
-          <AnalyticsPage />
-        </AdminLayout>
-      </AdminAuthGuard>
-    </NotificationProvider>
+    <AdminLayout>
+      <AnalyticsPage />
+    </AdminLayout>
   )
 }

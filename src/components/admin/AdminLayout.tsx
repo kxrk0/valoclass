@@ -36,13 +36,13 @@ import {
   Settings2
 } from 'lucide-react';
 import NotificationDropdown from './NotificationDropdown';
-import { useAdminSocket, AdminSocketProvider } from '@/contexts/AdminSocketContext';
+import { useAdminSocket } from '@/contexts/AdminSocketContext';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-const AdminLayoutComponent: React.FC<AdminLayoutProps> = ({ children }) => {
+const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -737,17 +737,6 @@ const AdminLayoutComponent: React.FC<AdminLayoutProps> = ({ children }) => {
         </div>
       )}
     </div>
-  );
-};
-
-// Main AdminLayout with Socket Provider
-const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  return (
-    <AdminSocketProvider>
-      <AdminLayoutComponent>
-        {children}
-      </AdminLayoutComponent>
-    </AdminSocketProvider>
   );
 };
 
