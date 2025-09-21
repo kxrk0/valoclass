@@ -37,9 +37,13 @@ const bulkActionSchema = z.object({
 // Middleware to verify admin role
 async function verifyAdmin(req: AuthenticatedRequest, res: Response, next: Function) {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    // Check both cookies and headers for auth token
+    const token = req.cookies?.admin_token || 
+                  req.cookies?.auth_token || 
+                  req.headers.authorization?.replace('Bearer ', '');
+    
     if (!token) {
-      return res.status(401).json({ error: 'No token provided' });
+      return res.status(401).json({ error: 'No authentication token provided' });
     }
 
     const decoded = await AuthService.verifyToken(token);
