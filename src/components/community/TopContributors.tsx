@@ -2,8 +2,11 @@
 
 import Link from 'next/link'
 import { Crown, Trophy, Star } from 'lucide-react'
+import { useTranslation } from '@/contexts/LanguageContext'
 
 const TopContributors = () => {
+  const t = useTranslation()
+  
   const contributors = [
     {
       id: '1',
@@ -104,7 +107,7 @@ const TopContributors = () => {
       <div className="card">
         <div className="flex items-center gap-3 mb-6">
           <Crown className="text-yellow-400" size={24} />
-          <h2 className="font-heading font-bold text-xl">Top Contributors</h2>
+          <h2 className="font-heading font-bold text-xl">{t.community.contributors.title}</h2>
         </div>
 
         <div className="space-y-4">
@@ -149,7 +152,7 @@ const TopContributors = () => {
                   <div className="text-sm font-medium text-pink-400">
                     {contributor.contributions.likes}
                   </div>
-                  <div className="text-xs text-gray-400">likes</div>
+                  <div className="text-xs text-gray-400">{t.community.contributors.likes}</div>
                 </div>
               </div>
             </Link>
@@ -160,7 +163,7 @@ const TopContributors = () => {
           href="/community/leaderboard" 
           className="block mt-6 text-center text-purple-400 hover:text-purple-300 transition-colors"
         >
-          View Full Leaderboard →
+          {t.community.contributors.viewLeaderboard}
         </Link>
       </div>
 
@@ -168,7 +171,7 @@ const TopContributors = () => {
       <div className="card">
         <div className="flex items-center gap-3 mb-6">
           <Star className="text-cyan-400" size={24} />
-          <h2 className="font-heading font-bold text-xl">Rising Stars</h2>
+          <h2 className="font-heading font-bold text-xl">{t.community.contributors.risingStars}</h2>
         </div>
 
         <div className="space-y-3">
@@ -194,7 +197,7 @@ const TopContributors = () => {
 
                 <div className="text-right">
                   <div className="text-sm font-medium">{contributor.contributions.lineups + contributor.contributions.crosshairs}</div>
-                  <div className="text-xs text-gray-400">posts</div>
+                  <div className="text-xs text-gray-400">{t.community.contributors.posts}</div>
                 </div>
               </div>
             </Link>

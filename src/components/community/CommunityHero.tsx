@@ -2,31 +2,34 @@
 
 import Link from 'next/link'
 import { Users, Trophy, Target, Heart } from 'lucide-react'
+import { useTranslation } from '@/contexts/LanguageContext'
 
 const CommunityHero = () => {
+  const t = useTranslation()
+  
   const stats = [
     {
       icon: Users,
       value: '25,000+',
-      label: 'Active Members',
+      label: t.community.hero.stats.activeMembers,
       color: 'text-blue-400'
     },
     {
       icon: Target,
       value: '5,200+',
-      label: 'Lineups Shared',
+      label: t.community.hero.stats.lineupsShared,
       color: 'text-red-400'
     },
     {
       icon: Trophy,
       value: '12,800+',
-      label: 'Crosshairs Created',
+      label: t.community.hero.stats.crosshairsCreated,
       color: 'text-yellow-400'
     },
     {
       icon: Heart,
       value: '89,000+',
-      label: 'Likes Given',
+      label: t.community.hero.stats.likesGiven,
       color: 'text-pink-400'
     }
   ]
@@ -36,22 +39,21 @@ const CommunityHero = () => {
       <div className="container">
         <div className="text-center max-w-4xl mx-auto">
           <h1 className="font-heading font-bold text-4xl md:text-6xl mb-6">
-            Join the 
-            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Community</span>
+            {t.community.hero.title.main}{' '}
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">{t.community.hero.title.highlight}</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
-            Connect with thousands of Valorant players, share your strategies, 
-            and learn from the best in the community. Your journey to improve starts here.
+            {t.community.hero.subtitle}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <Link href="/register" className="btn btn-primary text-lg px-8 py-3">
               <Users size={20} />
-              Join Community
+              {t.community.hero.joinCommunity}
             </Link>
             <Link href="/community/discord" className="btn btn-secondary text-lg px-8 py-3">
-              Discord Server
+              {t.community.hero.discordServer}
             </Link>
           </div>
 

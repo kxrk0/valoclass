@@ -15,6 +15,7 @@ import {
   validateCrosshairAccuracy,
   PRO_PRESETS
 } from '@/utils/valorantCrosshair'
+import { useTranslation } from '@/contexts/LanguageContext'
 
 // Import test utilities for development validation
 if (process.env.NODE_ENV === 'development') {
@@ -22,6 +23,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const CrosshairBuilder = () => {
+  const t = useTranslation()
+  
   const [profileSettings, setProfileSettings] = useState({
     general: { ...DEFAULT_VALORANT_CROSSHAIR, profile: 0 },
     primary: { ...DEFAULT_VALORANT_CROSSHAIR, profile: 1 },
@@ -160,10 +163,10 @@ const CrosshairBuilder = () => {
   }
 
   const profileConfigs = [
-    { key: 'general' as const, name: 'General', icon: '⊕', description: 'Default crosshair' },
-    { key: 'primary' as const, name: 'Primary', icon: '🎯', description: 'Primary weapons' },
-    { key: 'ads' as const, name: 'ADS', icon: '🔍', description: 'Aim down sight' },
-    { key: 'sniper' as const, name: 'Sniper', icon: '🎯', description: 'Sniper scopes' }
+    { key: 'general' as const, name: t.crosshairs.builder.profiles.general, icon: '⊕', description: 'Default crosshair' },
+    { key: 'primary' as const, name: t.crosshairs.builder.profiles.primary, icon: '🎯', description: 'Primary weapons' },
+    { key: 'ads' as const, name: t.crosshairs.builder.profiles.ads, icon: '🔍', description: 'Aim down sight' },
+    { key: 'sniper' as const, name: t.crosshairs.builder.profiles.sniper, icon: '🎯', description: 'Sniper scopes' }
   ]
 
   return (
@@ -180,9 +183,9 @@ const CrosshairBuilder = () => {
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           <div>
             <h2 className="font-heading font-bold text-2xl mb-2 bg-gradient-to-r from-yellow-400 to-red-400 bg-clip-text text-transparent">
-              Crosshair Builder
+              {t.crosshairs.builder.title}
             </h2>
-            <p className="text-sm text-gray-400">Create your perfect Valorant crosshair with accurate in-game codes</p>
+            <p className="text-sm text-gray-400">{t.crosshairs.builder.description}</p>
           </div>
           
           {/* Profile Selector */}
@@ -215,7 +218,7 @@ const CrosshairBuilder = () => {
             }))}
             className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white/5 hover:bg-white/10 text-gray-300"
           >
-            Reset
+            {t.crosshairs.builder.actions.reset}
           </button>
           
           <button
@@ -223,7 +226,7 @@ const CrosshairBuilder = () => {
             className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white/5 hover:bg-white/10 text-gray-300 flex items-center gap-2"
           >
             <Shuffle size={16} />
-            Random
+            {t.crosshairs.builder.actions.random}
           </button>
           
           <button
@@ -249,7 +252,7 @@ const CrosshairBuilder = () => {
             className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-red-500/20 hover:bg-red-500/30 text-red-300 flex items-center gap-2"
           >
             <div className="w-2 h-2 bg-red-300 rounded-full"></div>
-            Dot Only
+            {t.crosshairs.builder.actions.dotOnly}
           </button>
 
           <button
@@ -257,7 +260,7 @@ const CrosshairBuilder = () => {
             className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white/5 hover:bg-white/10 text-gray-300 flex items-center gap-2"
           >
             <Import size={16} />
-            Import
+            {t.crosshairs.builder.actions.import}
           </button>
 
           <button
@@ -265,7 +268,7 @@ const CrosshairBuilder = () => {
             className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white/5 hover:bg-white/10 text-gray-300 flex items-center gap-2"
           >
             <Users size={16} />
-            Pro Presets
+            {t.crosshairs.builder.actions.proPresets}
           </button>
 
           <button
@@ -273,7 +276,7 @@ const CrosshairBuilder = () => {
             className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white/5 hover:bg-white/10 text-gray-300 flex items-center gap-2"
           >
             <Download size={16} />
-            Export
+            {t.crosshairs.builder.actions.export}
           </button>
 
           <button
@@ -281,7 +284,7 @@ const CrosshairBuilder = () => {
             className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-gradient-to-r from-yellow-400 to-red-400 text-black flex items-center gap-2"
           >
             <Share2 size={16} />
-            Share & Codes
+            {t.crosshairs.builder.actions.shareCode}
           </button>
           
           <button
@@ -289,7 +292,7 @@ const CrosshairBuilder = () => {
             className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-gradient-to-r from-purple-500 to-blue-500 text-white flex items-center gap-2"
           >
             <Users size={16} />
-            Share to Community
+            {t.crosshairs.builder.actions.shareCommunity}
           </button>
         </div>
       </div>
@@ -308,7 +311,7 @@ const CrosshairBuilder = () => {
           >
             <h3 className="font-semibold text-base mb-3 flex items-center gap-2">
               <Palette size={18} />
-              Live Preview
+              {t.crosshairs.builder.preview.title}
             </h3>
             <div className="flex justify-center mb-3">
               <CrosshairPreview settings={settings} size="medium" />

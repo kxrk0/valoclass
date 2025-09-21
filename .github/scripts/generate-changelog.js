@@ -157,11 +157,17 @@ function formatDiscordField(type, commits) {
       low: '💡'
     }[commit.priority];
     
-    return `${priorityEmoji} \`${commit.hash}\` ${commit.parsed.description}\\n👤 **${commit.author}** • 📅 ${commit.date}`;
-  }).join('\\n\\n');
+    // Clean and professional formatting without \n artifacts
+    const cleanDescription = commit.parsed.description
+      .replace(/\\n/g, ' ')
+      .replace(/\bli\b/g, '•')
+      .trim();
+    
+    return `${priorityEmoji} **\`${commit.hash}\`** ${cleanDescription}\n📝 *${commit.author}* • 🕒 \`${commit.date}\``;
+  }).join('\n\n');
   
   return {
-    name: `${config.emoji} ${config.category} (${commits.length})`,
+    name: `${config.emoji} **${config.category}** (${commits.length})`,
     value: commitList.length > 1024 ? commitList.substring(0, 1020) + '...' : commitList,
     inline: false
   };

@@ -3,8 +3,10 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { MessageCircle, Heart, Share2, Target, Crosshair, Trophy, Clock, Eye, TrendingUp } from 'lucide-react'
+import { useTranslation } from '@/contexts/LanguageContext'
 
 const RecentActivity = () => {
+  const t = useTranslation()
   const [activeTab, setActiveTab] = useState<'all' | 'lineups' | 'crosshairs' | 'discussions'>('all')
 
   const activities = [
@@ -158,22 +160,22 @@ const RecentActivity = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="font-heading font-bold text-2xl">Recent Activity</h2>
+        <h2 className="font-heading font-bold text-2xl">{t.community.recentActivity.title}</h2>
         <Link 
           href="/community/activity" 
           className="text-purple-400 hover:text-purple-300 transition-colors"
         >
-          View All →
+          {t.community.recentActivity.viewAll}
         </Link>
       </div>
 
       {/* Filter Tabs */}
       <div className="flex gap-2 overflow-x-auto">
         {[
-          { id: 'all', label: 'All Activity', count: activities.length },
-          { id: 'lineups', label: 'Lineups', count: activities.filter(a => a.type === 'lineup').length },
-          { id: 'crosshairs', label: 'Crosshairs', count: activities.filter(a => a.type === 'crosshair').length },
-          { id: 'discussions', label: 'Discussions', count: activities.filter(a => a.type === 'discussion').length }
+          { id: 'all', label: t.community.recentActivity.filters.allActivity, count: activities.length },
+          { id: 'lineups', label: t.community.recentActivity.filters.lineups, count: activities.filter(a => a.type === 'lineup').length },
+          { id: 'crosshairs', label: t.community.recentActivity.filters.crosshairs, count: activities.filter(a => a.type === 'crosshair').length },
+          { id: 'discussions', label: t.community.recentActivity.filters.discussions, count: activities.filter(a => a.type === 'discussion').length }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -288,12 +290,12 @@ const RecentActivity = () => {
                     {activity.stats.downloads && (
                       <div className="flex items-center gap-1">
                         <TrendingUp size={14} />
-                        {activity.stats.downloads} downloads
+                        {activity.stats.downloads} {t.community.recentActivity.actions.downloads}
                       </div>
                     )}
                     <button className="flex items-center gap-1 hover:text-green-400 transition-colors">
                       <Share2 size={14} />
-                      Share
+                      {t.community.recentActivity.actions.share}
                     </button>
                   </div>
                 </div>
@@ -306,7 +308,7 @@ const RecentActivity = () => {
       {/* Load More */}
       <div className="text-center">
         <button className="btn btn-secondary">
-          Load More Activity
+          {t.community.recentActivity.loadMore}
         </button>
       </div>
     </div>

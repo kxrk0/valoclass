@@ -1,16 +1,22 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { Lock, Users, Shield, ArrowRight } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import CommunityHero from '@/components/community/CommunityHero'
 import TopContributors from '@/components/community/TopContributors'
 import RecentActivity from '@/components/community/RecentActivity'
 import CommunityStats from '@/components/community/CommunityStats'
+import { useTranslation } from '@/contexts/LanguageContext'
+import { useAuth } from '@/contexts/AuthContext'
 
 // Metadata is handled by layout since this is a client component
 
 export default function CommunityPage() {
+  const t = useTranslation()
+  const { isAuthenticated, isLoading } = useAuth()
   const [isVisible, setIsVisible] = useState(false)
   const [sectionIndex, setSectionIndex] = useState(0)
 
@@ -22,6 +28,82 @@ export default function CommunityPage() {
     }, 1500)
     return () => clearInterval(timer)
   }, [])
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show login prompt if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+        <Header />
+        
+        <div className="flex items-center justify-center min-h-screen px-4 pt-20">
+          <div className="max-w-md w-full">
+            <div className="glass rounded-2xl border border-white/10 p-8 text-center">
+              {/* Lock Icon */}
+              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Lock size={32} className="text-red-400" />
+              </div>
+              
+              {/* Content */}
+              <h2 className="text-2xl font-heading font-bold text-white mb-4">
+                Community Access Required
+              </h2>
+              
+              <p className="text-gray-400 mb-6 leading-relaxed">
+                The Community section is exclusive to our registered members. 
+                Join our community to connect with fellow Valorant players, share strategies, and access exclusive content.
+              </p>
+              
+              {/* Benefits */}
+              <div className="space-y-3 mb-8">
+                <div className="flex items-center space-x-3 text-left">
+                  <Users size={16} className="text-green-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-300">Connect with players worldwide</span>
+                </div>
+                <div className="flex items-center space-x-3 text-left">
+                  <Shield size={16} className="text-blue-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-300">Share and discover strategies</span>
+                </div>
+                <div className="flex items-center space-x-3 text-left">
+                  <ArrowRight size={16} className="text-purple-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-300">Participate in discussions</span>
+                </div>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="space-y-3">
+                <Link 
+                  href="/auth/login" 
+                  className="w-full btn-primary py-3 text-center block"
+                >
+                  Sign In to Continue
+                </Link>
+                <Link 
+                  href="/auth/register" 
+                  className="w-full text-gray-400 hover:text-white transition-colors duration-200 text-sm"
+                >
+                  Don&apos;t have an account? Register here
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <Footer />
+      </div>
+    )
+  }
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Enhanced Background Elements */}
@@ -122,13 +204,13 @@ export default function CommunityPage() {
             
             <div className="relative text-center max-w-4xl mx-auto">
               <h3 className="font-heading font-bold text-3xl md:text-4xl text-white mb-6 hover:text-green-300 transition-colors duration-300">
-                🌟 Join the Community
+                {t.community.features.title}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
                 {[
-                  { icon: '🤝', title: 'Connect & Learn', description: 'Join discussions, share strategies, and learn from experienced players worldwide.', color: 'green', delay: '0ms' },
-                  { icon: '🎯', title: 'Share Your Work', description: 'Upload lineups, crosshairs, and guides. Get recognition from the community.', color: 'purple', delay: '100ms' },
-                  { icon: '🏆', title: 'Compete & Grow', description: 'Participate in tournaments, challenges, and climb the community leaderboards.', color: 'blue', delay: '200ms' }
+                  { icon: '🤝', title: t.community.features.connect.title, description: t.community.features.connect.description, color: 'green', delay: '0ms' },
+                  { icon: '🎯', title: t.community.features.share.title, description: t.community.features.share.description, color: 'purple', delay: '100ms' },
+                  { icon: '🏆', title: t.community.features.compete.title, description: t.community.features.compete.description, color: 'blue', delay: '200ms' }
                 ].map((feature, index) => (
                   <div 
                     key={index}

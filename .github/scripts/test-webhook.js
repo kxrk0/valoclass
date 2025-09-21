@@ -87,19 +87,20 @@ function createTestPayload(commitCount = 3) {
       emoji = "👥"; category = "Topluluk";
     }
     
-    // Basit tek satır format
-    const commitText = `\`${commit.hash}\` ${commit.message} - ${commit.author}`;
+    // Professional formatting
+    const cleanMessage = commit.message.replace(/\\n/g, ' ').replace(/\bli\b/g, '•').trim();
+    const commitText = `⭐ **\`${commit.hash}\`** ${cleanMessage}\n📝 *${commit.author}* • 🕒 \`${commit.date}\``;
     
     fields.push({
-      name: `${emoji} ${category}`,
+      name: `${emoji} **${category}**`,
       value: commitText,
       inline: false
     });
   });
 
   return {
-    username: "PLAYVALORANTGUIDES.COM",
-    avatar_url: "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg",
+    username: "playvalorantguides.com",
+    avatar_url: "https://raw.githubusercontent.com/owner/repo/main/public/logo.png",
     embeds: [
       {
         title: "🔄 Kod Güncellemesi",
@@ -107,8 +108,8 @@ function createTestPayload(commitCount = 3) {
         color: color,
         fields: fields,
         footer: {
-          text: "PLAYVALORANTGUIDES.COM • Geliştirme Güncellemeleri",
-          icon_url: "https://github.com/fluidicon.png"
+          text: "playvalorantguides.com • Geliştirme Bildirimleri",
+          icon_url: "https://raw.githubusercontent.com/owner/repo/main/public/logo.png"
         },
         timestamp: new Date().toISOString(),
         thumbnail: {

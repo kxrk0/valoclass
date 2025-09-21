@@ -1,0 +1,881 @@
+[
+  {
+    "id": "astra-1",
+    "type": "lineup",
+    "agent": "Astra",
+    "abilities": [
+      "Gravity Well"
+    ],
+    "title": "A Site Clear",
+    "description": "From A Short to A Site",
+    "from": "A Short",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/astra-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "clear",
+      "attack"
+    ]
+  },
+  {
+    "id": "astra-2",
+    "type": "lineup",
+    "agent": "Astra",
+    "abilities": [
+      "Gravity Well"
+    ],
+    "title": "B Elbow Clear Lineup",
+    "description": "From B Long to B Elbow",
+    "from": "B Long",
+    "to": "B Elbow",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/astra-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "clear",
+      "attack"
+    ]
+  },
+  {
+    "id": "breach-1",
+    "type": "lineup",
+    "agent": "Breach",
+    "abilities": [
+      "Fault Line"
+    ],
+    "title": "A Site Clear Lineup",
+    "description": "From A Main to A Site",
+    "from": "A Main",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/breach-1/3.webp",
+    "map": "Ascent",
+    "tags": [
+      "clear",
+      "attack"
+    ]
+  },
+  {
+    "id": "breach-2",
+    "type": "lineup",
+    "agent": "Breach",
+    "abilities": [
+      "Aftershock"
+    ],
+    "title": "A Default Clear Lineup",
+    "description": "From A Main to A Site Default",
+    "from": "A Main",
+    "to": "A Site Default",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/breach-2/3.webp",
+    "map": "Ascent",
+    "tags": [
+      "clear",
+      "attack"
+    ]
+  },
+  {
+    "id": "brim-1",
+    "type": "lineup",
+    "agent": "Brimstone",
+    "abilities": [
+      "Incendiary"
+    ],
+    "title": "A Truck Denial from Short",
+    "description": "From A Short to A Truck",
+    "from": "A Short",
+    "to": "A Truck",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/brim-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "denial",
+      "attack"
+    ]
+  },
+  {
+    "id": "brim-2",
+    "type": "post-plant",
+    "agent": "Brimstone",
+    "abilities": [
+      "Incendiary"
+    ],
+    "title": "Stall Defuse B Site Default",
+    "description": "From B Long to B Site",
+    "from": "B Long",
+    "to": "B Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/brim-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "post-plant",
+      "defuse-deny"
+    ]
+  },
+  {
+    "id": "brim-3",
+    "type": "post-plant",
+    "agent": "Brimstone",
+    "abilities": [
+      "Incendiary"
+    ],
+    "title": "Post Plant Generator Molly",
+    "description": "From A Main to A Generator",
+    "from": "A Main",
+    "to": "A Generator",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/brim-3/3.webp",
+    "map": "Ascent",
+    "tags": [
+      "post-plant",
+      "defuse-deny"
+    ]
+  },
+  {
+    "id": "chamber-1",
+    "type": "setup",
+    "agent": "Chamber",
+    "abilities": [
+      "Trademark"
+    ],
+    "title": "Aggressive B Site Hold",
+    "description": "For B Elbow",
+    "from": "B Elbow",
+    "to": "",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/chamber-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "setup",
+      "defense"
+    ]
+  },
+  {
+    "id": "chamber-2",
+    "type": "setup",
+    "agent": "Chamber",
+    "abilities": [
+      "Rendezvous"
+    ],
+    "title": "A Site Anchor Setup",
+    "description": "For A Site",
+    "from": "A Site",
+    "to": "",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/chamber-2/3.webp",
+    "map": "Ascent",
+    "tags": [
+      "setup",
+      "defense"
+    ]
+  },
+  {
+    "id": "cypher-1",
+    "type": "setup",
+    "agent": "Cypher",
+    "abilities": [
+      "Spycam",
+      "Trapwire"
+    ],
+    "title": "B Site Defense Setup",
+    "description": "For B Site",
+    "from": "B Site",
+    "to": "",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/cypher-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "setup",
+      "defense",
+      "info"
+    ]
+  },
+  {
+    "id": "cypher-2",
+    "type": "lineup",
+    "agent": "Cypher",
+    "abilities": [
+      "Cyber Cage"
+    ],
+    "title": "B Long Smoke for Push",
+    "description": "From Attacker Spawn to B Long",
+    "from": "Attacker Spawn",
+    "to": "B Long",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/cypher-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "smoke",
+      "attack"
+    ]
+  },
+  {
+    "id": "deadlock-1",
+    "type": "setup",
+    "agent": "Deadlock",
+    "abilities": [
+      "Barrier Mesh"
+    ],
+    "title": "A Site Wall Block",
+    "description": "For A Site",
+    "from": "A Site",
+    "to": "",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/deadlock-1/3.webp",
+    "map": "Ascent",
+    "tags": [
+      "setup",
+      "defense"
+    ]
+  },
+  {
+    "id": "deadlock-2",
+    "type": "lineup",
+    "agent": "Deadlock",
+    "abilities": [
+      "Sonic Sensor"
+    ],
+    "title": "B Long Sound Trap",
+    "description": "From Defender Spawn to B Long",
+    "from": "Defender Spawn",
+    "to": "B Long",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/deadlock-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "info",
+      "defense"
+    ]
+  },
+  {
+    "id": "fade-1",
+    "type": "lineup",
+    "agent": "Fade",
+    "abilities": [
+      "Prowler"
+    ],
+    "title": "A Site Prowler Clear",
+    "description": "From A Main to A Site",
+    "from": "A Main",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/fade-1/3.webp",
+    "map": "Ascent",
+    "tags": [
+      "clear",
+      "attack",
+      "info"
+    ]
+  },
+  {
+    "id": "fade-2",
+    "type": "lineup",
+    "agent": "Fade",
+    "abilities": [
+      "Haunts"
+    ],
+    "title": "B Site Info Gather",
+    "description": "From B Main to B Site",
+    "from": "B Main",
+    "to": "B Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/fade-2/3.webp",
+    "map": "Ascent",
+    "tags": [
+      "info",
+      "attack"
+    ]
+  },
+  {
+    "id": "gekko-1",
+    "type": "lineup",
+    "agent": "Gekko",
+    "abilities": [
+      "Dizzy"
+    ],
+    "title": "A Site Flash Setup",
+    "description": "From A Short to A Site",
+    "from": "A Short",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/gekko-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "flash",
+      "entry",
+      "attack"
+    ]
+  },
+  {
+    "id": "gekko-2",
+    "type": "post-plant",
+    "agent": "Gekko",
+    "abilities": [
+      "Thrash"
+    ],
+    "title": "Post Plant B Site Stall",
+    "description": "From B Halls to B Site",
+    "from": "B Halls",
+    "to": "B Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/gekko-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "post-plant",
+      "stall"
+    ]
+  },
+  {
+    "id": "harbor-1",
+    "type": "lineup",
+    "agent": "Harbor",
+    "abilities": [
+      "High Tide"
+    ],
+    "title": "A Site Wall Push",
+    "description": "From A Short to A Site",
+    "from": "A Short",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/harbor-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "wall",
+      "attack"
+    ]
+  },
+  {
+    "id": "harbor-2",
+    "type": "lineup",
+    "agent": "Harbor",
+    "abilities": [
+      "Cove"
+    ],
+    "title": "B Site Smoke Cover",
+    "description": "From B Long to B Site",
+    "from": "B Long",
+    "to": "B Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/harbor-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "smoke",
+      "attack"
+    ]
+  },
+  {
+    "id": "kayo-1",
+    "type": "lineup",
+    "agent": "KAYO",
+    "abilities": [
+      "ZERO/point"
+    ],
+    "title": "A Site Suppress Lineup",
+    "description": "From A Main to A Site",
+    "from": "A Main",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/kayo-1/3.webp",
+    "map": "Ascent",
+    "tags": [
+      "suppress",
+      "attack"
+    ]
+  },
+  {
+    "id": "kayo-2",
+    "type": "lineup",
+    "agent": "KAYO",
+    "abilities": [
+      "FLASH/drive"
+    ],
+    "title": "B Site Flash Entry",
+    "description": "From B Main to B Site",
+    "from": "B Main",
+    "to": "B Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/kayo-2/3.webp",
+    "map": "Ascent",
+    "tags": [
+      "flash",
+      "entry",
+      "attack"
+    ]
+  },
+  {
+    "id": "killjoy-1",
+    "type": "setup",
+    "agent": "Killjoy",
+    "abilities": [
+      "Alarmbot",
+      "Turret"
+    ],
+    "title": "A Site Defense Setup",
+    "description": "For A Site",
+    "from": "A Site",
+    "to": "",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/killjoy-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "setup",
+      "defense",
+      "info"
+    ]
+  },
+  {
+    "id": "killjoy-2",
+    "type": "post-plant",
+    "agent": "Killjoy",
+    "abilities": [
+      "Nanoswarm"
+    ],
+    "title": "Post Plant B Site Deny",
+    "description": "From B Halls to B Site",
+    "from": "B Halls",
+    "to": "B Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/killjoy-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "post-plant",
+      "denial"
+    ]
+  },
+  {
+    "id": "neon-1",
+    "type": "lineup",
+    "agent": "Neon",
+    "abilities": [
+      "Fast Lane"
+    ],
+    "title": "A Site Wall Push",
+    "description": "From A Short to A Site",
+    "from": "A Short",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/neon-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "wall",
+      "attack"
+    ]
+  },
+  {
+    "id": "neon-2",
+    "type": "lineup",
+    "agent": "Neon",
+    "abilities": [
+      "Relay Bolt"
+    ],
+    "title": "B Long Clear Stun",
+    "description": "From B Long to B Elbow",
+    "from": "B Long",
+    "to": "B Elbow",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/neon-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "stun",
+      "clear",
+      "attack"
+    ]
+  },
+  {
+    "id": "omen-1",
+    "type": "lineup",
+    "agent": "Omen",
+    "abilities": [
+      "Dark Cover"
+    ],
+    "title": "One Way A Short",
+    "description": "From Attacker Spawn to A Short",
+    "from": "Attacker Spawn",
+    "to": "A Short",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/omen-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "smoke",
+      "one-way",
+      "attack"
+    ]
+  },
+  {
+    "id": "omen-2",
+    "type": "post-plant",
+    "agent": "Omen",
+    "abilities": [
+      "Dark Cover"
+    ],
+    "title": "Post Plant B Site Smoke",
+    "description": "From B Halls to B Site",
+    "from": "B Halls",
+    "to": "B Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/omen-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "post-plant",
+      "smoke"
+    ]
+  },
+  {
+    "id": "phoenix-1",
+    "type": "lineup",
+    "agent": "Phoenix",
+    "abilities": [
+      "Hot Hands"
+    ],
+    "title": "A Site Clear Molly",
+    "description": "From A Short to A Site",
+    "from": "A Short",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/phoenix-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "molly",
+      "clear",
+      "attack"
+    ]
+  },
+  {
+    "id": "phoenix-2",
+    "type": "lineup",
+    "agent": "Phoenix",
+    "abilities": [
+      "Blaze"
+    ],
+    "title": "B Long Wall Push",
+    "description": "From B Long to B Elbow",
+    "from": "B Long",
+    "to": "B Elbow",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/phoenix-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "wall",
+      "attack"
+    ]
+  },
+  {
+    "id": "raze-1",
+    "type": "lineup",
+    "agent": "Raze",
+    "abilities": [
+      "Paint Shells"
+    ],
+    "title": "A Site Clear Nade",
+    "description": "From A Short to A Site",
+    "from": "A Short",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/raze-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "nade",
+      "clear",
+      "attack"
+    ]
+  },
+  {
+    "id": "raze-2",
+    "type": "post-plant",
+    "agent": "Raze",
+    "abilities": [
+      "Paint Shells"
+    ],
+    "title": "Post Plant B Site Nade",
+    "description": "From B Halls to B Site",
+    "from": "B Halls",
+    "to": "B Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/raze-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "post-plant",
+      "nade"
+    ]
+  },
+  {
+    "id": "sage-1",
+    "type": "setup",
+    "agent": "Sage",
+    "abilities": [
+      "Barrier Orb"
+    ],
+    "title": "A Site Wall Setup",
+    "description": "For A Site",
+    "from": "A Site",
+    "to": "",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/sage-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "setup",
+      "wall",
+      "defense"
+    ]
+  },
+  {
+    "id": "sage-2",
+    "type": "lineup",
+    "agent": "Sage",
+    "abilities": [
+      "Slow Orb"
+    ],
+    "title": "B Long Slow Push",
+    "description": "From B Long to B Elbow",
+    "from": "B Long",
+    "to": "B Elbow",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/sage-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "slow",
+      "attack"
+    ]
+  },
+  {
+    "id": "skye-1",
+    "type": "lineup",
+    "agent": "Skye",
+    "abilities": [
+      "Guiding Light"
+    ],
+    "title": "A Site Flash Entry",
+    "description": "From A Short to A Site",
+    "from": "A Short",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/skye-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "flash",
+      "entry",
+      "attack"
+    ]
+  },
+  {
+    "id": "skye-2",
+    "type": "lineup",
+    "agent": "Skye",
+    "abilities": [
+      "Trailblazer"
+    ],
+    "title": "B Site Dog Clear",
+    "description": "From B Long to B Site",
+    "from": "B Long",
+    "to": "B Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/skye-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "clear",
+      "info",
+      "attack"
+    ]
+  },
+  {
+    "id": "sova-1",
+    "type": "lineup",
+    "agent": "Sova",
+    "abilities": [
+      "Recon Bolt"
+    ],
+    "title": "Reveal all of A Site",
+    "description": "From A Lobby to A Site",
+    "from": "A Lobby",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/sova-1/3.webp",
+    "map": "Ascent",
+    "tags": [
+      "info",
+      "attack"
+    ]
+  },
+  {
+    "id": "sova-2",
+    "type": "lineup",
+    "agent": "Sova",
+    "abilities": [
+      "Recon Bolt"
+    ],
+    "title": "Sova Lineup to A From A Lobby",
+    "description": "From A Lobby to A Site",
+    "from": "A Lobby",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/sova-2/3.webp",
+    "map": "Ascent",
+    "tags": [
+      "info",
+      "attack"
+    ]
+  },
+  {
+    "id": "sova-3",
+    "type": "lineup",
+    "agent": "Sova",
+    "abilities": [
+      "Recon Bolt"
+    ],
+    "title": "Attack A Site",
+    "description": "From A Long to A Hell",
+    "from": "A Long",
+    "to": "A Hell",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/sova-3/3.webp",
+    "map": "Split",
+    "tags": [
+      "info",
+      "attack"
+    ]
+  },
+  {
+    "id": "tejo-1",
+    "type": "lineup",
+    "agent": "Tejo",
+    "abilities": [
+      "Steady Aim"
+    ],
+    "title": "A Site Wall Bang",
+    "description": "From A Short to A Site",
+    "from": "A Short",
+    "to": "A Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/tejo-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "wallbang",
+      "attack"
+    ]
+  },
+  {
+    "id": "tejo-2",
+    "type": "setup",
+    "agent": "Tejo",
+    "abilities": [
+      "Dimensional Drift"
+    ],
+    "title": "Dimensional Drift Rotate",
+    "description": "For Mid",
+    "from": "Mid",
+    "to": "",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/tejo-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "setup",
+      "rotate"
+    ]
+  },
+  {
+    "id": "viper-1",
+    "type": "lineup",
+    "agent": "Viper",
+    "abilities": [
+      "Snake Bite"
+    ],
+    "title": "A Default Molly from Spawn",
+    "description": "From Attacker Spawn to A Site Default",
+    "from": "Attacker Spawn",
+    "to": "A Site Default",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/viper-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "molly",
+      "attack"
+    ]
+  },
+  {
+    "id": "viper-2",
+    "type": "post-plant",
+    "agent": "Viper",
+    "abilities": [
+      "Snake Bite"
+    ],
+    "title": "Post Plant A Default Molly",
+    "description": "From A Short to A Site Default",
+    "from": "A Short",
+    "to": "A Site Default",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/viper-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "post-plant",
+      "molly"
+    ]
+  },
+  {
+    "id": "viper-3",
+    "type": "lineup",
+    "agent": "Viper",
+    "abilities": [
+      "Toxic Screen"
+    ],
+    "title": "B Long Wall for Push",
+    "description": "From Attacker Spawn to B Long",
+    "from": "Attacker Spawn",
+    "to": "B Long",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/viper-3/3.webp",
+    "map": "Bind",
+    "tags": [
+      "wall",
+      "attack"
+    ]
+  },
+  {
+    "id": "viper-4",
+    "type": "post-plant",
+    "agent": "Viper",
+    "abilities": [
+      "Snake Bite"
+    ],
+    "title": "Post Plant B Site Molly",
+    "description": "From B Halls to B Site",
+    "from": "B Halls",
+    "to": "B Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/viper-4/3.webp",
+    "map": "Bind",
+    "tags": [
+      "post-plant",
+      "molly"
+    ]
+  },
+  {
+    "id": "vyse-1",
+    "type": "setup",
+    "agent": "Vyse",
+    "abilities": [
+      "Shear"
+    ],
+    "title": "A Site Shear Setup",
+    "description": "For A Site",
+    "from": "A Site",
+    "to": "",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/vyse-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "setup",
+      "defense"
+    ]
+  },
+  {
+    "id": "vyse-2",
+    "type": "lineup",
+    "agent": "Vyse",
+    "abilities": [
+      "Arc Rose"
+    ],
+    "title": "B Long Arc Rose Blind",
+    "description": "From B Long to B Elbow",
+    "from": "B Long",
+    "to": "B Elbow",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/vyse-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "blind",
+      "attack"
+    ]
+  },
+  {
+    "id": "yoru-1",
+    "type": "setup",
+    "agent": "Yoru",
+    "abilities": [
+      "Gatecrash"
+    ],
+    "title": "A Site Teleport Setup",
+    "description": "For A Site",
+    "from": "A Site",
+    "to": "",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/yoru-1/3.webp",
+    "map": "Bind",
+    "tags": [
+      "setup",
+      "teleport"
+    ]
+  },
+  {
+    "id": "yoru-2",
+    "type": "lineup",
+    "agent": "Yoru",
+    "abilities": [
+      "Blindside"
+    ],
+    "title": "B Site Flash Entry",
+    "description": "From B Long to B Site",
+    "from": "B Long",
+    "to": "B Site",
+    "image": "https://lineupsvalorant.com/static/lineup_images_thumbnail/yoru-2/3.webp",
+    "map": "Bind",
+    "tags": [
+      "flash",
+      "entry",
+      "attack"
+    ]
+  }
+]

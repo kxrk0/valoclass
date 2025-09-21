@@ -191,15 +191,15 @@ const Footer = () => {
             <div className="max-w-2xl mx-auto">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 bg-red-500/10 border border-red-500/20 backdrop-blur-20">
                 <Sparkles className="w-4 h-4 text-red-400 animate-pulse" />
-                <span className="text-red-400 text-sm font-medium">STAY UPDATED</span>
+                <span className="text-red-400 text-sm font-medium">{t.footer.newsletter.badge}</span>
               </div>
               
               <h3 className="text-2xl lg:text-3xl font-bold mb-4 bg-gradient-to-r from-white via-red-200 to-white bg-clip-text text-transparent">
-                Get the Latest Updates
+                {t.footer.newsletter.title}
               </h3>
               
               <p className="text-gray-400 mb-8 leading-relaxed">
-                Subscribe to receive the latest lineups, crosshair updates, and pro player settings directly in your inbox.
+                {t.footer.newsletter.subtitle}
               </p>
               
               <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
@@ -209,7 +209,7 @@ const Footer = () => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
+                    placeholder={t.footer.newsletter.placeholder}
                     className="w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/40 focus:border-red-500/50 backdrop-blur-20 transition-all duration-300"
                     required
                   />
@@ -218,7 +218,7 @@ const Footer = () => {
                   type="submit"
                   className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 group"
                 >
-                  <span>Subscribe</span>
+                  <span>{t.footer.newsletter.button}</span>
                   <Zap className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 </button>
               </form>

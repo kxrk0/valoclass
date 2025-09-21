@@ -5,10 +5,12 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import PlayerSearch from '@/components/stats/PlayerSearch'
 import FeaturedPlayers from '@/components/stats/FeaturedPlayers'
+import { useTranslation } from '@/contexts/LanguageContext'
 
 // Metadata is handled by layout since this is a client component
 
 export default function StatsPage() {
+  const t = useTranslation()
   const [isVisible, setIsVisible] = useState(false)
   const [activeStatBadge, setActiveStatBadge] = useState(0)
 
@@ -21,9 +23,9 @@ export default function StatsPage() {
     return () => clearInterval(interval)
   }, [])
   const statBadges = [
-    { label: 'Live API Data', color: 'green', icon: '📊' },
-    { label: 'Match History', color: 'blue', icon: '🎮' },
-    { label: 'Rank Tracking', color: 'purple', icon: '🏆' }
+    { label: t.stats.hero.features.liveData, color: 'green', icon: '📊' },
+    { label: t.stats.hero.features.matchHistory, color: 'blue', icon: '🎮' },
+    { label: t.stats.hero.features.rankTracking, color: 'purple', icon: '🏆' }
   ]
 
   return (
@@ -63,24 +65,23 @@ export default function StatsPage() {
             <div className={`inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-full text-blue-400 text-sm font-medium mb-6 backdrop-blur-sm transition-all duration-1000 ${
               isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
             }`}>
-              📊 Real-Time Valorant Statistics
+              📊 {t.stats.hero.badge}
               <div className="w-2 h-2 bg-blue-400 rounded-full animate-ping ml-2" />
             </div>
             
             <h1 className={`font-heading font-black text-5xl md:text-7xl mb-6 leading-tight transition-all duration-1000 delay-200 ${
               isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
             }`}>
-              <span className="text-white">Track Your</span>{' '}
+              <span className="text-white">{t.stats.hero.title.main}</span>{' '}
               <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-x">
-                Performance
+                {t.stats.hero.title.highlight}
               </span>
             </h1>
             
             <p className={`text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-8 leading-relaxed transition-all duration-1000 delay-400 ${
               isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
             }`}>
-              Get comprehensive Valorant statistics with real-time data from Riot&apos;s API. 
-              Track matches, analyze performance, and climb the ranks with data-driven insights.
+              {t.stats.hero.subtitle}
             </p>
 
             {/* Enhanced Live Stats Banner with Rotation */}
@@ -134,13 +135,13 @@ export default function StatsPage() {
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-full text-purple-400 text-sm font-medium mb-4">
                 <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
-                Featured Players
+                {t.stats.hero.featuredPlayers.badge}
               </div>
               <h2 className="font-heading font-bold text-3xl md:text-4xl text-white mb-2">
-                Top Performers
+                {t.stats.hero.featuredPlayers.title}
               </h2>
               <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                Learn from the best players and analyze their performance patterns
+                {t.stats.hero.featuredPlayers.subtitle}
               </p>
             </div>
             
@@ -159,25 +160,25 @@ export default function StatsPage() {
             {[
               {
                 icon: '✅',
-                title: 'Real-Time Updates',
-                description: 'Get the latest stats directly from Riot\'s official API. Your data updates automatically after every match.',
-                badge: 'Official API',
+                title: t.stats.hero.grid.realTime.title,
+                description: t.stats.hero.grid.realTime.description,
+                badge: t.stats.hero.grid.realTime.badge,
                 color: 'blue',
                 delay: '0ms'
               },
               {
                 icon: '📊',
-                title: 'Deep Analytics',
-                description: 'Comprehensive match history, agent performance, headshot percentages, and trend analysis to improve your gameplay.',
-                badge: 'Advanced Stats',
+                title: t.stats.hero.grid.deepAnalytics.title,
+                description: t.stats.hero.grid.deepAnalytics.description,
+                badge: t.stats.hero.grid.deepAnalytics.badge,
                 color: 'purple',
                 delay: '200ms'
               },
               {
                 icon: '👥',
-                title: 'Social Features',
-                description: 'Compare your performance with friends, share achievements, and discover top players in your region.',
-                badge: 'Community',
+                title: t.stats.hero.grid.social.title,
+                description: t.stats.hero.grid.social.description,
+                badge: t.stats.hero.grid.social.badge,
                 color: 'green',
                 delay: '400ms'
               }
@@ -230,13 +231,13 @@ export default function StatsPage() {
             
             <div className="relative text-center max-w-4xl mx-auto">
               <h3 className="font-heading font-bold text-3xl md:text-4xl text-white mb-6 group-hover:text-blue-300 transition-colors duration-300">
-                📈 Improve Your Gameplay
+                {t.stats.hero.improveTips.title}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
                 {[
-                  { icon: '🎯', title: 'Analyze Your Stats', description: 'Review your performance after each session. Identify strengths and areas for improvement.', delay: '0ms' },
-                  { icon: '📊', title: 'Track Progress', description: 'Monitor your rank progression and performance trends over time to see your growth.', delay: '100ms' },
-                  { icon: '🏆', title: 'Learn from Pros', description: 'Compare your stats with professional players and learn from their performance patterns.', delay: '200ms' }
+                  { icon: '🎯', title: t.stats.hero.improveTips.analyze.title, description: t.stats.hero.improveTips.analyze.description, delay: '0ms' },
+                  { icon: '📊', title: t.stats.hero.improveTips.track.title, description: t.stats.hero.improveTips.track.description, delay: '100ms' },
+                  { icon: '🏆', title: t.stats.hero.improveTips.learn.title, description: t.stats.hero.improveTips.learn.description, delay: '200ms' }
                 ].map((tip, index) => (
                   <div 
                     key={index}

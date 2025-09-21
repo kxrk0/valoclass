@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import '@/styles/globals.css'
 import { LanguageProvider } from '@/contexts/LanguageContext'
+import { AuthProvider } from '@/contexts/AuthContext'
 import PWAInstallPrompt from '@/components/ui/PWAInstallPrompt'
 
 export const metadata: Metadata = {
@@ -121,10 +122,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
       </head>
       <body>
         <LanguageProvider>
-          <div id="root">
-            {children}
-          </div>
-          <PWAInstallPrompt />
+          <AuthProvider>
+            <div id="root">
+              {children}
+            </div>
+            <PWAInstallPrompt />
+          </AuthProvider>
         </LanguageProvider>
       </body>
     </html>

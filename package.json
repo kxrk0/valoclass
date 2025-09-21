@@ -12,6 +12,8 @@
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.0",
     "@types/socket.io-client": "^1.4.36",
+    "axios": "^1.12.2",
+    "cheerio": "^1.1.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "firebase": "^12.2.1",

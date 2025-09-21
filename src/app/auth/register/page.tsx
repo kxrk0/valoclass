@@ -40,12 +40,12 @@ export default function RegisterPage() {
               <div className="text-center lg:text-left animate-fade-in-up order-2 lg:order-1">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 bg-green-500/10 border border-green-500/20 backdrop-blur-20">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-green-400 text-sm font-medium">JOIN PLAYVALORANTGUIDES</span>
+                  <span className="text-green-400 text-sm font-medium">{t.auth.registerHeroBadge}</span>
                 </div>
                 
                 <div className="mb-6">
                   <BlurText
-                    text="Start Your Journey"
+                    text={t.auth.registerHeroTitle}
                     delay={150}
                     animateBy="words"
                     direction="top"
@@ -63,19 +63,19 @@ export default function RegisterPage() {
                     <div className="w-5 h-5 bg-green-500/20 rounded-full flex items-center justify-center">
                       <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                     </div>
-                    <span className="text-sm">Access to exclusive lineups and crosshairs</span>
+                    <span className="text-sm">{t.auth.registerFeatures.exclusive}</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-300">
                     <div className="w-5 h-5 bg-purple-500/20 rounded-full flex items-center justify-center">
                       <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
                     </div>
-                    <span className="text-sm">Connect with the Valorant community</span>
+                    <span className="text-sm">{t.auth.registerFeatures.community}</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-300">
                     <div className="w-5 h-5 bg-teal-500/20 rounded-full flex items-center justify-center">
                       <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
                     </div>
-                    <span className="text-sm">Track your progress and stats</span>
+                    <span className="text-sm">{t.auth.registerFeatures.tracking}</span>
                   </div>
                 </div>
 
@@ -83,7 +83,7 @@ export default function RegisterPage() {
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800/50 border border-gray-700/50 backdrop-blur-10">
                   <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                   <span className="text-gray-400 text-sm">
-                    Already have an account? <a href="/auth/login" className="text-white font-medium hover:text-green-400 transition-colors">Sign in here</a>
+                    {t.auth.alreadyHaveAccount} <a href="/auth/login" className="text-white font-medium hover:text-green-400 transition-colors">{t.auth.signInHere}</a>
                   </span>
                 </div>
               </div>

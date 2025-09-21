@@ -40,12 +40,12 @@ export default function LoginPage() {
               <div className="text-center lg:text-left animate-fade-in-up order-2 lg:order-1">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 bg-red-500/10 border border-red-500/20 backdrop-blur-20">
                   <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-red-400 text-sm font-medium">VALOCLASS GAMING HUB</span>
+                  <span className="text-red-400 text-sm font-medium">{t.auth.loginHeroBadge}</span>
                 </div>
                 
                 <div className="mb-6">
                   <BlurText
-                    text="Level Up Your Game"
+                    text={t.auth.loginHeroTitle}
                     delay={150}
                     animateBy="words"
                     direction="top"
