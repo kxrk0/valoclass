@@ -1,10 +1,10 @@
+/* Test Page Styles */
+@import './testpage.scss';
+
 /* ValorantGuides - Clean Design System */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Test Page Styles */
-@import './testpage.scss';
 
 /* Custom Animations for Hero Section */
 @keyframes floatRotate {
