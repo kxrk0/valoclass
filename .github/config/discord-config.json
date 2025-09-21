@@ -3,6 +3,22 @@
     "username": "PLAYVALORANTGUIDES.COM",
     "avatar_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg"
   },
+  "custom_emojis": {
+    "uzi": "<a:uzi:1419286915194290326>",
+    "z_special": "<a:z_:1419286712668000256>",
+    "o_special": "<a:ogi:1419286667965108327>",
+    "online": "<a:online:1419285611012952074>",
+    "verified": "<a:verified:1419285858753970179>",
+    "crown": "<a:crown:1419286909389377576>",
+    "shutdown": "<a:shutdown:1419285612854382662>",
+    "arrow": "<a:arrow:1419286458543378492>",
+    "unlem": "<a:unlem:1419286534326059089>",
+    "hac": "<a:hac:1419286912203489400>"
+  },
+  "user_specific_emojis": {
+    "swaffX": "<a:z_:1419286712668000256>",
+    "kxrk0": "<a:ogi:1419286667965108327>"
+  },
   "embed": {
     "colors": {
       "major": 15844367,

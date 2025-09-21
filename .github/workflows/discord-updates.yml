@@ -106,12 +106,29 @@ jobs:
         COMMITS_JSON='${{ steps.generate-log.outputs.COMMITS_JSON }}'
         COMMIT_COUNT=$(echo "$COMMITS_JSON" | jq '. | length' 2>/dev/null || echo "0")
         
+        # Define custom emojis
+        UZI_EMOJI="<a:uzi:1419286915194290326>"
+        Z_EMOJI="<a:z_:1419286712668000256>"
+        O_EMOJI="<a:ogi:1419286667965108327>"
+        ONLINE_EMOJI="<a:online:1419285611012952074>"
+        VERIFIED_EMOJI="<a:verified:1419285858753970179>"
+        CROWN_EMOJI="<a:crown:1419286909389377576>"
+        ARROW_EMOJI="<a:arrow:1419286458543378492>"
+        
+        # Determine user-specific emoji with crown integration
+        USER_EMOJI="${CROWN_EMOJI}"
+        if [ "${{ steps.generate-log.outputs.TRIGGERED_BY }}" = "swaffX" ]; then
+          USER_EMOJI="${Z_EMOJI} ${CROWN_EMOJI}"
+        elif [ "${{ steps.generate-log.outputs.TRIGGERED_BY }}" = "kxrk0" ]; then
+          USER_EMOJI="${O_EMOJI} ${CROWN_EMOJI}"
+        fi
+        
         # Update türü ve rengini belirle
-        UPDATE_TYPE="🔄 Kod Güncellemesi"
+        UPDATE_TYPE="${UZI_EMOJI} Kod Güncellemesi ${ONLINE_EMOJI}"
         COLOR=3447003  # Varsayılan mavi
         
         if [ "${{ github.event_name }}" = "pull_request" ]; then
-          UPDATE_TYPE="🔀 Pull Request Entegrasyonu: ${{ steps.generate-log.outputs.PR_TITLE }}"
+          UPDATE_TYPE="${UZI_EMOJI} Pull Request Entegrasyonu: ${{ steps.generate-log.outputs.PR_TITLE }} ${VERIFIED_EMOJI}"
           COLOR=7419530  # PR'lar için mor
         fi
         
@@ -124,40 +141,48 @@ jobs:
           COLOR=15158332  # Red for hotfixes
         fi
         
-        # Açıklama oluştur
-        DESCRIPTION="**🗂️ Proje:** \`${{ steps.generate-log.outputs.REPOSITORY }}\`\\n**🛠️ Branch:** \`${{ steps.generate-log.outputs.BRANCH_NAME }}\`\\n**📝 Geliştirici:** **${{ steps.generate-log.outputs.TRIGGERED_BY }}**"
+        # Açıklama oluştur with enhanced design
+        DESCRIPTION="${ARROW_EMOJI} **Proje:** \`${{ steps.generate-log.outputs.REPOSITORY }}\` ${VERIFIED_EMOJI}\\n${ARROW_EMOJI} **Branch:** \`${{ steps.generate-log.outputs.BRANCH_NAME }}\` ${ONLINE_EMOJI}\\n${ARROW_EMOJI} **Geliştirici:** ${USER_EMOJI} **${{ steps.generate-log.outputs.TRIGGERED_BY }}** ${CROWN_EMOJI}"
         
-        # Özet alanını oluştur
-        SUMMARY_VALUE="📝 **$COMMIT_COUNT** commit • 📁 **${{ steps.generate-log.outputs.FILES_CHANGED }}** dosya değiştirildi\\n➕ **${{ steps.generate-log.outputs.LINES_ADDED }}** satır eklendi • ➖ **${{ steps.generate-log.outputs.LINES_DELETED }}** satır silindi\\n🏗️ Toplam **${{ steps.generate-log.outputs.TOTAL_COMMITS }}** commit"
+        # Özet alanını oluştur with custom emojis
+        SUMMARY_VALUE="${ARROW_EMOJI} **$COMMIT_COUNT** commit ${UZI_EMOJI} • ${ARROW_EMOJI} **${{ steps.generate-log.outputs.FILES_CHANGED }}** dosya değiştirildi ${VERIFIED_EMOJI}\\n${ARROW_EMOJI} **${{ steps.generate-log.outputs.LINES_ADDED }}** satır eklendi • ${ARROW_EMOJI} **${{ steps.generate-log.outputs.LINES_DELETED }}** satır silindi\\n${ARROW_EMOJI} Toplam **${{ steps.generate-log.outputs.TOTAL_COMMITS }}** commit ${CROWN_EMOJI}"
         
         # Get current timestamp
         TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
         
-        # Create Discord payload using jq
+        # Create enhanced Discord payload using jq
         jq -n --arg title "$UPDATE_TYPE" \
               --arg description "$DESCRIPTION" \
               --argjson color $COLOR \
               --arg summary "$SUMMARY_VALUE" \
               --arg timestamp "$TIMESTAMP" \
+              --arg user_emoji "$USER_EMOJI" \
+              --arg uzi_emoji "$UZI_EMOJI" \
+              --arg verified_emoji "$VERIFIED_EMOJI" \
+              --arg online_emoji "$ONLINE_EMOJI" \
+              --arg arrow_emoji "$ARROW_EMOJI" \
               '{
-                "username": "playvalorantguides.com",
-                "avatar_url": "https://raw.githubusercontent.com/owner/repo/main/public/logo.png",
+                "username": "PLAYVALORANTGUIDES.COM",
+                "avatar_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg",
                 "embeds": [{
                   "title": $title,
                   "description": $description,
                   "color": $color,
                   "fields": [{
-                    "name": "📊 Güncelleme Özeti",
+                    "name": ($uzi_emoji + " Güncelleme Özeti " + $verified_emoji),
                     "value": $summary,
                     "inline": false
                   }],
                   "footer": {
-                    "text": "playvalorantguides.com • Geliştirme Bildirimleri",
-                    "icon_url": "https://raw.githubusercontent.com/owner/repo/main/public/logo.png"
+                    "text": ("PLAYVALORANTGUIDES.COM " + $online_emoji + " Geliştirme Bildirimleri " + $verified_emoji),
+                    "icon_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg"
                   },
                   "timestamp": $timestamp,
                   "thumbnail": {
                     "url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Github-Dark.svg"
+                  },
+                  "image": {
+                    "url": "https://media.giphy.com/media/26tn33aiTi1jkl6H6/giphy.gif"
                   }
                 }]
               }' > webhook_payload.json
@@ -179,12 +204,13 @@ jobs:
         HTTP_CODE=$(echo "$RESPONSE" | tail -c 4)
         
         if [ "$HTTP_CODE" = "204" ]; then
-          echo "✅ Discord bildirimi başarıyla gönderildi!"
-          echo "📝 Commit Sayısı: ${{ steps.create-notification.outputs.COMMIT_COUNT }}"
-          echo "📊 Değişen Dosya: ${{ steps.generate-log.outputs.FILES_CHANGED }}"
-          echo "🎨 Güncelleme Türü: ${{ steps.create-notification.outputs.UPDATE_TYPE }}"
+          echo "<a:verified:1419285858753970179> Discord bildirimi başarıyla gönderildi! <a:online:1419285611012952074>"
+          echo "<a:arrow:1419286458543378492> Commit Sayısı: ${{ steps.create-notification.outputs.COMMIT_COUNT }} <a:uzi:1419286915194290326>"
+          echo "<a:arrow:1419286458543378492> Değişen Dosya: ${{ steps.generate-log.outputs.FILES_CHANGED }} <a:verified:1419285858753970179>"
+          echo "<a:arrow:1419286458543378492> Güncelleme Türü: ${{ steps.create-notification.outputs.UPDATE_TYPE }}"
+          echo "<a:crown:1419286909389377576> Webhook gösterimi tamamlandı! <a:crown:1419286909389377576>"
         else
-          echo "❌ Discord bildirimi gönderilemedi. HTTP Kod: $HTTP_CODE"
+          echo "<a:hac:1419286912203489400> Discord bildirimi gönderilemedi. HTTP Kod: $HTTP_CODE"
           echo "Yanıt: $(echo "$RESPONSE" | head -n -1)"
           exit 1
         fi

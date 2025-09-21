@@ -1,0 +1,24 @@
+{
+  "username": "PLAYVALORANTGUIDES.COM",
+  "avatar_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg",
+  "content": "<a:uzi:1419286915194290326> **WEBHOOK DEBUG TEST** <a:verified:1419285858753970179>",
+  "embeds": [
+    {
+      "title": "<a:crown:1419286909389377576> Discord Webhook Test <a:online:1419285611012952074>",
+      "description": "<a:arrow:1419286458543378492> Bu bir test mesajıdır\\n<a:arrow:1419286458543378492> Webhook çalışıyor mu kontrol ediyoruz",
+      "color": 15844367,
+      "fields": [
+        {
+          "name": "<a:uzi:1419286915194290326> Test Detayları",
+          "value": "<a:arrow:1419286458543378492> Zaman: 21.09.2025 14:54:35\\n<a:verified:1419285858753970179> Durum: Test mesajı gönderiliyor",
+          "inline": false
+        }
+      ],
+      "footer": {
+        "text": "Debug Test <a:online:1419285611012952074>",
+        "icon_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg"
+      },
+      "timestamp": "2025-09-21T11:54:35.337Z"
+    }
+  ]
+}
