@@ -42,14 +42,7 @@ router.post('/login', loginRateLimit, async (req: Request, res: Response) => {
     }
 
     // Verify password
-    if (!user.passwordHash) {
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid credentials'
-      } as ApiResponse<never>);
-    }
-    
-    const isPasswordValid = await AuthService.verifyPassword(password, user.passwordHash);
+    const isPasswordValid = await AuthService.verifyPassword(password, user.password);
     if (!isPasswordValid) {
       logger.warn(`Invalid password attempt for user: ${user.id} from IP: ${clientIP}`);
       return res.status(401).json({
@@ -88,19 +81,7 @@ router.post('/login', loginRateLimit, async (req: Request, res: Response) => {
       maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000 // 30 days or 7 days
     });
 
-    // Also set authToken for AdminAuthGuard compatibility
-    res.cookie('authToken', accessToken, {
-      ...cookieOptions,
-      maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000 // 30 days or 7 days
-    });
-
     res.cookie('refresh_token', refreshToken, {
-      ...cookieOptions,
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
-    });
-
-    // Also set refreshToken for compatibility
-    res.cookie('refreshToken', refreshToken, {
       ...cookieOptions,
       maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
     });

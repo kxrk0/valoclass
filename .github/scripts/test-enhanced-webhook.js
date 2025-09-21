@@ -34,7 +34,10 @@ function createTestPayload(authorName = 'TestUser') {
 
   const description = `**Geliştirici:** ${userEmoji}`;
   
-  const summary = `${CUSTOM_EMOJIS.arrow} **3** commit gönderildi\\n${CUSTOM_EMOJIS.arrow} **8** dosya değiştirildi\\n${CUSTOM_EMOJIS.arrow} **47** satır eklendi • **12** satır silindi\\n${CUSTOM_EMOJIS.crown} Toplam proje commit sayısı: **156**`;
+  const summary = `${CUSTOM_EMOJIS.arrow} **3** commit gönderildi
+${CUSTOM_EMOJIS.arrow} **8** dosya değiştirildi
+${CUSTOM_EMOJIS.arrow} **47** satır eklendi • **12** satır silindi
+${CUSTOM_EMOJIS.crown} Toplam proje commit sayısı: **156**`;
 
   return {
     username: "PLAYVALORANTGUIDES.COM",
@@ -56,7 +59,10 @@ function createTestPayload(authorName = 'TestUser') {
         },
         {
           name: `${CUSTOM_EMOJIS.crown} ━━━━━ Proje Sağlığı ━━━━━`,
-          value: "🟢 **Yapı Durumu:** Başarılı\\n🔒 **Güvenlik:** Tüm kontroller geçti\\n⚡ **Performans:** Optimize edildi\\n🧪 **Test Kapsamı:** Aktif izleme",
+          value: `🟢 **Yapı Durumu:** Başarılı
+🔒 **Güvenlik:** Tüm kontroller geçti
+⚡ **Performans:** Optimize edildi
+🧪 **Test Kapsamı:** Aktif izleme`,
           inline: false
         },
         {
@@ -66,7 +72,10 @@ function createTestPayload(authorName = 'TestUser') {
         },
         {
           name: `${CUSTOM_EMOJIS.online} ━━━━━ Son Aktiviteler ━━━━━`,
-          value: "💾 Veritabanı optimizasyonları\\n🎨 UI/UX iyileştirmeleri\\n🔧 Backend geliştirmeleri\\n📱 Mobil uyumluluk çalışmaları",
+          value: `💾 Veritabanı optimizasyonları
+🎨 UI/UX iyileştirmeleri
+🔧 Backend geliştirmeleri
+📱 Mobil uyumluluk çalışmaları`,
           inline: false
         }
       ],

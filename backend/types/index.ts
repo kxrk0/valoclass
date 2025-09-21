@@ -1,5 +1,4 @@
 // Backend-specific Types
-import { Request } from 'express';
 
 // Authentication Types
 export interface AuthResponse {

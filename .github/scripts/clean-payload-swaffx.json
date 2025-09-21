@@ -3,23 +3,33 @@
   "avatar_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg",
   "embeds": [
     {
-      "title": "<a:uzi:1419286915194290326> PLAYVALORANTGUIDES.COM - Geliştirme Güncellemesi",
-      "description": "**Proje:** `valoclass`\n**Dal:** `main`\n**Geliştirici:** <a:z_:1419286712668000256>",
+      "title": "<a:verified:1419285858753970179> PLAYVALORANTGUIDES.COM - Geliştirme Güncellemesi <a:online:1419285611012952074>",
+      "description": "**Geliştirici:** <a:z_:1419286712668000256>",
       "color": 3066993,
       "fields": [
         {
-          "name": "📊 Geliştirme İstatistikleri",
-          "value": "📊 **3** commit gönderildi\n📁 **8** dosya değiştirildi\n➕ **47** satır eklendi • ➖ **12** satır silindi\n🏗️ Toplam proje commit sayısı: **156**",
+          "name": "<a:verified:1419285858753970179> ━━━━━ Geliştirme İstatistikleri ━━━━━",
+          "value": "<a:arrow:1419286458543378492> **3** commit gönderildi\\n<a:arrow:1419286458543378492> **8** dosya değiştirildi\\n<a:arrow:1419286458543378492> **47** satır eklendi • **12** satır silindi\\n<a:crown:1419286909389377576> Toplam proje commit sayısı: **156**",
           "inline": false
         },
         {
-          "name": "<a:crown:1419286909389377576> Proje Sağlığı",
-          "value": "🟢 **Yapı Durumu:** Başarılı\n🔒 **Güvenlik:** Tüm kontroller geçti\n⚡ **Performans:** Optimize edildi\n🧪 **Test Kapsamı:** Aktif izleme",
+          "name": "⠀",
+          "value": "⠀",
           "inline": false
         },
         {
-          "name": "🚀 Son Aktiviteler",
-          "value": "💾 Veritabanı optimizasyonları\n🎨 UI/UX iyileştirmeleri\n🔧 Backend geliştirmeleri\n📱 Mobil uyumluluk çalışmaları",
+          "name": "<a:crown:1419286909389377576> ━━━━━ Proje Sağlığı ━━━━━",
+          "value": "🟢 **Yapı Durumu:** Başarılı\\n🔒 **Güvenlik:** Tüm kontroller geçti\\n⚡ **Performans:** Optimize edildi\\n🧪 **Test Kapsamı:** Aktif izleme",
+          "inline": false
+        },
+        {
+          "name": "⠀",
+          "value": "⠀",
+          "inline": false
+        },
+        {
+          "name": "<a:online:1419285611012952074> ━━━━━ Son Aktiviteler ━━━━━",
+          "value": "💾 Veritabanı optimizasyonları\\n🎨 UI/UX iyileştirmeleri\\n🔧 Backend geliştirmeleri\\n📱 Mobil uyumluluk çalışmaları",
           "inline": false
         }
       ],
@@ -27,7 +37,7 @@
         "text": "PLAYVALORANTGUIDES.COM • Profesyonel Valorant Rehber Platformu",
         "icon_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg"
       },
-      "timestamp": "2025-09-21T12:12:26.228Z",
+      "timestamp": "2025-09-21T12:48:25.893Z",
       "thumbnail": {
         "url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Github-Dark.svg"
       },

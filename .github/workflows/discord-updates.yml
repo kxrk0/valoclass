@@ -146,8 +146,14 @@ jobs:
         # Turkish description - only developer info
         DESCRIPTION="**Geliştirici:** ${USER_EMOJI}"
         
-        # Turkish summary with detailed metrics using custom emojis
-        SUMMARY_VALUE="${ARROW_EMOJI} **${COMMIT_COUNT}** commit gönderildi\\n${ARROW_EMOJI} **${{ steps.generate-log.outputs.FILES_CHANGED }}** dosya değiştirildi\\n${ARROW_EMOJI} **${{ steps.generate-log.outputs.LINES_ADDED }}** satır eklendi • **${{ steps.generate-log.outputs.LINES_DELETED }}** satır silindi\\n${CROWN_EMOJI} Toplam proje commit sayısı: **${{ steps.generate-log.outputs.TOTAL_COMMITS }}**"
+        # Turkish summary with detailed metrics using custom emojis - using proper newlines
+        SUMMARY_VALUE="${ARROW_EMOJI} **${COMMIT_COUNT}** commit gönderildi"$'\n'"${ARROW_EMOJI} **${{ steps.generate-log.outputs.FILES_CHANGED }}** dosya değiştirildi"$'\n'"${ARROW_EMOJI} **${{ steps.generate-log.outputs.LINES_ADDED }}** satır eklendi • **${{ steps.generate-log.outputs.LINES_DELETED }}** satır silindi"$'\n'"${CROWN_EMOJI} Toplam proje commit sayısı: **${{ steps.generate-log.outputs.TOTAL_COMMITS }}**"
+        
+        # Project Health multi-line field
+        PROJECT_HEALTH="🟢 **Yapı Durumu:** Başarılı"$'\n'"🔒 **Güvenlik:** Tüm kontroller geçti"$'\n'"⚡ **Performans:** Optimize edildi"$'\n'"🧪 **Test Kapsamı:** Aktif izleme"
+        
+        # Recent Activities multi-line field  
+        RECENT_ACTIVITIES="💾 Veritabanı optimizasyonları"$'\n'"🎨 UI/UX iyileştirmeleri"$'\n'"🔧 Backend geliştirmeleri"$'\n'"📱 Mobil uyumluluk çalışmaları"
         
         # Get current timestamp
         TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -157,6 +163,8 @@ jobs:
               --arg description "$DESCRIPTION" \
               --argjson color $COLOR \
               --arg summary "$SUMMARY_VALUE" \
+              --arg project_health "$PROJECT_HEALTH" \
+              --arg recent_activities "$RECENT_ACTIVITIES" \
               --arg timestamp "$TIMESTAMP" \
               --arg crown_emoji "$CROWN_EMOJI" \
               --arg verified_emoji "$VERIFIED_EMOJI" \
@@ -182,7 +190,7 @@ jobs:
                     },
                     {
                       "name": ($crown_emoji + " ━━━━━ Proje Sağlığı ━━━━━"),
-                      "value": "🟢 **Yapı Durumu:** Başarılı\n🔒 **Güvenlik:** Tüm kontroller geçti\n⚡ **Performans:** Optimize edildi\n🧪 **Test Kapsamı:** Aktif izleme",
+                      "value": $project_health,
                       "inline": false
                     },
                     {
@@ -192,7 +200,7 @@ jobs:
                     },
                     {
                       "name": ($online_emoji + " ━━━━━ Son Aktiviteler ━━━━━"),
-                      "value": "💾 Veritabanı optimizasyonları\n🎨 UI/UX iyileştirmeleri\n🔧 Backend geliştirmeleri\n📱 Mobil uyumluluk çalışmaları",
+                      "value": $recent_activities,
                       "inline": false
                     }
                   ],

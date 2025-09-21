@@ -21,8 +21,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'tr')) {
       setLanguage(savedLanguage)
     } else {
-      // Set default language to Turkish
-      setLanguage('tr')
+      // Set default language to English
+      setLanguage('en')
     }
   }, [])
 
