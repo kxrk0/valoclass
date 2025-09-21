@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { NextRequest } from 'next/server';
 import { AuthService } from './auth';
 import { SafeUser } from '../types';
 
@@ -66,9 +65,9 @@ export async function authenticate(req: AuthenticatedRequest, res: Response, nex
           id: user.id,
           username: user.username,
           email: user.email,
-          avatar: user.avatar || undefined,
-          riotId: user.riotId || undefined,
-          role: user.role as any,
+          avatar: user.avatar,
+          riotId: user.riotId,
+          role: user.role,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt
         };
@@ -146,57 +145,6 @@ export function getClientIP(req: Request): string {
 
 export function getUserAgent(req: Request): string {
   return req.headers['user-agent'] || 'unknown';
-}
-
-// NextRequest compatible versions
-export function getClientIPNext(req: NextRequest): string {
-  const forwarded = req.headers.get('x-forwarded-for');
-  const realIP = req.headers.get('x-real-ip');
-  
-  if (forwarded) {
-    return forwarded.split(',')[0].trim();
-  }
-  
-  if (realIP) {
-    return realIP;
-  }
-  
-  return 'unknown';
-}
-
-export function getUserAgentNext(req: NextRequest): string {
-  return req.headers.get('user-agent') || 'unknown';
-}
-
-// Simple rate limiting for NextRequest
-export function checkRateLimit(identifier: string, windowMs: number = 900000, maxRequests: number = 5): boolean {
-  const now = Date.now();
-  
-  // Clean expired entries
-  for (const [key, data] of rateLimitStore.entries()) {
-    if (data.resetTime < now) {
-      rateLimitStore.delete(key);
-    }
-  }
-  
-  const current = rateLimitStore.get(identifier);
-  
-  if (!current) {
-    rateLimitStore.set(identifier, { count: 1, resetTime: now + windowMs });
-    return true;
-  }
-  
-  if (current.resetTime < now) {
-    rateLimitStore.set(identifier, { count: 1, resetTime: now + windowMs });
-    return true;
-  }
-  
-  if (current.count >= maxRequests) {
-    return false;
-  }
-  
-  current.count++;
-  return true;
 }
 
 // Input validation middleware

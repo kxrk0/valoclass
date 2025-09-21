@@ -166,7 +166,7 @@ export class OAuthService {
       id: discordUser.id,
       email: discordUser.email,
       name: discordUser.username,
-      avatar: avatar || undefined,
+      avatar,
       provider: 'discord',
       providerId: discordUser.id
     }

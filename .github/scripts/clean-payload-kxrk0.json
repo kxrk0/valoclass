@@ -1,0 +1,49 @@
+{
+  "username": "PLAYVALORANTGUIDES.COM",
+  "avatar_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg",
+  "embeds": [
+    {
+      "title": "<a:verified:1419285858753970179> PLAYVALORANTGUIDES.COM - Geliştirme Güncellemesi <a:online:1419285611012952074>",
+      "description": "**Geliştirici:** <a:ogi:1419286667965108327>",
+      "color": 3066993,
+      "fields": [
+        {
+          "name": "<a:verified:1419285858753970179> ━━━━━ Geliştirme İstatistikleri ━━━━━",
+          "value": "<a:arrow:1419286458543378492> **3** commit gönderildi\\n<a:arrow:1419286458543378492> **8** dosya değiştirildi\\n<a:arrow:1419286458543378492> **47** satır eklendi • **12** satır silindi\\n<a:crown:1419286909389377576> Toplam proje commit sayısı: **156**",
+          "inline": false
+        },
+        {
+          "name": "⠀",
+          "value": "⠀",
+          "inline": false
+        },
+        {
+          "name": "<a:crown:1419286909389377576> ━━━━━ Proje Sağlığı ━━━━━",
+          "value": "🟢 **Yapı Durumu:** Başarılı\\n🔒 **Güvenlik:** Tüm kontroller geçti\\n⚡ **Performans:** Optimize edildi\\n🧪 **Test Kapsamı:** Aktif izleme",
+          "inline": false
+        },
+        {
+          "name": "⠀",
+          "value": "⠀",
+          "inline": false
+        },
+        {
+          "name": "<a:online:1419285611012952074> ━━━━━ Son Aktiviteler ━━━━━",
+          "value": "💾 Veritabanı optimizasyonları\\n🎨 UI/UX iyileştirmeleri\\n🔧 Backend geliştirmeleri\\n📱 Mobil uyumluluk çalışmaları",
+          "inline": false
+        }
+      ],
+      "footer": {
+        "text": "PLAYVALORANTGUIDES.COM • Profesyonel Valorant Rehber Platformu",
+        "icon_url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Valorant.svg"
+      },
+      "timestamp": "2025-09-21T12:48:25.894Z",
+      "thumbnail": {
+        "url": "https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/Github-Dark.svg"
+      },
+      "image": {
+        "url": "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGdwcWR1dWhkczR0eHI3dDNreGI3dTUwYnV0ZGduZXo2YWo2dzE4ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L1R1tvI9svkIWwpVYr/giphy.gif"
+      }
+    }
+  ]
+}

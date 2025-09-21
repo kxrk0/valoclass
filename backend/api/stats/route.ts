@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
-import valorantAPI from '@/services/valorantAPI'
+import { valorantAPI } from '@/services/valorantAPI'
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,10 +36,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Get match history
-    const matchHistory = await valorantAPI.getMatchHistory(gameName, tagLine, region)
+    const matchHistory = await valorantAPI.getMatchHistory(gameName, tagLine, region, 5)
 
-    // Rank information is included in player stats
-    const rankInfo = playerStats?.currenttierpatched || 'Unranked'
+    // Get rank information
+    const rankInfo = await valorantAPI.getPlayerRank(gameName, tagLine, region)
 
     return NextResponse.json({
       success: true,

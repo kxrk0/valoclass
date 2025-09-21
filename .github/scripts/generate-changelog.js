@@ -8,11 +8,24 @@
 const fs = require('fs');
 const { execSync } = require('child_process');
 
-// Configuration for commit categorization
+// Configuration for commit categorization with custom emojis
+const CUSTOM_EMOJIS = {
+  uzi: '<a:uzi:1419286915194290326>',
+  z_special: '<a:z_:1419286712668000256>',
+  o_special: '<a:ogi:1419286667965108327>',
+  online: '<a:online:1419285611012952074>',
+  verified: '<a:verified:1419285858753970179>',
+  crown: '<a:crown:1419286909389377576>',
+  shutdown: '<a:shutdown:1419285612854382662>',
+  arrow: '<a:arrow:1419286458543378492>',
+  unlem: '<a:unlem:1419286534326059089>',
+  hac: '<a:hac:1419286912203489400>'
+};
+
 const COMMIT_TYPES = {
-  feat: { emoji: '✨', category: 'New Features', color: '#00d4aa' },
-  fix: { emoji: '🐛', category: 'Bug Fixes', color: '#f14c4c' },
-  style: { emoji: '🎨', category: 'UI & Design', color: '#f39c12' },
+  feat: { emoji: `${CUSTOM_EMOJIS.uzi}`, category: 'New Features', color: '#00d4aa' },
+  fix: { emoji: `${CUSTOM_EMOJIS.hac}`, category: 'Bug Fixes', color: '#f14c4c' },
+  style: { emoji: `${CUSTOM_EMOJIS.verified}`, category: 'UI & Design', color: '#f39c12' },
   refactor: { emoji: '♻️', category: 'Code Refactoring', color: '#9b59b6' },
   perf: { emoji: '⚡', category: 'Performance', color: '#e74c3c' },
   docs: { emoji: '📝', category: 'Documentation', color: '#3498db' },
@@ -20,17 +33,17 @@ const COMMIT_TYPES = {
   build: { emoji: '🏗️', category: 'Build System', color: '#34495e' },
   ci: { emoji: '👷', category: 'CI/CD', color: '#16a085' },
   chore: { emoji: '🔧', category: 'Maintenance', color: '#7f8c8d' },
-  security: { emoji: '🔒', category: 'Security', color: '#e67e22' },
+  security: { emoji: `${CUSTOM_EMOJIS.unlem}`, category: 'Security', color: '#e67e22' },
   valorant: { emoji: '🎯', category: 'Valorant Features', color: '#ff4654' },
   database: { emoji: '🗄️', category: 'Database', color: '#2ecc71' },
-  api: { emoji: '🔌', category: 'API', color: '#3498db' },
+  api: { emoji: `${CUSTOM_EMOJIS.online}`, category: 'API', color: '#3498db' },
   animation: { emoji: '🎪', category: 'Animations', color: '#9013fe' },
-  hero: { emoji: '🦸', category: 'Hero Section', color: '#ff6b7a' },
+  hero: { emoji: `${CUSTOM_EMOJIS.crown}`, category: 'Hero Section', color: '#ff6b7a' },
   crosshair: { emoji: '🎯', category: 'Crosshair System', color: '#f0db4f' },
   lineup: { emoji: '📐', category: 'Lineups', color: '#00f5a0' },
   stats: { emoji: '📊', category: 'Statistics', color: '#00d4ff' },
   community: { emoji: '👥', category: 'Community', color: '#9d4edd' },
-  auth: { emoji: '🔐', category: 'Authentication', color: '#ff8c42' }
+  auth: { emoji: `${CUSTOM_EMOJIS.verified}`, category: 'Authentication', color: '#ff8c42' }
 };
 
 // Priority levels for different changes
@@ -148,11 +161,11 @@ function generateChangelog(commits) {
   };
 }
 
-function formatDiscordField(type, commits) {
+function formatDiscordField(type, commits, authorName = '') {
   const config = COMMIT_TYPES[type] || COMMIT_TYPES.chore;
   const commitList = commits.map(commit => {
     const priorityEmoji = {
-      high: '🔥',
+      high: `${CUSTOM_EMOJIS.unlem}`,
       medium: '⭐',
       low: '💡'
     }[commit.priority];
@@ -160,10 +173,20 @@ function formatDiscordField(type, commits) {
     // Clean and professional formatting without \n artifacts
     const cleanDescription = commit.parsed.description
       .replace(/\\n/g, ' ')
-      .replace(/\bli\b/g, '•')
+      .replace(/\bli\b/g, `${CUSTOM_EMOJIS.arrow}`)
       .trim();
     
-    return `${priorityEmoji} **\`${commit.hash}\`** ${cleanDescription}\n📝 *${commit.author}* • 🕒 \`${commit.date}\``;
+    // Clean user-specific emoji - NO NAMES, just emojis
+    let authorEmoji = '';
+    if (commit.author === 'swaffX') {
+      authorEmoji = CUSTOM_EMOJIS.z_special;
+    } else if (commit.author === 'kxrk0') {
+      authorEmoji = CUSTOM_EMOJIS.o_special;
+    } else {
+      authorEmoji = CUSTOM_EMOJIS.crown;
+    }
+    
+    return `${priorityEmoji} **\`${commit.hash}\`** ${cleanDescription}\n${authorEmoji} • \`${commit.date}\``;
   }).join('\n\n');
   
   return {

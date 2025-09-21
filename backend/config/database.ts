@@ -19,8 +19,8 @@ export const connectDatabase = async () => {
   try {
     await prisma.$connect();
     return true;
-  } catch (error: any) {
-    console.warn('Database connection failed:', error?.message || 'Unknown error');
+  } catch (error) {
+    console.warn('Database connection failed:', error.message);
     return false;
   }
 };

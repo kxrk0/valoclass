@@ -42,15 +42,6 @@ router.post('/refresh', apiRateLimit, async (req: Request, res: Response) => {
       path: '/'
     });
 
-    // Also set authToken for AdminAuthGuard compatibility
-    res.cookie('authToken', result.accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: '/'
-    });
-
     logger.info(`Token refreshed for session from IP: ${clientIP}`);
 
     return res.status(200).json({

@@ -1,7 +1,5 @@
 import { Router } from 'express';
 import authRouter from './auth';
-import adminUsersRouter from './admin/users';
-import adminReportsRouter from './admin/reports';
 import adminAnalyticsRouter from './admin/analytics';
 import adminSystemRouter from './admin/system';
 // Import other routers as we create them
@@ -14,8 +12,6 @@ const router = Router();
 
 // Mount API routes
 router.use('/auth', authRouter);
-router.use('/admin/users', adminUsersRouter);
-router.use('/admin/reports', adminReportsRouter);
 router.use('/admin/analytics', adminAnalyticsRouter);
 router.use('/admin/system', adminSystemRouter);
 // router.use('/crosshairs', crosshairRouter);
@@ -32,8 +28,6 @@ router.get('/', (req, res) => {
     endpoints: {
       auth: '/api/auth',
       admin: {
-        users: '/api/admin/users',
-        reports: '/api/admin/reports',
         analytics: '/api/admin/analytics',
         system: '/api/admin/system'
       },
