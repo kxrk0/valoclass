@@ -176,17 +176,17 @@ function formatDiscordField(type, commits, authorName = '') {
       .replace(/\bli\b/g, `${CUSTOM_EMOJIS.arrow}`)
       .trim();
     
-    // User-specific emoji for author with crown integration
+    // Clean user-specific emoji - NO NAMES, just emojis
     let authorEmoji = '';
     if (commit.author === 'swaffX') {
-      authorEmoji = `${CUSTOM_EMOJIS.z_special} ${CUSTOM_EMOJIS.crown}`;
+      authorEmoji = CUSTOM_EMOJIS.z_special;
     } else if (commit.author === 'kxrk0') {
-      authorEmoji = `${CUSTOM_EMOJIS.o_special} ${CUSTOM_EMOJIS.crown}`;
+      authorEmoji = CUSTOM_EMOJIS.o_special;
     } else {
       authorEmoji = CUSTOM_EMOJIS.crown;
     }
     
-    return `${CUSTOM_EMOJIS.arrow} ${priorityEmoji} **\`${commit.hash}\`** ${cleanDescription}\n${authorEmoji} *${commit.author}* • 🕒 \`${commit.date}\``;
+    return `${priorityEmoji} **\`${commit.hash}\`** ${cleanDescription}\n${authorEmoji} • \`${commit.date}\``;
   }).join('\n\n');
   
   return {
