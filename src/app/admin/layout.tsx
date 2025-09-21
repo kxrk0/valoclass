@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import AdminAuthGuard from '@/components/admin/AdminAuthGuard'
 import { AdminSocketProvider } from '@/contexts/AdminSocketContext'
 import { NotificationProvider } from '@/contexts/NotificationContext'
+import { AdminLayoutWrapper } from './AdminLayoutWrapper'
 
 export const metadata: Metadata = {
   title: {
@@ -19,11 +20,9 @@ interface AdminLayoutProps {
 export default function AdminRootLayout({ children }: AdminLayoutProps) {
   return (
     <NotificationProvider>
-      <AdminSocketProvider>
-        <AdminAuthGuard>
-          {children}
-        </AdminAuthGuard>
-      </AdminSocketProvider>
+      <AdminLayoutWrapper>
+        {children}
+      </AdminLayoutWrapper>
     </NotificationProvider>
   )
 }
