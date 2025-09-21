@@ -147,7 +147,7 @@ jobs:
         DESCRIPTION="**Geliştirici:** ${USER_EMOJI}"
         
         # Turkish summary with detailed metrics using custom emojis
-        SUMMARY_VALUE="${ARROW_EMOJI} **${COMMIT_COUNT}** commit gönderildi\n${ARROW_EMOJI} **${{ steps.generate-log.outputs.FILES_CHANGED }}** dosya değiştirildi\n${ARROW_EMOJI} **${{ steps.generate-log.outputs.LINES_ADDED }}** satır eklendi • **${{ steps.generate-log.outputs.LINES_DELETED }}** satır silindi\n${CROWN_EMOJI} Toplam proje commit sayısı: **${{ steps.generate-log.outputs.TOTAL_COMMITS }}**"
+        SUMMARY_VALUE="${ARROW_EMOJI} **${COMMIT_COUNT}** commit gönderildi\\n${ARROW_EMOJI} **${{ steps.generate-log.outputs.FILES_CHANGED }}** dosya değiştirildi\\n${ARROW_EMOJI} **${{ steps.generate-log.outputs.LINES_ADDED }}** satır eklendi • **${{ steps.generate-log.outputs.LINES_DELETED }}** satır silindi\\n${CROWN_EMOJI} Toplam proje commit sayısı: **${{ steps.generate-log.outputs.TOTAL_COMMITS }}**"
         
         # Get current timestamp
         TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
