@@ -2,9 +2,9 @@
 
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import AdvancedCrosshairBuilder from '@/components/crosshair/AdvancedCrosshairBuilder'
+import AimTrainerStats from '@/components/aim-trainer/AimTrainerStats'
 
-export default function CrosshairBuilderPage() {
+export default function AimTrainerStatsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -54,8 +54,8 @@ export default function CrosshairBuilderPage() {
       </div>
 
       <Header />
-      <div className="relative z-10">
-        <AdvancedCrosshairBuilder />
+      <div className="relative z-10 pt-20">
+        <AimTrainerStats />
       </div>
       <Footer />
     </div>

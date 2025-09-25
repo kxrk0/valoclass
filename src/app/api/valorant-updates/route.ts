@@ -1,26 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { valorantWebScraper } from '@/services/valorantWebScraper'
 
-// Valorant Updates API endpoint - Now using real web scraping
+// Valorant Updates API endpoint - Now using real web scraping with language support
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category')
     const search = searchParams.get('search')
+    const lang = searchParams.get('lang') || 'en'
     
-    console.log('🔄 API: Fetching real Valorant updates from official site...')
+    // Language detection from Accept-Language header if not provided
+    const language = (lang === 'tr' ? 'tr' : 'en') as 'en' | 'tr'
+    const acceptLanguage = request.headers.get('accept-language') || ''
+    const detectedLang = acceptLanguage.includes('tr') && !searchParams.get('lang') ? 'tr' : language
+    
+    console.log(`🔄 API: Fetching real Valorant updates from official site (${detectedLang})...`)
     
     let updates
+    const sourceUrl = detectedLang === 'tr' 
+      ? 'playvalorant.com/tr-tr/news/game-updates'
+      : 'playvalorant.com/en-us/news/game-updates'
     
     if (search) {
-      updates = await valorantWebScraper.searchUpdates(search)
-      console.log(`🔍 API: Found ${updates.length} updates for search: "${search}"`)
+      updates = await valorantWebScraper.searchUpdates(search, detectedLang)
+      console.log(`🔍 API: Found ${updates.length} updates for search: "${search}" (${detectedLang})`)
     } else if (category) {
-      updates = await valorantWebScraper.getUpdatesByCategory(category)
-      console.log(`📂 API: Found ${updates.length} updates for category: "${category}"`)
+      updates = await valorantWebScraper.getUpdatesByCategory(category, detectedLang)
+      console.log(`📂 API: Found ${updates.length} updates for category: "${category}" (${detectedLang})`)
     } else {
-      updates = await valorantWebScraper.scrapeUpdates()
-      console.log(`📋 API: Found ${updates.length} total updates`)
+      updates = await valorantWebScraper.scrapeUpdates(detectedLang)
+      console.log(`📋 API: Found ${updates.length} total updates (${detectedLang})`)
     }
     
     return NextResponse.json({
@@ -28,7 +37,8 @@ export async function GET(request: NextRequest) {
       updates: updates,
       lastUpdated: new Date().toISOString(),
       count: updates.length,
-      source: 'playvalorant.com/en-us/news/game-updates'
+      source: sourceUrl,
+      language: detectedLang
     })
   } catch (error) {
     console.error('❌ API Error fetching Valorant updates:', error)
@@ -50,15 +60,21 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { forceUpdate } = body
+    const { forceUpdate, language } = body
+    
+    // Language detection
+    const detectedLang = (language === 'tr' ? 'tr' : 'en') as 'en' | 'tr'
+    const sourceUrl = detectedLang === 'tr' 
+      ? 'playvalorant.com/tr-tr/news/game-updates'
+      : 'playvalorant.com/en-us/news/game-updates'
 
     if (forceUpdate) {
-      console.log('🔄 API: Manual refresh triggered - fetching fresh data from official site')
+      console.log(`🔄 API: Manual refresh triggered - fetching fresh data from official site (${detectedLang})`)
       
       // Force refresh cache and get fresh data
-      const updates = await valorantWebScraper.refreshData()
+      const updates = await valorantWebScraper.refreshData(detectedLang)
       
-      console.log(`✅ API: Successfully refreshed ${updates.length} updates from playvalorant.com`)
+      console.log(`✅ API: Successfully refreshed ${updates.length} updates from ${sourceUrl}`)
       
       return NextResponse.json({
         success: true,
@@ -66,7 +82,8 @@ export async function POST(request: NextRequest) {
         updates: updates,
         lastUpdated: new Date().toISOString(),
         count: updates.length,
-        source: 'playvalorant.com/en-us/news/game-updates'
+        source: sourceUrl,
+        language: detectedLang
       })
     }
 

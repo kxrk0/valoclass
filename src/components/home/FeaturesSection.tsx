@@ -115,11 +115,26 @@ const FeaturesSection = () => {
       }
       
       @keyframes slideDown {
-        from {
-          transform: translateY(-100%);
+        0% {
+          transform: translateY(-50px);
+          opacity: 0.8;
         }
-        to {
-          transform: translateY(100%);
+        50% {
+          transform: translateY(0px);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(50px);
+          opacity: 0.8;
+        }
+      }
+
+      @keyframes gridFlow {
+        0% {
+          transform: translate(0, 0);
+        }
+        100% {
+          transform: translate(60px, 60px);
         }
       }
     `
@@ -188,11 +203,11 @@ const FeaturesSection = () => {
       <div className="absolute inset-0 opacity-20">
         <div className="absolute inset-0" style={{
           backgroundImage: `
-            linear-gradient(rgba(0, 255, 65, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 255, 65, 0.1) 1px, transparent 1px)
+            linear-gradient(rgba(0, 255, 65, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 65, 0.08) 1px, transparent 1px)
           `,
-          backgroundSize: '50px 50px',
-          animation: 'slideDown 20s linear infinite'
+          backgroundSize: '60px 60px',
+          animation: 'gridFlow 20s linear infinite'
         }} />
       </div>
 
@@ -439,11 +454,11 @@ const FeaturesSection = () => {
               className="absolute inset-0 opacity-10"
               style={{
                 backgroundImage: `
-                  radial-gradient(circle at 25% 25%, #8b5cf6 2px, transparent 2px),
+                  radial-gradient(circle at 25% 25%, #8b5cf6 1.5px, transparent 1.5px),
                   radial-gradient(circle at 75% 75%, #ec4899 1px, transparent 1px)
                 `,
-                backgroundSize: '50px 50px',
-                animation: 'slideDown 15s linear infinite'
+                backgroundSize: '40px 40px',
+                animation: 'slideDown 8s ease-in-out infinite'
               }}
             />
             

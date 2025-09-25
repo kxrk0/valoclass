@@ -12,7 +12,6 @@ interface RegisterFormData {
   email: string
   password: string
   confirmPassword: string
-  riotId?: string
   acceptTerms: boolean
 }
 
@@ -79,8 +78,7 @@ const RegisterForm = () => {
         body: JSON.stringify({
           username: data.username,
           email: data.email,
-          password: data.password,
-          riotId: data.riotId
+          password: data.password
         })
       })
 
@@ -174,25 +172,6 @@ const RegisterForm = () => {
         </div>
 
         {/* Riot ID (Optional) */}
-        <div className="form-group">
-          <label>Riot ID (Optional)</label>
-          <input
-            type="text"
-            placeholder="PlayerName#TAG"
-            {...register('riotId', {
-              pattern: {
-                value: /^.+#.+$/,
-                message: 'Riot ID must include # symbol (e.g., PlayerName#TAG)'
-              }
-            })}
-          />
-          {errors.riotId && (
-            <div className="form-error">{errors.riotId.message}</div>
-          )}
-          <div className="form-help">
-            Link your Riot account to automatically sync your stats and rank
-          </div>
-        </div>
 
         {/* Password */}
         <div className="form-group">

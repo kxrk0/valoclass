@@ -1,18 +1,69 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { 
   ArrowRight, 
   Target, 
   Crosshair, 
   TrendingUp, 
-  Search 
+  Search,
+  Newspaper,
+  Calendar,
+  Clock
 } from 'lucide-react'
 import '@/styles/hero.scss'
+import { useLanguage } from '@/contexts/LanguageContext'
+
+interface ValorantUpdate {
+  id: string
+  title: string
+  version: string
+  date: string
+  category: 'Agent Updates' | 'Map Changes' | 'Weapon Changes' | 'System Updates' | 'Bug Fixes' | 'Competitive Updates'
+  summary: string
+  content: string
+  imageUrl?: string
+  officialUrl: string
+  tags: string[]
+  isNew?: boolean
+}
 
 const Hero = () => {
   const [searchQuery, setSearchQuery] = useState('')
+  const [isVisible, setIsVisible] = useState(false)
+  const [updates, setUpdates] = useState<ValorantUpdate[]>([])
+  const [updatesLoading, setUpdatesLoading] = useState(true)
+  const { language } = useLanguage()
+
+  useEffect(() => {
+    // Trigger animations after component mounts
+    const timer = setTimeout(() => {
+      setIsVisible(true)
+    }, 100)
+    
+    return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    const fetchUpdates = async () => {
+      try {
+        const response = await fetch(`/api/valorant-updates?lang=${language}`)
+        const data = await response.json()
+        
+        if (data.success) {
+          // Get only the first 3 updates for the banner
+          setUpdates(data.updates.slice(0, 3))
+        }
+      } catch (error) {
+        console.error('Failed to fetch updates:', error)
+      } finally {
+        setUpdatesLoading(false)
+      }
+    }
+
+    fetchUpdates()
+  }, [language])
 
   const handleRiotLogin = async () => {
     try {
@@ -60,16 +111,16 @@ const Hero = () => {
       <div className="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-screen">
           <div className="lg:col-span-8 flex flex-col justify-center py-16 lg:py-0">
-            <div className="hero-title transition-all duration-1000 opacity-100 transform translate-y-0">
+            <div className={`hero-title transition-all duration-1000 ${isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
               <span className="title-line primary">Master</span>
               <span className="title-line gradient">Valorant</span>
             </div>
 
-            <p className="hero-subtitle transition-all duration-1000 delay-300 opacity-100 transform translate-y-0">
+            <p className={`hero-subtitle transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
               The ultimate platform for professional lineups, customizable crosshairs and detailed statistics. Elevate your gameplay to the next level.
             </p>
 
-            <div className="hero-buttons transition-all duration-1000 delay-500 opacity-100 transform translate-y-0">
+            <div className={`hero-buttons transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
               <Link className="btn-primary group" href="/lineups">
                 <Target size={20} className="group-hover:scale-110 transition-transform" />
                 Explore Lineups
@@ -81,7 +132,7 @@ const Hero = () => {
               </Link>
             </div>
 
-            <div className="transition-all duration-1000 delay-700 opacity-100 transform translate-y-0">
+            <div className={`transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
               <div className="valorant-search">
                 <div className="search-container">
                   <div className="relative">
@@ -114,103 +165,350 @@ const Hero = () => {
 
           <div className="lg:col-span-4 relative flex items-center justify-center">
             <div className="relative">
-              <div className="grid grid-cols-1 gap-6">
-                <div
-                  className="group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer opacity-100 transform translate-y-0 transition-all duration-1000 delay-1000"
-                  style={{
-                    background: 'rgba(255, 70, 84, 0.1)',
-                    border: '1px solid rgba(255, 70, 84, 0.2)',
-                    boxShadow: 'rgba(255, 70, 84, 0.1) 0px 8px 32px'
-                  }}
-                >
-                  <div
-                    className="inline-flex p-3 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
-                    style={{ background: 'rgba(255, 70, 84, 0.2)' }}
-                  >
-                    <Target size={24} style={{ color: 'rgb(255, 70, 84)' }} />
-                  </div>
-                  <h3
-                    className="text-lg font-semibold mb-2 group-hover:text-red-300 transition-colors"
-                    style={{ color: 'var(--text-main)' }}
-                  >
-                    Pro Lineups
-                  </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                    Learn and apply smoke, flash and molotov lineups from professional players.
-                  </p>
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                </div>
+               <div className="grid grid-cols-1 gap-6">
+                 <Link href="/lineups" className="block">
+                   <div
+                     className={`group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer transition-all duration-500 delay-1000 ${
+                       isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+                     }`}
+                     style={{
+                       background: 'rgba(255, 70, 84, 0.15)',
+                       border: '1px solid rgba(255, 70, 84, 0.4)',
+                       boxShadow: 'rgba(255, 70, 84, 0.2) 0px 8px 32px, inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                     }}
+                   >
+                     <div
+                       className="inline-flex p-3 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
+                       style={{ background: 'rgba(255, 70, 84, 0.3)' }}
+                     >
+                       <Target size={24} style={{ color: 'rgb(255, 70, 84)' }} />
+                     </div>
+                     <h3
+                       className="text-lg font-semibold mb-2 group-hover:text-red-300 transition-colors text-white"
+                     >
+                       Pro Lineups
+                     </h3>
+                     <p className="text-sm leading-relaxed text-gray-300 group-hover:text-gray-200 transition-colors">
+                       Learn and apply smoke, flash and molotov lineups from professional players.
+                     </p>
+                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                     
+                     {/* Click indicator */}
+                     <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                       <ArrowRight size={16} className="text-red-400" />
+                     </div>
+                   </div>
+                 </Link>
 
-                <div
-                  className="group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer opacity-100 transform translate-y-0 transition-all duration-1000 delay-1200"
-                  style={{
-                    background: 'rgba(0, 212, 255, 0.1)',
-                    border: '1px solid rgba(0, 212, 255, 0.2)',
-                    boxShadow: 'rgba(0, 212, 255, 0.1) 0px 8px 32px'
-                  }}
-                >
-                  <div
-                    className="inline-flex p-3 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
-                    style={{ background: 'rgba(0, 212, 255, 0.2)' }}
-                  >
-                    <Crosshair size={24} style={{ color: 'rgb(0, 212, 255)' }} />
-                  </div>
-                  <h3
-                    className="text-lg font-semibold mb-2 group-hover:text-cyan-300 transition-colors"
-                    style={{ color: 'var(--text-main)' }}
-                  >
-                    Crosshair Editor
-                  </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                    Create the perfect crosshair with advanced customization tools.
-                  </p>
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                </div>
+                 <Link href="/crosshairs/builder" className="block">
+                   <div
+                     className={`group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer transition-all duration-500 delay-1200 ${
+                       isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+                     }`}
+                     style={{
+                       background: 'rgba(0, 212, 255, 0.15)',
+                       border: '1px solid rgba(0, 212, 255, 0.4)',
+                       boxShadow: 'rgba(0, 212, 255, 0.2) 0px 8px 32px, inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                     }}
+                   >
+                     <div
+                       className="inline-flex p-3 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
+                       style={{ background: 'rgba(0, 212, 255, 0.3)' }}
+                     >
+                       <Crosshair size={24} style={{ color: 'rgb(0, 212, 255)' }} />
+                     </div>
+                     <h3
+                       className="text-lg font-semibold mb-2 group-hover:text-cyan-300 transition-colors text-white"
+                     >
+                       Crosshair Editor
+                     </h3>
+                     <p className="text-sm leading-relaxed text-gray-300 group-hover:text-gray-200 transition-colors">
+                       Create the perfect crosshair with advanced customization tools.
+                     </p>
+                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-500/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                     
+                     {/* Click indicator */}
+                     <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                       <ArrowRight size={16} className="text-cyan-400" />
+                     </div>
+                   </div>
+                 </Link>
 
-                <div
-                  className="group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer opacity-100 transform translate-y-0 transition-all duration-1000 delay-1400"
-                  style={{
-                    background: 'rgba(168, 85, 247, 0.1)',
-                    border: '1px solid rgba(168, 85, 247, 0.2)',
-                    boxShadow: 'rgba(168, 85, 247, 0.1) 0px 8px 32px'
-                  }}
-                >
-                  <div
-                    className="inline-flex p-3 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
-                    style={{ background: 'rgba(168, 85, 247, 0.2)' }}
-                  >
-                    <TrendingUp size={24} style={{ color: 'rgb(168, 85, 247)' }} />
-                  </div>
-                  <h3
-                    className="text-lg font-semibold mb-2 group-hover:text-purple-300 transition-colors"
-                    style={{ color: 'var(--text-main)' }}
-                  >
-                    Live Statistics
-                  </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                    Track your progress and compare with other players.
-                  </p>
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                </div>
-              </div>
+                 <Link href="/stats" className="block">
+                   <div
+                     className={`group relative p-6 rounded-2xl backdrop-blur-xl hover:scale-105 hover:-translate-y-2 cursor-pointer transition-all duration-500 delay-1400 ${
+                       isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+                     }`}
+                     style={{
+                       background: 'rgba(168, 85, 247, 0.15)',
+                       border: '1px solid rgba(168, 85, 247, 0.4)',
+                       boxShadow: 'rgba(168, 85, 247, 0.2) 0px 8px 32px, inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                     }}
+                   >
+                     <div
+                       className="inline-flex p-3 rounded-xl mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
+                       style={{ background: 'rgba(168, 85, 247, 0.3)' }}
+                     >
+                       <TrendingUp size={24} style={{ color: 'rgb(168, 85, 247)' }} />
+                     </div>
+                     <h3
+                       className="text-lg font-semibold mb-2 group-hover:text-purple-300 transition-colors text-white"
+                     >
+                       Live Statistics
+                     </h3>
+                     <p className="text-sm leading-relaxed text-gray-300 group-hover:text-gray-200 transition-colors">
+                       Track your progress and compare with other players.
+                     </p>
+                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                     
+                     {/* Click indicator */}
+                     <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                       <ArrowRight size={16} className="text-purple-400" />
+                     </div>
+                   </div>
+                 </Link>
+               </div>
 
               <div
-                className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-r from-red-500/30 to-purple-500/30 rounded-full blur-2xl animate-pulse opacity-100 scale-100 transition-all duration-1000 delay-1600"
+                className={`absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-r from-red-500/30 to-purple-500/30 rounded-full blur-2xl animate-pulse transition-all duration-1000 delay-1600 pointer-events-none z-0 ${
+                  isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+                }`}
               ></div>
               <div
-                className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-r from-cyan-500/20 to-yellow-500/20 rounded-full blur-3xl animate-pulse opacity-100 scale-100 transition-all duration-1000 delay-1800"
+                className={`absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-r from-cyan-500/20 to-yellow-500/20 rounded-full blur-3xl animate-pulse transition-all duration-1000 delay-1800 pointer-events-none z-0 ${
+                  isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+                }`}
                 style={{ animationDelay: '1s' }}
               ></div>
               <div
-                className="absolute -top-4 left-1/3 w-16 h-16 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full blur-xl animate-pulse opacity-100 scale-100 transition-all duration-1000 delay-2000"
+                className={`absolute -top-4 left-1/3 w-16 h-16 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full blur-xl animate-pulse transition-all duration-1000 delay-2000 pointer-events-none z-0 ${
+                  isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+                }`}
                 style={{ animationDelay: '2s' }}
               ></div>
               <div
-                className="absolute top-1/2 -right-4 w-12 h-12 bg-gradient-to-r from-pink-500/25 to-rose-500/20 rounded-full blur-lg animate-pulse opacity-100 scale-100 transition-all duration-1000 delay-2200"
+                className={`absolute top-1/2 -right-4 w-12 h-12 bg-gradient-to-r from-pink-500/25 to-rose-500/20 rounded-full blur-lg animate-pulse transition-all duration-1000 delay-2200 pointer-events-none z-0 ${
+                  isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+                }`}
                 style={{ animationDelay: '2.5s' }}
               ></div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Updates Banner - Modern & Animated */}
+      <div className="w-full relative overflow-hidden backdrop-blur-xl z-30">
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-slate-800/90 to-purple-900/95 animate-gradient-x"></div>
+        
+        {/* Floating Particles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-10 left-1/4 w-2 h-2 bg-red-400/30 rounded-full animate-float" style={{ animationDelay: '0s' }}></div>
+          <div className="absolute top-20 right-1/3 w-1 h-1 bg-cyan-400/40 rounded-full animate-float" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute bottom-16 left-1/3 w-3 h-3 bg-purple-400/20 rounded-full animate-float" style={{ animationDelay: '4s' }}></div>
+          <div className="absolute top-32 right-1/4 w-2 h-2 bg-yellow-400/25 rounded-full animate-float" style={{ animationDelay: '1s' }}></div>
+        </div>
+
+        {/* Mesh Gradient Overlay */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0" style={{
+            background: `
+              radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%)
+            `
+          }}></div>
+        </div>
+
+        {/* Glass Border */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+
+        <div className="max-w-7xl mx-auto px-4 py-8 relative z-40">
+          {updatesLoading ? (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-gray-700/50 to-gray-800/50 rounded-xl animate-pulse backdrop-blur-sm"></div>
+                <div className="space-y-2">
+                  <div className="w-40 h-6 bg-gradient-to-r from-gray-700/50 to-gray-600/50 rounded-lg animate-pulse"></div>
+                  <div className="w-32 h-4 bg-gradient-to-r from-gray-800/50 to-gray-700/50 rounded animate-pulse"></div>
+                </div>
+              </div>
+              <div className="hidden md:flex space-x-6 flex-1 justify-center max-w-4xl">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center space-x-4 bg-black/20 backdrop-blur-sm rounded-2xl p-4 border border-white/10 flex-1">
+                    <div className="w-16 h-12 bg-gradient-to-br from-gray-700/50 to-gray-800/50 rounded-xl animate-pulse"></div>
+                    <div className="space-y-2 flex-1">
+                      <div className="w-full h-4 bg-gradient-to-r from-gray-700/50 to-gray-600/50 rounded animate-pulse"></div>
+                      <div className="w-3/4 h-3 bg-gradient-to-r from-gray-800/50 to-gray-700/50 rounded animate-pulse"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="w-32 h-12 bg-gradient-to-r from-red-500/50 to-red-600/50 rounded-xl animate-pulse"></div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+               {/* Left: Enhanced Updates Title */}
+               <div className="flex items-center space-x-6 group min-w-0 flex-shrink-0 -ml-20">
+                 <div className="relative">
+                   <div className="absolute inset-0 bg-gradient-to-r from-red-500/30 to-purple-500/30 rounded-2xl blur-xl animate-pulse"></div>
+                   <div className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-white/20 rounded-2xl p-4 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-1">
+                     <Newspaper className="w-8 h-8 text-red-400 animate-pulse" />
+                   </div>
+                 </div>
+                 <div className="space-y-1 min-w-0 -ml-6">
+                   <h2 className="text-white font-bold text-xl bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent whitespace-nowrap">
+                     Latest Updates
+                   </h2>
+                   <p className="text-gray-400 text-sm flex items-center gap-3 whitespace-nowrap">
+                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                     Stay updated with VALORANT
+                   </p>
+                 </div>
+               </div>
+
+              {/* Center: Enhanced Updates Cards */}
+              <div className="hidden md:flex items-center space-x-6 flex-1 justify-center max-w-4xl -ml-4">
+                {updates.map((update, index) => (
+                  <Link
+                    key={update.id}
+                    href={`/updates/${update.id}`}
+                    className="group relative flex items-center space-x-4 bg-black/30 hover:bg-black/40 border border-white/10 hover:border-red-500/40 rounded-2xl px-5 py-4 transition-all duration-500 hover:scale-105 hover:-translate-y-2 min-w-0 flex-1 cursor-pointer overflow-hidden"
+                    style={{ animationDelay: `${index * 150}ms` }}
+                    onClick={(e) => {
+                      console.log('🎯 Update card clicked:', update.id, update.title)
+                    }}
+                  >
+                    {/* Background Glow */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 via-purple-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    {/* Shimmer Effect */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent transform skew-x-12"></div>
+                    </div>
+
+                    {/* Update Image */}
+                    <div className="relative flex-shrink-0 w-16 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 group-hover:border-red-500/30 transition-all duration-300">
+                      {update.imageUrl && (
+                        <img
+                          src={update.imageUrl}
+                          alt={update.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+
+                    {/* Update Info */}
+                    <div className="min-w-0 flex-1 relative">
+                      <h3 className="text-white text-sm font-semibold truncate group-hover:text-red-300 transition-colors duration-300 mb-1">
+                        {update.title}
+                      </h3>
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-1">
+                          <Calendar className="w-3 h-3 text-gray-500 group-hover:text-red-400 transition-colors duration-300" />
+                          <span className="text-gray-500 text-xs group-hover:text-gray-300 transition-colors duration-300">
+                            {new Date(update.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US', {
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </span>
+                        </div>
+                        {update.isNew && (
+                          <span className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs px-2 py-1 rounded-full font-medium shadow-lg animate-pulse">
+                            NEW
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Arrow Indicator */}
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                      <ArrowRight className="w-4 h-4 text-red-400" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+               {/* Right: Enhanced View All Button */}
+               <div className="relative group ml-16 flex-shrink-0">
+                 <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
+                 <Link
+                   href="/updates"
+                   className="relative flex items-center space-x-3 bg-gradient-to-r from-red-500 to-red-600 text-white px-8 py-4 rounded-2xl font-semibold transition-all duration-500 hover:scale-105 hover:-translate-y-1 shadow-2xl hover:shadow-red-500/25 whitespace-nowrap cursor-pointer border border-red-400/30 backdrop-blur-sm"
+                   onClick={(e) => {
+                     console.log('🎯 View All Updates clicked')
+                   }}
+                 >
+                   <span className="text-sm font-bold relative">
+                     View All Updates
+                     <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 rounded transition-opacity duration-300"></span>
+                   </span>
+                   <ArrowRight className="w-5 h-5 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-300" />
+                   
+                   {/* Button glow */}
+                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                 </Link>
+               </div>
+            </div>
+          )}
+
+          {/* Enhanced Mobile Updates */}
+          {!updatesLoading && (
+            <div className="md:hidden mt-6">
+              <div className="flex space-x-4 overflow-x-auto scrollbar-hide pb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {updates.map((update, index) => (
+                  <Link
+                    key={update.id}
+                    href={`/updates/${update.id}`}
+                    className="group relative flex-shrink-0 w-72 bg-black/30 hover:bg-black/40 border border-white/10 hover:border-red-500/40 rounded-2xl p-4 transition-all duration-500 hover:scale-105 cursor-pointer overflow-hidden"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                    onClick={(e) => {
+                      console.log('🎯 Mobile update card clicked:', update.id, update.title)
+                    }}
+                  >
+                    {/* Mobile card background glow */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div className="flex items-center space-x-4 relative">
+                      <div className="w-16 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 flex-shrink-0">
+                        {update.imageUrl && (
+                          <img
+                            src={update.imageUrl}
+                            alt={update.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-white text-sm font-semibold truncate group-hover:text-red-300 transition-colors duration-300 mb-1">
+                          {update.title}
+                        </h3>
+                        <div className="flex items-center space-x-3">
+                          <div className="flex items-center space-x-1">
+                            <Clock className="w-3 h-3 text-gray-500 group-hover:text-red-400 transition-colors duration-300" />
+                            <span className="text-gray-500 text-xs group-hover:text-gray-300 transition-colors duration-300">
+                              {new Date(update.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US', {
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                          {update.isNew && (
+                            <span className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs px-2 py-1 rounded-full font-medium animate-pulse">
+                              NEW
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

@@ -1,8 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Calendar, Clock, Tag, ExternalLink, Zap, Shield, Users, MapPin, RefreshCw } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
+import { Calendar, Clock, Tag, ExternalLink, Zap, Shield, Users, MapPin, RefreshCw, X, TrendingUp, Eye, Filter, Search } from 'lucide-react'
 import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface ValorantUpdate {
   id: string
@@ -18,38 +21,27 @@ interface ValorantUpdate {
   isNew?: boolean
 }
 
-// No more hardcoded data! All updates are now fetched live from playvalorant.com
-
 const Updates = () => {
   const [updates, setUpdates] = useState<ValorantUpdate[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   const [loading, setLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState<string>('')
   const [refreshing, setRefreshing] = useState(false)
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const { language } = useLanguage()
 
-  const categories = ['All', 'Agent Updates', 'Map Changes', 'Weapon Changes', 'System Updates', 'Bug Fixes', 'Competitive Updates']
+  const categories = ['All', 'System Updates', 'Competitive Updates', 'Agent Updates', 'Map Changes', 'Weapon Changes', 'Bug Fixes']
 
-  useEffect(() => {
-    fetchUpdates()
-    
-    // Set up real-time polling every 5 minutes
-    const interval = setInterval(() => {
-      fetchUpdates(true) // Silent refresh
-    }, 5 * 60 * 1000) // 5 minutes
-
-    return () => clearInterval(interval)
-  }, [])
-
-  const fetchUpdates = async (silent = false) => {
+  const fetchUpdates = useCallback(async (silent = false) => {
     if (!silent) setLoading(true)
     
     try {
-      console.log('🔄 Frontend: Fetching updates from real-time API...')
-      const response = await fetch('/api/valorant-updates')
+      console.log(`🔄 Frontend: Fetching updates from real-time API (${language})...`)
+      const response = await fetch(`/api/valorant-updates?lang=${language}`)
       const data = await response.json()
       
       if (data.success) {
-        console.log(`✅ Frontend: Successfully loaded ${data.count} updates from ${data.source}`)
+        console.log(`✅ Frontend: Successfully loaded ${data.count} updates from ${data.source} (${data.language})`)
         setUpdates(data.updates)
         setLastUpdated(data.lastUpdated)
       } else {
@@ -58,50 +50,49 @@ const Updates = () => {
         setLastUpdated(new Date().toISOString())
       }
     } catch (error) {
-      console.error('❌ Frontend: Failed to fetch updates:', error)
+      console.error('🚨 Frontend: Network error while fetching updates:', error)
       setUpdates([])
       setLastUpdated(new Date().toISOString())
     } finally {
-      if (!silent) setLoading(false)
+      setLoading(false)
     }
-  }
+  }, [language])
 
-  const handleManualRefresh = async () => {
+  useEffect(() => {
+    fetchUpdates()
+  }, [fetchUpdates])
+
+  const handleRefresh = async () => {
     setRefreshing(true)
     try {
-      const response = await fetch('/api/valorant-updates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ forceUpdate: true })
-      })
-      const data = await response.json()
-      
-      if (data.success) {
-        setUpdates(data.updates)
-        setLastUpdated(data.lastUpdated)
-      }
-    } catch (error) {
-      console.error('Failed to refresh updates:', error)
+      await fetchUpdates(true)
     } finally {
       setRefreshing(false)
     }
   }
 
-  const filteredUpdates = selectedCategory === 'All' 
-    ? updates 
-    : updates.filter(update => update.category === selectedCategory)
+  const filteredUpdates = updates.filter(update => {
+    const matchesCategory = selectedCategory === 'All' || update.category === selectedCategory
+    const matchesSearch = searchQuery === '' || 
+      update.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      update.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      update.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+    return matchesCategory && matchesSearch
+  })
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'Agent Updates': return <Users size={20} />
-      case 'Map Changes': return <MapPin size={20} />
-      case 'Weapon Changes': return <Zap size={20} />
-      case 'System Updates': return <Shield size={20} />
-      default: return <Tag size={20} />
+      case 'Agent Updates': return <Users size={16} />
+      case 'Map Changes': return <MapPin size={16} />
+      case 'Weapon Changes': return <Zap size={16} />
+      case 'System Updates': return <Shield size={16} />
+      case 'Bug Fixes': return <ExternalLink size={16} />
+      case 'Competitive Updates': return <TrendingUp size={16} />
+      default: return <Filter size={16} />
     }
   }
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryBadgeStyle = (category: string) => {
     switch (category) {
       case 'Agent Updates': return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
       case 'Map Changes': return 'bg-green-500/20 text-green-400 border-green-500/30'
@@ -113,178 +104,362 @@ const Updates = () => {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-900">
+        <Header />
+        <div className="pt-32 pb-16 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="animate-pulse">
+              <div className="h-8 bg-slate-700 rounded w-64 mb-4"></div>
+              <div className="h-12 bg-slate-700 rounded w-96 mb-8"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="h-64 bg-slate-700 rounded-lg"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <div className="min-h-screen bg-slate-900">
       <Header />
       
-      {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex items-center justify-center space-x-4 mb-6">
-            <div className="inline-flex items-center space-x-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-green-400 text-sm font-medium">Live from playvalorant.com</span>
+      {/* Gaming Site Layout */}
+      <div className="pt-20">
+        {/* Breadcrumb Bar */}
+        <div className="bg-slate-800 border-b border-slate-700">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-center space-x-2 text-sm">
+              <Link href="/" className="text-slate-400 hover:text-white transition-colors">
+                Home
+              </Link>
+              <span className="text-slate-500">/</span>
+              <span className="text-white font-medium">Updates</span>
             </div>
-            
-            <button
-              onClick={handleManualRefresh}
-              disabled={refreshing}
-              className="inline-flex items-center space-x-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-600/30 rounded-full px-4 py-2 transition-all duration-200 disabled:opacity-50"
-            >
-              <RefreshCw size={14} className={`text-gray-400 ${refreshing ? 'animate-spin' : ''}`} />
-              <span className="text-gray-400 text-sm font-medium">
-                {refreshing ? 'Refreshing...' : 'Refresh'}
-              </span>
-            </button>
-          </div>
-          
-          <h1 className="text-4xl md:text-6xl font-heading font-bold text-white mb-6">
-            Valorant <span className="text-red-400">Updates</span>
-          </h1>
-          
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
-            Stay up-to-date with the latest Valorant patches, agent changes, map updates, and competitive adjustments. 
-            Real-time tracking of official updates from Riot Games.
-          </p>
-
-          {/* Category Filters */}
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  selectedCategory === category
-                    ? 'bg-red-500 text-white shadow-lg shadow-red-500/25'
-                    : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
           </div>
         </div>
-      </section>
 
-      {/* Updates Grid */}
-      <section className="px-4 pb-20">
-        <div className="max-w-7xl mx-auto">
-          {/* Results Count & Last Updated */}
-          <div className="mb-6 flex items-center justify-between">
-            <p className="text-gray-400">
-              {loading ? 'Loading...' : `${filteredUpdates.length} updates found`}
-            </p>
-            {lastUpdated && (
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <Clock size={14} />
-                <span>
-                  Last updated: {new Date(lastUpdated).toLocaleString()}
-                </span>
+        {/* Page Header */}
+        <div className="bg-slate-800 border-b border-slate-700">
+          <div className="max-w-7xl mx-auto px-4 py-12">
+            <div className="text-center">
+              <div className="inline-flex items-center px-3 py-1 bg-red-600 rounded-full text-white text-sm font-medium mb-4">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse mr-2"></div>
+                Live from VALORANT.com
               </div>
-            )}
-          </div>
-
-          {loading ? (
-            <div className="text-center py-20">
-              <div className="animate-spin w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-              <p className="text-gray-400">Loading updates...</p>
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                VALORANT Updates
+              </h1>
+              <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-8">
+                Stay up-to-date with the latest patches, balance changes, and system updates.
+                All content synchronized live from official Riot sources.
+              </p>
+              
+              {/* Quick Stats */}
+              <div className="flex justify-center gap-8">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-red-400">{updates.length}</div>
+                  <div className="text-sm text-slate-400">Total Updates</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-yellow-400">{updates.filter(u => u.isNew).length}</div>
+                  <div className="text-sm text-slate-400">New This Week</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-400">Live</div>
+                  <div className="text-sm text-slate-400">Real-time</div>
+                </div>
+              </div>
             </div>
-          ) : (
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {filteredUpdates.map((update) => (
-                <div key={update.id} className="glass rounded-2xl border border-white/10 overflow-hidden group hover:border-red-500/30 transition-all duration-300">
-                  {/* Update Image */}
-                  {update.imageUrl && (
-                    <div className="relative h-48 overflow-hidden">
-                      <img 
-                        src={update.imageUrl}
-                        alt={update.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          e.currentTarget.src = '/static/ui_icons/placeholder.png'
-                        }}
-                      />
-                      {update.isNew && (
-                        <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                          NEW
-                        </div>
-                      )}
-                    </div>
-                  )}
+          </div>
+        </div>
 
-                  <div className="p-6">
-                    {/* Category Badge */}
-                    <div className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium border mb-4 ${getCategoryColor(update.category)}`}>
-                      {getCategoryIcon(update.category)}
-                      <span>{update.category}</span>
-                    </div>
-
-                    {/* Version & Date */}
-                    <div className="flex items-center space-x-4 text-sm text-gray-400 mb-3">
-                      <div className="flex items-center space-x-1">
-                        <Tag size={14} />
-                        <span>v{update.version}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Calendar size={14} />
-                        <span>{new Date(update.date).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="text-xl font-heading font-semibold text-white mb-3 group-hover:text-red-300 transition-colors duration-200">
-                      {update.title}
-                    </h3>
-
-                    {/* Summary */}
-                    <p className="text-gray-400 text-sm mb-4 line-clamp-3">
-                      {update.summary}
-                    </p>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {update.tags.slice(0, 3).map((tag) => (
-                        <span 
-                          key={tag}
-                          className="px-2 py-1 bg-gray-800/50 text-gray-400 text-xs rounded-md"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                      {update.tags.length > 3 && (
-                        <span className="px-2 py-1 bg-gray-800/50 text-gray-400 text-xs rounded-md">
-                          +{update.tags.length - 3} more
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Read More Button */}
-                    <a 
-                      href={update.officialUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center space-x-2 text-red-400 hover:text-red-300 text-sm font-medium transition-colors duration-200"
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Main Content Area */}
+            <main className="flex-1">
+              {/* Filters Bar */}
+              <div className="bg-slate-800 rounded-lg p-6 mb-8">
+                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-white flex items-center space-x-2">
+                    <Filter className="w-5 h-5" />
+                    <span>Filter Updates</span>
+                  </h2>
+                  
+                  {/* Search Bar */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Search updates..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:border-red-500 focus:outline-none w-64"
+                    />
+                  </div>
+                  
+                  <button
+                    onClick={() => handleRefresh()}
+                    disabled={refreshing}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                      refreshing 
+                        ? 'bg-slate-700 text-slate-400 cursor-not-allowed' 
+                        : 'bg-red-600 hover:bg-red-700 text-white'
+                    }`}
+                  >
+                    <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                    <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
+                  </button>
+                </div>
+                
+                {/* Category Tabs */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {categories.map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => setSelectedCategory(category)}
+                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        selectedCategory === category
+                          ? 'bg-red-600 text-white'
+                          : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                      }`}
                     >
-                      <span>Read Official Post</span>
-                      <ExternalLink size={14} />
-                    </a>
+                      {getCategoryIcon(category)}
+                      <span>{category}</span>
+                      <span className="text-xs bg-black/30 px-2 py-0.5 rounded">
+                        {category === 'All' ? updates.length : updates.filter(u => u.category === category).length}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                
+                {/* Results Info */}
+                <div className="flex items-center justify-between text-sm text-slate-400">
+                  <div className="flex items-center space-x-2">
+                    {loading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span>Loading updates...</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>Showing {filteredUpdates.length} of {updates.length} updates</span>
+                      </>
+                    )}
+                  </div>
+                  {lastUpdated && (
+                    <span>Last updated: {new Date(lastUpdated).toLocaleDateString()}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Updates Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {filteredUpdates.map((update) => (
+                  <Link
+                    key={update.id}
+                    href={`/updates/${update.id}`}
+                    className="group bg-slate-800 rounded-lg overflow-hidden hover:bg-slate-750 transition-colors border border-slate-700 hover:border-slate-600"
+                  >
+                    {/* Update Image */}
+                    {update.imageUrl && (
+                      <div className="aspect-video bg-slate-700">
+                        <img
+                          src={update.imageUrl}
+                          alt={update.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+                    
+                    <div className="p-6">
+                      {/* Category & Date */}
+                      <div className="flex items-center justify-between mb-3">
+                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${getCategoryBadgeStyle(update.category)}`}>
+                          {update.category}
+                        </span>
+                        <div className="flex items-center space-x-2 text-xs text-slate-400">
+                          <Calendar className="w-3 h-3" />
+                          <span>
+                            {new Date(update.date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US', {
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </span>
+                          {update.isNew && (
+                            <span className="bg-red-500 text-white px-2 py-0.5 rounded text-xs font-bold">
+                              NEW
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Title */}
+                      <h2 className="text-lg font-semibold text-white mb-2 group-hover:text-red-400 transition-colors line-clamp-2">
+                        {update.title}
+                      </h2>
+
+                      {/* Summary */}
+                      <p className="text-slate-300 text-sm line-clamp-3 mb-4">
+                        {update.summary}
+                      </p>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {update.tags.slice(0, 3).map((tag, index) => (
+                          <span
+                            key={index}
+                            className="bg-slate-700 text-slate-300 text-xs px-2 py-1 rounded"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                        {update.tags.length > 3 && (
+                          <span className="text-slate-400 text-xs">
+                            +{update.tags.length - 3} more
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Footer */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-red-400 text-sm font-medium group-hover:text-red-300">
+                          Read More →
+                        </span>
+                        <div className="flex items-center space-x-2 text-xs text-slate-400">
+                          <Eye className="w-3 h-3" />
+                          <span>2.4K views</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Empty State */}
+              {filteredUpdates.length === 0 && !loading && (
+                <div className="text-center py-12">
+                  <div className="w-24 h-24 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="w-12 h-12 text-slate-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-2">No updates found</h3>
+                  <p className="text-slate-400 mb-6">Try adjusting your filters or search query</p>
+                  <button
+                    onClick={() => {
+                      setSelectedCategory('All')
+                      setSearchQuery('')
+                    }}
+                    className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+              )}
+            </main>
+
+            {/* Sidebar */}
+            <aside className="lg:w-80 xl:w-96 space-y-6">
+              {/* Popular This Week */}
+              <div className="bg-slate-800 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                  <TrendingUp className="w-5 h-5" />
+                  <span>Popular This Week</span>
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3 group cursor-pointer">
+                    <span className="text-red-400 font-bold text-lg">#1</span>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium text-white group-hover:text-red-400 transition-colors line-clamp-2">
+                        Replay System Finally Here
+                      </h4>
+                      <p className="text-xs text-slate-400">15.2K views</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3 group cursor-pointer">
+                    <span className="text-orange-400 font-bold text-lg">#2</span>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium text-white group-hover:text-red-400 transition-colors line-clamp-2">
+                        New AFK Penalty System
+                      </h4>
+                      <p className="text-xs text-slate-400">12.8K views</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3 group cursor-pointer">
+                    <span className="text-yellow-400 font-bold text-lg">#3</span>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium text-white group-hover:text-red-400 transition-colors line-clamp-2">
+                        Mobile Verification Beta
+                      </h4>
+                      <p className="text-xs text-slate-400">9.1K views</p>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-
-          {filteredUpdates.length === 0 && !loading && (
-            <div className="text-center py-20">
-              <div className="w-16 h-16 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock size={32} className="text-gray-400" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">No Updates Found</h3>
-              <p className="text-gray-400">No updates available for the selected category.</p>
-            </div>
-          )}
+
+              {/* Latest News */}
+              <div className="bg-slate-800 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Latest News</h3>
+                <div className="space-y-4">
+                  <div className="group cursor-pointer">
+                    <div className="flex space-x-3">
+                      <img
+                        src="https://picsum.photos/60/45?random=20"
+                        alt="News"
+                        className="w-15 h-11 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <h4 className="text-sm font-medium text-white group-hover:text-red-400 transition-colors line-clamp-2">
+                          Champions 2025 Bundle Coming Soon
+                        </h4>
+                        <p className="text-xs text-slate-400 mt-1">2 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="group cursor-pointer">
+                    <div className="flex space-x-3">
+                      <img
+                        src="https://picsum.photos/60/45?random=21"
+                        alt="News"
+                        className="w-15 h-11 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <h4 className="text-sm font-medium text-white group-hover:text-red-400 transition-colors line-clamp-2">
+                          Agent Balance Changes Preview
+                        </h4>
+                        <p className="text-xs text-slate-400 mt-1">6 hours ago</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="group cursor-pointer">
+                    <div className="flex space-x-3">
+                      <img
+                        src="https://picsum.photos/60/45?random=22"
+                        alt="News"
+                        className="w-15 h-11 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <h4 className="text-sm font-medium text-white group-hover:text-red-400 transition-colors line-clamp-2">
+                          New Map Rotation Announced
+                        </h4>
+                        <p className="text-xs text-slate-400 mt-1">1 day ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
         </div>
-      </section>
+      </div>
+      
+      <Footer />
     </div>
   )
 }

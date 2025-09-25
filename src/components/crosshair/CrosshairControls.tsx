@@ -3,7 +3,7 @@
 import { ChangeEvent } from 'react'
 import type { ValorantCrosshairSettings } from '@/types'
 import { VALORANT_COLORS, getColorFromType } from '@/utils/valorantCrosshair'
-import ToggleSwitch from '@/components/ui/ToggleSwitch'
+import { Palette, Crosshair, Target, Zap } from 'lucide-react'
 
 interface CrosshairControlsProps {
   settings: ValorantCrosshairSettings
@@ -33,34 +33,28 @@ const CrosshairControls = ({ settings, updateSetting, profile = 'general' }: Cro
     }
   }
 
-  const ControlGroup = ({ title, children, icon }: { title: string; children: React.ReactNode; icon?: string }) => (
-    <div 
-      className="rounded-xl p-4"
-      style={{
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)'
-      }}
-    >
-      <h4 className="font-semibold text-base mb-4 text-yellow-400/90 flex items-center gap-2">
-        {icon && <span>{icon}</span>}
+  // Modern Section Component - Valorant Style
+  const Section = ({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) => (
+    <div className="bg-gray-800/20 backdrop-blur-10 border border-gray-700/30 rounded-xl p-4 mb-4">
+      <h3 className="font-semibold text-base mb-4 text-white flex items-center gap-2">
+        {icon}
         {title}
-      </h4>
+      </h3>
       <div className="space-y-4">
         {children}
       </div>
     </div>
   )
 
-  const SliderControl = ({ 
+  // Modern Slider - Like Valorant
+  const Slider = ({ 
     label, 
     value, 
     min, 
     max, 
     step = 1, 
     onChange,
-    unit = '',
-    description
+    unit = ''
   }: {
     label: string
     value: number
@@ -69,335 +63,319 @@ const CrosshairControls = ({ settings, updateSetting, profile = 'general' }: Cro
     step?: number
     onChange: (e: ChangeEvent<HTMLInputElement>) => void
     unit?: string
-    description?: string
   }) => (
-    <div>
-      <div className="flex justify-between items-center mb-2">
-        <label className="text-sm font-medium text-gray-200">{label}</label>
-        <span className="text-sm text-yellow-400 font-mono bg-black/20 px-2 py-1 rounded">
+    <div className="space-y-2">
+      <div className="flex justify-between items-center">
+        <label className="text-sm font-medium text-gray-300">{label}</label>
+        <span className="text-xs text-yellow-400 font-mono bg-gray-900/50 px-2 py-1 rounded">
           {value}{unit}
         </span>
       </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={onChange}
-        className="w-full h-2 bg-gray-800/50 rounded-lg appearance-none cursor-pointer slider"
-        style={{
-          background: `linear-gradient(to right, #f0db4f 0%, #f0db4f ${((value - min) / (max - min)) * 100}%, rgba(255,255,255,0.1) ${((value - min) / (max - min)) * 100}%, rgba(255,255,255,0.1) 100%)`
-        }}
-      />
-      {description && (
-        <p className="text-xs text-gray-500 mt-1">{description}</p>
-      )}
+      <div className="relative">
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={onChange}
+          className="w-full h-2 bg-gray-700/50 rounded-lg appearance-none cursor-pointer"
+        />
+        <div 
+          className="absolute top-0 left-0 h-2 bg-gradient-to-r from-yellow-400 to-red-400 rounded-lg pointer-events-none"
+          style={{ width: `${((value - min) / (max - min)) * 100}%` }}
+        />
+        <div 
+          className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-gray-600 rounded-full shadow-lg pointer-events-none"
+          style={{ left: `calc(${((value - min) / (max - min)) * 100}% - 8px)` }}
+        />
+      </div>
     </div>
   )
 
+  // Toggle Switch - Valorant Style
+  const Toggle = ({ label, checked, onChange, disabled = false }: {
+    label: string
+    checked: boolean
+    onChange: (e: ChangeEvent<HTMLInputElement>) => void
+    disabled?: boolean
+  }) => (
+    <label className="flex items-center justify-between cursor-pointer">
+      <span className={`text-sm font-medium ${disabled ? 'text-gray-500' : 'text-gray-300'}`}>{label}</span>
+      <div className="relative">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={onChange}
+          disabled={disabled}
+          className="sr-only"
+        />
+        <div className={`w-10 h-6 rounded-full transition-colors duration-200 ${
+          checked && !disabled ? 'bg-gradient-to-r from-yellow-400 to-red-400' : 'bg-gray-600'
+        } ${disabled ? 'opacity-50' : ''}`}>
+          <div className={`w-4 h-4 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${
+            checked && !disabled ? 'translate-x-5' : 'translate-x-1'
+          }`} />
+        </div>
+      </div>
+    </label>
+  )
 
-  const SelectControl = ({
-    label,
-    value,
-    options,
-    onChange,
-    description
-  }: {
+  // Dropdown - Valorant Style
+  const Dropdown = ({ label, value, options, onChange }: {
     label: string
     value: number
     options: { value: number; label: string }[]
     onChange: (e: ChangeEvent<HTMLSelectElement>) => void
-    description?: string
   }) => (
-    <div>
-      <label className="block text-sm font-medium text-gray-200 mb-2">{label}</label>
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-gray-300">{label}</label>
       <select
         value={value}
         onChange={onChange}
-        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-sm text-white focus:outline-none focus:border-yellow-500/50"
+        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50"
       >
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option key={option.value} value={option.value} className="bg-gray-800">
             {option.label}
           </option>
         ))}
       </select>
-      {description && (
-        <p className="text-xs text-gray-500 mt-1">{description}</p>
-      )}
     </div>
   )
 
-  const colorOptions = Object.entries(VALORANT_COLORS).map(([value, color]) => ({
-    value: parseInt(value),
-    label: color.name
-  }))
-
   return (
-    <div className="space-y-4">
-      {/* Color & Appearance */}
-      <ControlGroup title="Color & Appearance" icon="🎨">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <SelectControl
-            label="Color Type"
+    <div className="space-y-0">
+      {/* GENERAL - Exactly like Valorant's layout */}
+      <Section title="GENERAL" icon={<Palette size={18} className="text-yellow-400" />}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Dropdown
+            label="Color"
             value={settings.colorType}
-            options={colorOptions}
             onChange={handleSelectChange('colorType')}
-            description="Choose from Valorant's preset colors or use custom"
+            options={Object.entries(VALORANT_COLORS).map(([value, color]) => ({
+              value: parseInt(value),
+              label: color.name
+            }))}
           />
           
-          {settings.colorType === 7 && (
-            <div>
-              <label className="block text-sm font-medium text-gray-200 mb-2">Custom Color</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={settings.customColor}
-                  onChange={handleColorChange}
-                  className="w-12 h-10 rounded border border-gray-600 bg-transparent cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={settings.customColor}
-                  onChange={handleColorChange}
-                  className="flex-1 px-3 py-2 bg-gray-800/50 border border-gray-700 rounded text-sm font-mono"
-                />
-              </div>
-            </div>
-          )}
+          <Toggle
+            label="Show Spectated Player's Crosshair"
+            checked={false}
+            onChange={() => {}}
+            disabled={true}
+          />
           
-          {settings.colorType !== 7 && (
-            <div>
-              <label className="block text-sm font-medium text-gray-200 mb-2">Color Preview</label>
-              <div 
-                className="w-full h-10 rounded border border-gray-600"
-                style={{ backgroundColor: getColorFromType(settings.colorType, settings.customColor) }}
+          <Toggle
+            label="Disable Crosshair"
+            checked={false}
+            onChange={() => {}}
+            disabled={true}
+          />
+        </div>
+        
+        {settings.colorType === 7 && (
+          <div className="pt-4 border-t border-gray-700/30">
+            <label className="text-sm font-medium text-gray-300 block mb-2">Custom Color</label>
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={settings.customColor}
+                onChange={handleColorChange}
+                className="w-12 h-8 rounded-lg border border-gray-600 bg-transparent cursor-pointer"
+              />
+              <input
+                type="text"
+                value={settings.customColor}
+                onChange={(e) => updateSetting('customColor', e.target.value)}
+                className="flex-1 px-3 py-2 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-yellow-400/50"
+                placeholder="#00ff00"
               />
             </div>
-          )}
+          </div>
+        )}
+      </Section>
+
+      {/* PRIMARY - Like Valorant's Primary section */}
+      <Section title="PRIMARY" icon={<Crosshair size={18} className="text-yellow-400" />}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+          <Toggle
+            label="Show Inner Lines"
+            checked={settings.innerLines}
+            onChange={handleCheckboxChange('innerLines')}
+          />
+          
+          <Toggle
+            label="Show Outlines"
+            checked={settings.outlines}
+            onChange={handleCheckboxChange('outlines')}
+          />
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ToggleSwitch
-          label="Enable Outlines"
-          checked={settings.outlines}
-          onChange={handleCheckboxChange('outlines')}
-          description="Black outline around crosshair for better visibility"
-        />
-
-          {settings.outlines && (
-            <>
-              <SliderControl
-                label="Outline Opacity"
-                value={settings.outlineOpacity}
-                min={0}
-                max={1}
-                step={0.1}
-                onChange={handleRangeChange('outlineOpacity')}
-                description="Transparency of the outline"
-              />
-              <SliderControl
-                label="Outline Thickness"
-                value={settings.outlineThickness}
-                min={0}
-                max={5}
-                onChange={handleRangeChange('outlineThickness')}
-                description="Thickness of the outline"
-              />
-            </>
-          )}
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Slider
+            label="Inner Line Opacity"
+            value={settings.innerLineOpacity}
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={handleRangeChange('innerLineOpacity')}
+          />
+          
+          <Slider
+            label="Inner Line Length"
+            value={settings.innerLineLength}
+            min={0}
+            max={20}
+            onChange={handleRangeChange('innerLineLength')}
+          />
+          
+          <Slider
+            label="Inner Line Thickness"
+            value={settings.innerLineThickness}
+            min={1}
+            max={10}
+            onChange={handleRangeChange('innerLineThickness')}
+          />
+          
+          <Slider
+            label="Inner Line Offset"
+            value={settings.innerLineOffset}
+            min={0}
+            max={20}
+            onChange={handleRangeChange('innerLineOffset')}
+          />
         </div>
-      </ControlGroup>
-
-      {/* Center Dot */}
-      <ControlGroup title="Center Dot" icon="⚫">
-        <ToggleSwitch
-          label="Show Center Dot"
-          checked={settings.centerDot}
-          onChange={handleCheckboxChange('centerDot')}
-          description="Small dot in the center of crosshair"
-        />
-
-        {settings.centerDot && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SliderControl
-              label="Dot Opacity"
-              value={settings.centerDotOpacity}
+        
+        {settings.outlines && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-700/30">
+            <Slider
+              label="Outline Opacity"
+              value={settings.outlineOpacity}
               min={0}
               max={1}
               step={0.1}
-              onChange={handleRangeChange('centerDotOpacity')}
-              description="Transparency of the center dot"
+              onChange={handleRangeChange('outlineOpacity')}
             />
-            <SliderControl
-              label="Dot Size"
+            <Slider
+              label="Outline Thickness"
+              value={settings.outlineThickness}
+              min={1}
+              max={3}
+              onChange={handleRangeChange('outlineThickness')}
+            />
+          </div>
+        )}
+      </Section>
+
+      {/* CENTER DOT - Like Valorant */}
+      <Section title="CENTER DOT" icon={<Target size={18} className="text-yellow-400" />}>
+        <div className="mb-4">
+          <Toggle
+            label="Show Center Dot"
+            checked={settings.centerDot}
+            onChange={handleCheckboxChange('centerDot')}
+          />
+        </div>
+        
+        {settings.centerDot && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Slider
+              label="Center Dot Opacity"
+              value={settings.centerDotOpacity}
+              min={0}
+              max={1}
+              step={0.01}
+              onChange={handleRangeChange('centerDotOpacity')}
+            />
+            <Slider
+              label="Center Dot Thickness"
               value={settings.centerDotThickness}
               min={1}
               max={10}
               onChange={handleRangeChange('centerDotThickness')}
-              description="Size of the center dot"
             />
           </div>
         )}
-      </ControlGroup>
+      </Section>
 
-      {/* Inner Lines */}
-      <ControlGroup title="Inner Lines" icon="✚">
-        <ToggleSwitch
-          label="Show Inner Lines"
-          checked={settings.innerLines}
-          onChange={handleCheckboxChange('innerLines')}
-          description="Main crosshair lines"
-        />
-
-        {settings.innerLines && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SliderControl
-              label="Line Opacity"
-              value={settings.innerLineOpacity}
-              min={0}
-              max={1}
-              step={0.1}
-              onChange={handleRangeChange('innerLineOpacity')}
-              description="Transparency of inner lines"
-            />
-            <SliderControl
-              label="Line Length"
-              value={settings.innerLineLength}
-              min={0}
-              max={20}
-              onChange={handleRangeChange('innerLineLength')}
-              description="Length of crosshair lines"
-            />
-            <SliderControl
-              label="Line Thickness"
-              value={settings.innerLineThickness}
-              min={1}
-              max={10}
-              onChange={handleRangeChange('innerLineThickness')}
-              description="Thickness of crosshair lines"
-            />
-            <SliderControl
-              label="Center Gap"
-              value={settings.innerLineOffset}
-              min={0}
-              max={20}
-              onChange={handleRangeChange('innerLineOffset')}
-              description="Gap between lines and center"
-            />
-          </div>
-        )}
-      </ControlGroup>
-
-      {/* Dynamic Crosshair */}
-      <ControlGroup title="Dynamic Crosshair" icon="🎯">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <ToggleSwitch
+      {/* ERROR - Valorant's Error section */}
+      <Section title="ERROR" icon={<Zap size={18} className="text-yellow-400" />}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+          <Toggle
             label="Movement Error"
             checked={settings.movementError}
             onChange={handleCheckboxChange('movementError')}
-            description="Crosshair expands when moving"
           />
           
-          <ToggleSwitch
+          <Toggle
             label="Firing Error"
             checked={settings.firingError}
             onChange={handleCheckboxChange('firingError')}
-            description="Crosshair expands when shooting"
           />
         </div>
-
+        
         {(settings.movementError || settings.firingError) && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {settings.movementError && (
-              <SliderControl
-                label="Movement Error Multiplier"
-                value={settings.movementErrorMultiplier}
-                min={0}
-                max={5}
-                step={0.1}
-                onChange={handleRangeChange('movementErrorMultiplier')}
-                description="How much crosshair expands when moving"
-              />
-            )}
-            
-            {settings.firingError && (
-              <SliderControl
-                label="Firing Error Multiplier"
-                value={settings.firingErrorMultiplier}
-                min={0}
-                max={5}
-                step={0.1}
-                onChange={handleRangeChange('firingErrorMultiplier')}
-                description="How much crosshair expands when shooting"
-              />
-            )}
-          </div>
-        )}
-      </ControlGroup>
-
-      {/* Outer Lines (Dynamic) */}
-      {(settings.movementError || settings.firingError) && (
-        <ControlGroup title="Outer Lines (Dynamic)" icon="⊕">
-          <ToggleSwitch
-            label="Show Outer Lines"
-            checked={settings.outerLines}
-            onChange={handleCheckboxChange('outerLines')}
-            description="Additional lines that appear during movement/firing"
-          />
-
-          {settings.outerLines && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <SliderControl
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Slider
                 label="Outer Line Opacity"
                 value={settings.outerLineOpacity}
                 min={0}
                 max={1}
-                step={0.1}
+                step={0.01}
                 onChange={handleRangeChange('outerLineOpacity')}
-                description="Transparency of outer lines"
               />
-              <SliderControl
+              
+              <Slider
                 label="Outer Line Length"
                 value={settings.outerLineLength}
                 min={0}
                 max={20}
                 onChange={handleRangeChange('outerLineLength')}
-                description="Length of outer lines"
               />
-              <SliderControl
+              
+              <Slider
                 label="Outer Line Thickness"
                 value={settings.outerLineThickness}
                 min={1}
                 max={10}
                 onChange={handleRangeChange('outerLineThickness')}
-                description="Thickness of outer lines"
               />
-              <SliderControl
-                label="Distance from Center"
+              
+              <Slider
+                label="Outer Line Offset"
                 value={settings.outerLineOffset}
-                min={5}
+                min={0}
                 max={50}
                 onChange={handleRangeChange('outerLineOffset')}
-                description="Distance of outer lines from center"
               />
             </div>
-          )}
-        </ControlGroup>
-      )}
-
-      {/* Profile-specific Settings */}
-      {profile === 'ads' && (
-        <ControlGroup title="ADS Settings" icon="🔍">
-          <ToggleSwitch
-            label="ADS Error"
-            checked={settings.adsError}
-            onChange={handleCheckboxChange('adsError')}
-            description="Enable error when aiming down sights"
-          />
-        </ControlGroup>
-      )}
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-700/30">
+              {settings.movementError && (
+                <Slider
+                  label="Movement Error Multiplier"
+                  value={settings.movementErrorMultiplier}
+                  min={0}
+                  max={5}
+                  onChange={handleRangeChange('movementErrorMultiplier')}
+                />
+              )}
+              
+              {settings.firingError && (
+                <Slider
+                  label="Firing Error Multiplier"
+                  value={settings.firingErrorMultiplier}
+                  min={0}
+                  max={5}
+                  onChange={handleRangeChange('firingErrorMultiplier')}
+                />
+              )}
+            </div>
+          </div>
+        )}
+      </Section>
     </div>
   )
 }

@@ -219,6 +219,10 @@
       background: rgba(255, 255, 255, 0.12);
       border-color: rgba(255, 70, 84, 0.5);
       box-shadow: 0 0 30px rgba(255, 70, 84, 0.2);
+      
+      .search-icon {
+        color: rgba(255, 70, 84, 1);
+      }
     }
   }
 
@@ -229,7 +233,7 @@
     outline: none;
     color: white;
     font-size: 1.1rem;
-    padding: 0.5rem 3rem 0.5rem 1rem;
+    padding: 0.5rem 1rem 0.5rem 3.5rem;
 
     &::placeholder {
       color: rgba(255, 255, 255, 0.5);
@@ -238,10 +242,12 @@
 
   .search-icon {
     position: absolute;
-    right: 1rem;
+    left: 1rem;
     top: 50%;
     transform: translateY(-50%);
     color: rgba(255, 70, 84, 0.7);
+    pointer-events: none;
+    z-index: 10;
   }
 
   .riot-id-button {
@@ -511,4 +517,262 @@
 
 .animate-float-decorative {
   animation: floatDecorative 6s ease-in-out infinite;
+}
+
+// New Modern Animations for Updates Banner
+
+// Gradient X Animation (animated background)
+@keyframes gradientX {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+  75% {
+    background-position: 50% 100%;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 400% 400%;
+  animation: gradientX 10s ease infinite;
+}
+
+// Float Animation for particles
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) scale(1);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px) scale(1.1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-10px) translateX(-15px) scale(0.9);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(-25px) translateX(20px) scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+// Enhanced Shimmer Effect
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+    opacity: 0;
+  }
+}
+
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    animation: shimmerSweep 2s ease-in-out infinite;
+  }
+}
+
+// Bounce In Animation
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(50px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05) translateY(-10px);
+  }
+  70% {
+    transform: scale(0.95) translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-bounce-in {
+  animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+// Glow Pulse Animation
+@keyframes glowPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px rgba(255, 70, 84, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(255, 70, 84, 0.8)) drop-shadow(0 0 30px rgba(255, 70, 84, 0.4));
+  }
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+// Slide Up with Fade
+@keyframes slideUpFade {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up-fade {
+  animation: slideUpFade 0.8s ease-out;
+}
+
+// Morphing Border Animation
+@keyframes morphBorder {
+  0%, 100% {
+    border-radius: 16px;
+  }
+  25% {
+    border-radius: 24px 8px 16px 32px;
+  }
+  50% {
+    border-radius: 8px 24px 32px 16px;
+  }
+  75% {
+    border-radius: 32px 16px 8px 24px;
+  }
+}
+
+.animate-morph-border {
+  animation: morphBorder 8s ease-in-out infinite;
+}
+
+// Staggered Slide Animation for Cards
+@keyframes staggerSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.animate-stagger-slide {
+  animation: staggerSlide 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+// Heartbeat Animation for NEW badges
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.1);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+// Magnetic Hover Effect
+@keyframes magneticPull {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(1deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.animate-magnetic:hover {
+  animation: magneticPull 0.3s ease-out;
+}
+
+// Rainbow Border Animation
+@keyframes rainbowBorder {
+  0% {
+    border-color: rgba(255, 70, 84, 0.5);
+  }
+  16.666% {
+    border-color: rgba(255, 154, 0, 0.5);
+  }
+  33.333% {
+    border-color: rgba(255, 206, 84, 0.5);
+  }
+  50% {
+    border-color: rgba(129, 199, 132, 0.5);
+  }
+  66.666% {
+    border-color: rgba(79, 172, 254, 0.5);
+  }
+  83.333% {
+    border-color: rgba(168, 85, 247, 0.5);
+  }
+  100% {
+    border-color: rgba(255, 70, 84, 0.5);
+  }
+}
+
+.animate-rainbow-border {
+  animation: rainbowBorder 3s linear infinite;
+}
+
+// 3D Flip Animation
+@keyframes flip3D {
+  0% {
+    transform: perspective(400px) rotateY(0);
+  }
+  50% {
+    transform: perspective(400px) rotateY(-180deg);
+  }
+  100% {
+    transform: perspective(400px) rotateY(0);
+  }
+}
+
+.animate-flip-3d:hover {
+  animation: flip3D 0.8s ease-in-out;
 }

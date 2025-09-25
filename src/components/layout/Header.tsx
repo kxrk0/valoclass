@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, Target, Users, BarChart3, Crosshair, Newspaper } from 'lucide-react'
+import { Menu, X, Target, Users, BarChart3, Crosshair, Zap } from 'lucide-react'
 import LanguageToggle from '@/components/ui/LanguageToggle'
 import { useTranslation } from '@/contexts/LanguageContext'
 import { useAuth } from '@/contexts/AuthContext'
@@ -19,8 +19,8 @@ const Header = () => {
   const baseNavigation = [
     { name: t.nav.lineups, href: '/lineups', icon: Target },
     { name: t.nav.crosshairs, href: '/crosshairs', icon: Crosshair },
+    { name: 'Trainer', href: '/aim-trainer', icon: Zap, static: true },
     { name: t.nav.stats, href: '/stats', icon: BarChart3 },
-    { name: 'Updates', href: '/updates', icon: Newspaper },
   ]
 
   // Add Community only for authenticated users
@@ -53,7 +53,7 @@ const Header = () => {
           <nav className="hidden md:flex items-center space-x-8">
             {navigation.map((item) => {
               const Icon = item.icon
-              const isActive = pathname === item.href
+              const isActive = pathname === item.href || (item.href === '/aim-trainer' && pathname.startsWith('/aim-trainer'))
               return (
                 <Link
                   key={item.name}
@@ -116,7 +116,7 @@ const Header = () => {
             <nav className="flex flex-col space-y-4 pt-4">
               {navigation.map((item) => {
                 const Icon = item.icon
-                const isActive = pathname === item.href
+                const isActive = pathname === item.href || (item.href === '/aim-trainer' && pathname.startsWith('/aim-trainer'))
                 return (
                   <Link
                     key={item.name}

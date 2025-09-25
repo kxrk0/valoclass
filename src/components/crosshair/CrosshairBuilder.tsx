@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { Copy, Download, Share2, Save, Palette, Import, Code, Shuffle, Users, X, Check, AlertCircle, Settings } from 'lucide-react'
+import { Copy, Download, Share2, Save, Palette, Import, Code, Shuffle, Users, X, Check, AlertCircle, Settings, Crosshair, Target } from 'lucide-react'
 import CrosshairPreview from './CrosshairPreview'
 import CrosshairControls from './CrosshairControls'
 import type { ValorantCrosshairSettings } from '@/types'
@@ -13,7 +13,8 @@ import {
   generateShareCode,
   getColorFromType,
   validateCrosshairAccuracy,
-  PRO_PRESETS
+  PRO_PRESETS,
+  VALORANT_COLORS
 } from '@/utils/valorantCrosshair'
 import { useTranslation } from '@/contexts/LanguageContext'
 
@@ -170,171 +171,178 @@ const CrosshairBuilder = () => {
   ]
 
   return (
-    <div className="space-y-6">
-      {/* Enhanced Header with Profile Selector */}
-      <div 
-        className="rounded-2xl p-6"
-        style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.12)'
-        }}
-      >
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-          <div>
-            <h2 className="font-heading font-bold text-2xl mb-2 bg-gradient-to-r from-yellow-400 to-red-400 bg-clip-text text-transparent">
-              {t.crosshairs.builder.title}
-            </h2>
-            <p className="text-sm text-gray-400">{t.crosshairs.builder.description}</p>
+    <>
+      <div className="container mx-auto px-4 max-w-7xl">
+      {/* Modern Header with Profile Selector */}
+      <div className="mb-8">
+        <div className="bg-gray-800/30 backdrop-blur-20 border border-gray-700/50 rounded-2xl p-6">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                <Crosshair className="text-yellow-400" size={24} />
+                Crosshair Builder
+              </h2>
+              <p className="text-gray-400">Build your perfect Valorant crosshair with authentic game settings</p>
+            </div>
+            
+            {/* Profile Selector */}
+            <div className="flex gap-2 bg-gray-900/50 p-2 rounded-xl">
+              {profileConfigs.map((profile) => (
+                <button
+                  key={profile.key}
+                  onClick={() => setActiveProfile(profile.key)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    activeProfile === profile.key
+                      ? 'bg-gradient-to-r from-yellow-400 to-red-400 text-black shadow-lg'
+                      : 'bg-transparent text-gray-300 hover:bg-gray-700/50'
+                  }`}
+                  title={profile.description}
+                >
+                  <span className="mr-1">{profile.icon}</span>
+                  {profile.name}
+                </button>
+              ))}
+            </div>
           </div>
-          
-          {/* Profile Selector */}
-          <div className="flex gap-2">
-            {profileConfigs.map((profile) => (
-              <button
-                key={profile.key}
-                onClick={() => setActiveProfile(profile.key)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  activeProfile === profile.key
-                    ? 'bg-gradient-to-r from-yellow-400 to-red-400 text-black'
-                    : 'bg-white/5 text-gray-300 hover:bg-white/10'
-                }`}
-                title={profile.description}
-              >
-                <span className="mr-2">{profile.icon}</span>
-                {profile.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setProfileSettings(prev => ({
-              ...prev,
-              [activeProfile]: { ...DEFAULT_VALORANT_CROSSHAIR, profile: settings.profile }
-            }))}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white/5 hover:bg-white/10 text-gray-300"
-          >
-            {t.crosshairs.builder.actions.reset}
-          </button>
-          
-          <button
-            onClick={generateRandomCrosshair}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white/5 hover:bg-white/10 text-gray-300 flex items-center gap-2"
-          >
-            <Shuffle size={16} />
-            {t.crosshairs.builder.actions.random}
-          </button>
-          
-          <button
-            onClick={() => {
-              const centerDotOnly = {
-                ...DEFAULT_VALORANT_CROSSHAIR,
-                profile: activeProfile === 'general' ? 0 : activeProfile === 'primary' ? 1 : activeProfile === 'ads' ? 2 : 3,
-                centerDot: true,
-                centerDotThickness: 3,
-                centerDotOpacity: 1,
-                innerLines: false,
-                innerLineLength: 0,
-                outerLines: false,
-                outerLineLength: 0,
-                movementError: false,
-                firingError: false
-              }
-              setProfileSettings(prev => ({
-                ...prev,
-                [activeProfile]: centerDotOnly
-              }))
-            }}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-red-500/20 hover:bg-red-500/30 text-red-300 flex items-center gap-2"
-          >
-            <div className="w-2 h-2 bg-red-300 rounded-full"></div>
-            {t.crosshairs.builder.actions.dotOnly}
-          </button>
-
-          <button
-            onClick={() => setShowImportModal(true)}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white/5 hover:bg-white/10 text-gray-300 flex items-center gap-2"
-          >
-            <Import size={16} />
-            {t.crosshairs.builder.actions.import}
-          </button>
-
-          <button
-            onClick={() => setShowPresets(true)}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white/5 hover:bg-white/10 text-gray-300 flex items-center gap-2"
-          >
-            <Users size={16} />
-            {t.crosshairs.builder.actions.proPresets}
-          </button>
-
-          <button
-            onClick={exportSettings}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-white/5 hover:bg-white/10 text-gray-300 flex items-center gap-2"
-          >
-            <Download size={16} />
-            {t.crosshairs.builder.actions.export}
-          </button>
-
-          <button
-            onClick={() => setShowShareModal(true)}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-gradient-to-r from-yellow-400 to-red-400 text-black flex items-center gap-2"
-          >
-            <Share2 size={16} />
-            {t.crosshairs.builder.actions.shareCode}
-          </button>
-          
-          <button
-            onClick={() => setShowCommunityModal(true)}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-gradient-to-r from-purple-500 to-blue-500 text-white flex items-center gap-2"
-          >
-            <Users size={16} />
-            {t.crosshairs.builder.actions.shareCommunity}
-          </button>
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Quick Actions Bar */}
+      <div className="mb-8">
+        <div className="bg-gray-800/20 backdrop-blur-10 border border-gray-700/30 rounded-xl p-4">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setProfileSettings(prev => ({
+                ...prev,
+                [activeProfile]: { ...DEFAULT_VALORANT_CROSSHAIR, profile: settings.profile }
+              }))}
+              className="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-gray-700/50 hover:bg-gray-700 text-gray-300"
+            >
+              Reset
+            </button>
+            
+            <button
+              onClick={generateRandomCrosshair}
+              className="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-gray-700/50 hover:bg-gray-700 text-gray-300 flex items-center gap-2"
+            >
+              <Shuffle size={14} />
+              Random
+            </button>
+            
+            <button
+              onClick={() => {
+                const centerDotOnly = {
+                  ...DEFAULT_VALORANT_CROSSHAIR,
+                  profile: settings.profile,
+                  centerDot: true,
+                  centerDotThickness: 3,
+                  centerDotOpacity: 1,
+                  innerLines: false,
+                  innerLineLength: 0,
+                  outerLines: false,
+                  outerLineLength: 0,
+                  movementError: false,
+                  firingError: false
+                }
+                setProfileSettings(prev => ({
+                  ...prev,
+                  [activeProfile]: centerDotOnly
+                }))
+              }}
+              className="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-red-500/20 hover:bg-red-500/30 text-red-300 flex items-center gap-2"
+            >
+              <div className="w-2 h-2 bg-red-300 rounded-full"></div>
+              Dot Only
+            </button>
+
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-gray-700/50 hover:bg-gray-700 text-gray-300 flex items-center gap-2"
+            >
+              <Import size={14} />
+              Import
+            </button>
+
+            <button
+              onClick={() => setShowPresets(true)}
+              className="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 flex items-center gap-2"
+            >
+              <Users size={14} />
+              Pro Presets
+            </button>
+
+            <button
+              onClick={() => setShowShareModal(true)}
+              className="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-gradient-to-r from-yellow-400 to-red-400 text-black hover:shadow-lg flex items-center gap-2"
+            >
+              <Code size={14} />
+              Get Code
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content - Modern Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Preview Section */}
         <div className="lg:col-span-1">
-          <div 
-            className="rounded-2xl p-4 h-fit sticky top-4"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}
-          >
-            <h3 className="font-semibold text-base mb-3 flex items-center gap-2">
-              <Palette size={18} />
-              {t.crosshairs.builder.preview.title}
+          <div className="bg-gray-800/30 backdrop-blur-20 border border-gray-700/50 rounded-2xl p-4 h-fit sticky top-24">
+            <h3 className="font-semibold text-base mb-4 flex items-center gap-2 text-white">
+              <Target size={18} className="text-yellow-400" />
+              Preview
             </h3>
-            <div className="flex justify-center mb-3">
-              <CrosshairPreview settings={settings} size="medium" />
+            
+            {/* Large Preview */}
+            <div className="flex justify-center mb-4 p-6 bg-gray-900/50 rounded-xl">
+              <CrosshairPreview settings={settings} size="large" />
+            </div>
+            
+            {/* Code Display */}
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-300">Valorant Code</span>
+                <div className="flex items-center gap-1">
+                  {codeAccuracy ? (
+                    <>
+                      <Check size={14} className="text-green-400" />
+                      <span className="text-xs text-green-400">Valid</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle size={14} className="text-red-400" />
+                      <span className="text-xs text-red-400">Error</span>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={valorantCode}
+                  readOnly
+                  className="w-full px-3 py-2 text-xs font-mono bg-gray-900/50 border border-gray-600/50 rounded-lg text-gray-300"
+                />
+                <button
+                  onClick={() => copyToClipboard(valorantCode, 'quick')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-yellow-400 transition-colors"
+                >
+                  {copySuccess === 'quick' ? <Check size={14} /> : <Copy size={14} />}
+                </button>
+              </div>
             </div>
             
             {/* Quick Info */}
-            <div className="text-xs text-gray-400 space-y-2 bg-gray-800/20 p-3 rounded-lg">
+            <div className="text-xs text-gray-400 space-y-2 bg-gray-900/30 p-3 rounded-lg">
               <div className="flex justify-between items-center">
                 <span>Profile:</span>
                 <span className="capitalize font-medium text-yellow-400">{activeProfile}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span>Style:</span>
-                <span className="font-medium">
+                <span className="font-medium text-gray-300">
                   {settings.innerLines && settings.centerDot ? 'Lines + Dot' :
                    settings.innerLines ? 'Lines Only' :
                    settings.centerDot ? 'Dot Only' : 'None'}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Dynamic:</span>
-                <span className={`font-medium ${settings.movementError || settings.firingError ? 'text-green-400' : 'text-gray-500'}`}>
-                  {settings.movementError || settings.firingError ? 'Yes' : 'No'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -344,23 +352,7 @@ const CrosshairBuilder = () => {
                     className="w-3 h-3 rounded-full border border-gray-600"
                     style={{ backgroundColor: getColorFromType(settings.colorType, settings.customColor) }}
                   />
-                  <span className="text-xs">{getColorFromType(settings.colorType, settings.customColor)}</span>
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Accuracy:</span>
-                <div className="flex items-center gap-1">
-                  {codeAccuracy ? (
-                    <>
-                      <Check size={12} className="text-green-400" />
-                      <span className="text-xs text-green-400 font-medium">100%</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle size={12} className="text-red-400" />
-                      <span className="text-xs text-red-400 font-medium">Error</span>
-                    </>
-                  )}
+                  <span className="text-xs text-gray-300">{VALORANT_COLORS[settings.colorType as keyof typeof VALORANT_COLORS]?.name || 'Custom'}</span>
                 </div>
               </div>
             </div>
@@ -368,13 +360,14 @@ const CrosshairBuilder = () => {
         </div>
 
         {/* Controls Section */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-3">
           <CrosshairControls 
             settings={settings} 
             updateSetting={updateSetting}
             profile={activeProfile}
           />
         </div>
+      </div>
       </div>
 
       {/* Share Modal */}
@@ -738,7 +731,7 @@ const CrosshairBuilder = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }
 

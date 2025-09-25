@@ -7,7 +7,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { 
   Eye, 
   EyeOff, 
-  Mail, 
+  Mail,
+  Lock,
   AlertCircle, 
   CheckCircle,
   MessageCircle,
@@ -93,44 +94,46 @@ const MinimalistLoginForm = () => {
         <div className="absolute bottom-10 left-10 w-2 h-2 bg-cyan-500/40 rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
-      {/* Main Container */}
+      {/* Modern Clean Container */}
       <div className="relative">
-        {/* Glassmorphism container */}
+        {/* Professional Form Container */}
         <div 
-          className="relative p-6 lg:p-8 rounded-2xl backdrop-blur-30 border transition-all duration-300"
+          className="relative p-6 lg:p-8 rounded-2xl backdrop-blur-20 border transition-all duration-300 hover:shadow-2xl group"
           style={{
             background: `
               linear-gradient(145deg, 
-                rgba(255, 255, 255, 0.1) 0%, 
-                rgba(255, 255, 255, 0.05) 50%,
-                rgba(255, 255, 255, 0.02) 100%
+                rgba(30, 30, 40, 0.95) 0%, 
+                rgba(35, 35, 50, 0.92) 50%,
+                rgba(25, 25, 35, 0.95) 100%
               ),
-              radial-gradient(circle at 30% 40%, rgba(255, 70, 84, 0.05) 0%, transparent 50%),
-              radial-gradient(circle at 70% 60%, rgba(0, 212, 255, 0.05) 0%, transparent 50%)
+              radial-gradient(circle at 30% 40%, rgba(255, 70, 84, 0.08) 0%, transparent 60%),
+              radial-gradient(circle at 70% 60%, rgba(0, 212, 255, 0.06) 0%, transparent 60%)
             `,
-            borderColor: 'rgba(255, 255, 255, 0.2)',
+            borderColor: 'rgba(255, 255, 255, 0.15)',
             boxShadow: `
-              0 25px 45px rgba(0, 0, 0, 0.2),
-              inset 0 1px 0 rgba(255, 255, 255, 0.2),
-              0 0 50px rgba(255, 255, 255, 0.05)
+              0 20px 40px rgba(0, 0, 0, 0.3),
+              0 0 0 1px rgba(255, 255, 255, 0.05),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1)
             `
           }}
         >
-          {/* Minimal Header */}
-          <div className="text-center mb-5">
-            {/* Geometric logo */}
-            <div className="relative inline-flex items-center justify-center w-8 h-8 mb-3">
-              {/* Overlapping shapes */}
-              <div className="absolute w-8 h-8 border border-red-400/60 rounded-lg rotate-45 animate-pulse"></div>
-              <div className="absolute w-5 h-5 bg-cyan-400/40 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-              <div className="absolute w-2 h-2 bg-white rounded-sm animate-pulse" style={{ animationDelay: '1s' }}></div>
+          {/* Clean hover effect */}
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+          {/* Clean Professional Header */}
+          <div className="text-center mb-6 relative">
+            {/* Simple Logo */}
+            <div className="relative inline-flex items-center justify-center w-12 h-12 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500/20 to-cyan-500/20 rounded-xl flex items-center justify-center border border-white/10">
+                <div className="w-6 h-6 bg-gradient-to-br from-red-400 to-cyan-400 rounded-lg"></div>
+              </div>
             </div>
 
-            <h1 className="text-xl font-light mb-1 text-white tracking-wide">
-              Welcome
+            {/* Clean title */}
+            <h1 className="text-2xl font-bold text-white mb-2">
+              Sign In
             </h1>
-            <p className="text-gray-400 text-xs font-light">
-              Enter your credentials to continue
+            <p className="text-gray-400 text-sm">
+              Access your tactical dashboard
             </p>
           </div>
 
@@ -143,12 +146,12 @@ const MinimalistLoginForm = () => {
           )}
 
           {/* Clean OAuth Buttons */}
-          <div className="space-y-2 mb-4">
+          <div className="space-y-3 mb-6">
             {/* Google */}
             <button
               onClick={() => handleOAuthLogin('google')}
               disabled={activeOAuth !== null}
-              className="group w-full p-2.5 rounded-lg border border-gray-600/50 hover:border-gray-500 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 bg-gray-800/20 hover:bg-gray-800/40 backdrop-blur-20"
+              className="group w-full p-3 rounded-lg border border-gray-600/50 hover:border-blue-500/50 transition-all duration-300 hover:bg-blue-500/5 disabled:opacity-50"
             >
               <div className="flex items-center justify-center gap-3 text-gray-300 group-hover:text-white">
                 {activeOAuth === 'google' ? (
@@ -171,7 +174,7 @@ const MinimalistLoginForm = () => {
             <button
               onClick={() => handleOAuthLogin('discord')}
               disabled={activeOAuth !== null}
-              className="group w-full p-2.5 rounded-lg border border-gray-600/50 hover:border-gray-500 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 bg-gray-800/20 hover:bg-gray-800/40 backdrop-blur-20"
+              className="group w-full p-3 rounded-lg border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 hover:bg-purple-500/5 disabled:opacity-50"
             >
               <div className="flex items-center justify-center gap-3 text-gray-300 group-hover:text-white">
                 {activeOAuth === 'discord' ? (
@@ -185,29 +188,27 @@ const MinimalistLoginForm = () => {
               </div>
             </button>
 
-            {/* Riot ID - Hero Style Design */}
+            {/* Riot ID */}
             <button
               onClick={() => handleOAuthLogin('riot')}
               disabled={activeOAuth !== null}
-              className="w-full riot-id-button-auth"
+              className="group w-full p-3 rounded-lg border border-red-500/30 hover:border-red-500/50 transition-all duration-300 bg-red-500/5 hover:bg-red-500/10 disabled:opacity-50"
             >
-              {activeOAuth === 'riot' ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <svg className="riot-icon" width="20" height="20" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
-                  <g>
-                    <polygon points="80.11463165283203,8.324189960956573 0,45.35578089952469 19.96091079711914,121.31561595201492 35.225154876708984,119.41886454820633 30.980073928833008,71.72943431138992 36.03803253173828,69.47140055894852 44.61853790283203,118.24470835924149 70.54061126708984,115.08348399400711 65.93424224853516,62.42641764879227 70.81159210205078,60.25872737169266 80.29529571533203,113.90928965806961 106.57864379882812,110.6577256321907 101.52070617675781,52.942733108997345 106.48834228515625,50.775035202503204 116.87525177001953,109.39323741197586 142.79733276367188,106.23201304674149 142.79733276367188,24.040038406848907"></polygon>
-                    <polygon points="82.01138305664062,123.3929780125618 83.27587127685547,130.8895142674446 142.79733276367188,140.8247407078743 142.79733276367188,115.98668986558914 82.10169982910156,123.3929780125618"></polygon>
-                  </g>
-                </svg>
-              )}
-              <span className="button-text">
-                {activeOAuth === 'riot' ? 'Connecting...' : (
-                  <>
-                    Sign in<span className="collapsed"> with Riot ID</span>
-                  </>
+              <div className="flex items-center justify-center gap-3 text-red-300 group-hover:text-red-200">
+                {activeOAuth === 'riot' ? (
+                  <div className="w-5 h-5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <svg className="w-5 h-5" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+                    <g fill="currentColor">
+                      <polygon points="80.11463165283203,8.324189960956573 0,45.35578089952469 19.96091079711914,121.31561595201492 35.225154876708984,119.41886454820633 30.980073928833008,71.72943431138992 36.03803253173828,69.47140055894852 44.61853790283203,118.24470835924149 70.54061126708984,115.08348399400711 65.93424224853516,62.42641764879227 70.81159210205078,60.25872737169266 80.29529571533203,113.90928965806961 106.57864379882812,110.6577256321907 101.52070617675781,52.942733108997345 106.48834228515625,50.775035202503204 116.87525177001953,109.39323741197586 142.79733276367188,106.23201304674149 142.79733276367188,24.040038406848907"></polygon>
+                      <polygon points="82.01138305664062,123.3929780125618 83.27587127685547,130.8895142674446 142.79733276367188,140.8247407078743 142.79733276367188,115.98668986558914 82.10169982910156,123.3929780125618"></polygon>
+                    </g>
+                  </svg>
                 )}
-              </span>
+                <span className="font-semibold text-sm">
+                  {activeOAuth === 'riot' ? 'Connecting...' : 'Sign in with Riot ID'}
+                </span>
+              </div>
             </button>
           </div>
 
@@ -225,14 +226,14 @@ const MinimalistLoginForm = () => {
 
           {/* Clean Email Login Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Email Field */}
+            {/* Enhanced Email Field */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-300">Email</label>
+              <label className="block text-sm font-medium text-gray-300 group-focus-within:text-red-300 transition-colors">Email</label>
               <div className="relative group">
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 bg-gray-800/30 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 transition-all duration-300 backdrop-blur-20 hover:bg-gray-800/50"
+                  className="w-full px-4 py-3 pl-12 bg-gray-800/30 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 transition-all duration-300 backdrop-blur-20 hover:bg-gray-800/50 hover:border-gray-500/60 group-focus-within:shadow-lg group-focus-within:shadow-red-500/10"
                   {...register('email', {
                     required: 'Email is required',
                     pattern: {
@@ -241,42 +242,49 @@ const MinimalistLoginForm = () => {
                     }
                   })}
                 />
-                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                  <Mail className="h-4 w-4 text-gray-500 group-focus-within:text-red-400 transition-colors" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Mail className="h-4 w-4 text-gray-500 group-focus-within:text-red-400 group-hover:text-gray-400 transition-all duration-300" />
                 </div>
+                {/* Animated Border */}
+                <div className="absolute inset-0 rounded-lg border border-red-500/0 group-focus-within:border-red-500/20 transition-all duration-300 pointer-events-none"></div>
               </div>
               {errors.email && (
-                <p className="text-red-400 text-sm flex items-center gap-2">
-                  <Circle size={4} className="fill-current" />
+                <p className="text-red-400 text-sm flex items-center gap-2 animate-fade-in">
+                  <Circle size={4} className="fill-current animate-pulse" />
                   {errors.email.message}
                 </p>
               )}
             </div>
 
-            {/* Password Field */}
+            {/* Enhanced Password Field */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-300">Password</label>
+              <label className="block text-sm font-medium text-gray-300 group-focus-within:text-red-300 transition-colors">Password</label>
               <div className="relative group">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your password"
-                  className="w-full px-4 py-3 bg-gray-800/30 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 transition-all duration-300 backdrop-blur-20 hover:bg-gray-800/50"
+                  className="w-full px-4 py-3 pl-12 pr-12 bg-gray-800/30 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 transition-all duration-300 backdrop-blur-20 hover:bg-gray-800/50 hover:border-gray-500/60 group-focus-within:shadow-lg group-focus-within:shadow-red-500/10"
                   {...register('password', {
                     required: 'Password is required',
                     minLength: { value: 6, message: 'Password must be at least 6 characters' }
                   })}
                 />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="h-4 w-4 text-gray-500 group-focus-within:text-red-400 group-hover:text-gray-400 transition-all duration-300" />
+                </div>
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-white transition-colors"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-white hover:scale-110 transition-all duration-200 z-10"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
+                {/* Animated Border */}
+                <div className="absolute inset-0 rounded-lg border border-red-500/0 group-focus-within:border-red-500/20 transition-all duration-300 pointer-events-none"></div>
               </div>
               {errors.password && (
-                <p className="text-red-400 text-sm flex items-center gap-2">
-                  <Circle size={4} className="fill-current" />
+                <p className="text-red-400 text-sm flex items-center gap-2 animate-fade-in">
+                  <Circle size={4} className="fill-current animate-pulse" />
                   {errors.password.message}
                 </p>
               )}

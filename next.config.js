@@ -1,7 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['media.valorant-api.com', 'titles.trackercdn.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'media.valorant-api.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'titles.trackercdn.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
   sassOptions: {
     includePaths: ['./src/styles'],
